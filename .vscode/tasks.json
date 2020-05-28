@@ -1,0 +1,63 @@
+{
+    "version": "2.0.0",
+    "command": "sh",
+    "args": [
+        "-c"
+    ],
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+    },
+    "tasks": [
+        {
+            "label": "g++ -g *.cpp",
+            "type": "shell",
+            "command": "g++ -g *.cpp",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "create build dir",
+            "type": "shell",
+            "args": ["mkdir build || true"]
+        },
+        {
+            "label": "cmake",
+            "type": "shell",
+            "options": {
+                "cwd": "/build"
+            },
+            "command": "cmake",
+            "args": [
+                "-G",
+                "Unix Makefiles",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                ""
+            ],
+            "dependsOn": [
+                "create build dir"
+            ]
+        },
+        {
+            "label": "make",
+            "type": "shell",
+            "options": {
+                "cwd": "/build"
+            },
+            "command": [
+                "make"
+            ],
+            "dependsOn": [
+                "cmake"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        }
+    ]
+}
