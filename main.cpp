@@ -1,7 +1,10 @@
 #include <iostream>
+#include "Board.hpp"
 
-using namespace std;
 
 int main() {
+    Board board;
+    board.set_unit(3, 7);
+    board.draw();
     
 }
