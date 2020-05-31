@@ -1,21 +1,24 @@
 #include "Board.hpp"
+#include "RegularUnit.hpp"
 #include <iostream>
-
-namespace GAME_STATES
-{
-enum class TURN {
-    PLAYER1,
-    PLAYER2
-};
-}
+#include <map>
+#include <string>
 
 Board::Board()
     : height(12),
       width(10),
+      units(width, height),
       has_unit(width, height)
 {
+    // RegularUnit unit(5);
+    // units.push_back(&unit);
     set_obstacles();
     set_units();
+    for (int row = 0; row < height; ++row) {
+        for (int col = 0; col < width; ++col) {
+            units[row][col] = nullptr;
+        }
+    }
 }
 
 void Board::set_units()
@@ -89,17 +92,21 @@ void Board::set_obstacles()
     // }
 }
 
-char Board::get_tile_info(int col, int row) const
+std::string Board::get_tile_info(int col, int row) const
 {
+
     for (size_t i = 0; i < obstacles.size(); ++i) {
         if (obstacles[i].x == col && obstacles[i].y == row) {
-            return 'O';
+            return "O";
         }
     }
-    if (has_unit[row][col]) {
-        return 'U';
+    if (units[row][col] != nullptr) {
+        return units[row][col]->get_type();
     }
-    return ' ';
+    // if (units[0]->get_x() == col && units[0]->get_y() == row) {
+    //     return units[0]->get_type();
+    // }
+    return " ";
 }
 
 void Board::draw()
@@ -107,40 +114,45 @@ void Board::draw()
     for (int row = 0; row < height; ++row) {
         for (int col = 0; col < width; ++col) {
             std::cout << "[ ";
-            switch (get_tile_info(col, row)) {
-            case 'U':
-                std::cout << "U";
-                break;
-
-            case 'O':
+            if (get_tile_info(col, row) == "regular") {
+                std::cout << "R";
+            } else if (get_tile_info(col, row) == "O") {
                 std::cout << "O";
-                break;
-
-            default:
-                std::cout << ' ';
+            }
+            else {
+                std::cout << " ";
             }
             std::cout << " ]";
-            // if (has_unit[row][col]) {
-            //     std::cout << "U";
-            // } else {
-            //     std::cout << " ";
-            // }
-            // std::cout << " ]";
+           
+            
         }
         std::cout << '\n';
     }
 }
 
-void Board::set_unit(int col, int row)
+void Board::set_unit(int col, int row, TURN player) {
+    if (col < 0 || col >= width) {
+        return;
+    }
+    if (row < (height - 5) || row >= height) {
+        return;
+    }
+    if (get_tile_info(col, row) != " ") {
+        return;
+    }
+
+
+    //first we have to choose the type of unit to set
+
+
+    //second we set the desired field with the chosen unit
+    units[row][col] = new RegularUnit(5, player);
+    units[row][col]->set_position(col, row);
+
+}
+
+void Board::remove_unit(int col, int row)
 {
-    if (col < 0 || col >= height) {
-        return;
-    }
-    if (row < 0 || row >= width) {
-        return;
-    }
-    if (get_tile_info(col, row) != ' ') {
-        return;
-    }
-    has_unit[row][col] = true;
+    delete units[row][col];
+    units[row][col] = nullptr;
 }

@@ -1,10 +1,10 @@
 #include <iostream>
 #include "Board.hpp"
-
+#include "RegularUnit.hpp"
+#include "test.hpp"
 
 int main() {
     Board board;
-    board.set_unit(3, 7);
-    board.draw();
+    testing(board);
     
 }
