@@ -5,25 +5,33 @@ enum class TURN;
 class Unit
 {
     int value;
-    std::string name;
+    std::string type;
     TURN owner;
     int x;
     int y;
     
     public:
-    Unit(int v, std::string n, TURN player) :value(v), name(n), owner(player) { x = -1; y = -1; };
+    Unit() {};
+    Unit(int v, const std::string& t, TURN player) :value(v), type(t), owner(player) { x = -1; y = -1; };
+    inline Unit(const Unit& rhs);
     inline virtual bool can_move(int col, int row) = 0;
     int get_value() const { return value; };
-    std::string get_type() const { return name; };
+    std::string get_type() const { return type; };
     int get_x() const { return x; };
     int get_y() const { return y; };
     TURN get_owner() const { return owner; };
     inline void set_position(int Ax, int Ay);
-    virtual int get_player_A_count() = 0;
-    virtual int get_player_B_count() = 0; 
     virtual ~Unit() {};
 
 };
+
+Unit::Unit(const Unit& rhs) {
+    value = rhs.value;
+    type = rhs.type;
+    owner = rhs.owner;
+    x = rhs.x;
+    y = rhs.y;
+}
 
 void Unit::set_position(int Ax, int Ay) {
     x = Ax;
@@ -39,3 +47,5 @@ bool Unit::can_move(int col, int row) {
         return false;
     }
 }
+
+    

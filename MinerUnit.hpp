@@ -4,13 +4,11 @@
 enum class TURN;
 class MinerUnit :public Unit 
 {
-    static int player_A_count;
-    static int player_B_count;
 
     public:
+    MinerUnit(const Unit& rhs);
     MinerUnit(TURN player);
     ~MinerUnit();
-    MinerUnit(const MinerUnit&) = delete;
-    MinerUnit& operator=(const MinerUnit&) = delete;
+    virtual bool can_move(int col, int row) override;
 
 };
