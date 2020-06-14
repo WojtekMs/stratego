@@ -15,6 +15,8 @@
 Board::Board()
     : height(12),
       width(10),
+      current_state(STATE::UNINITIALIZED),
+      unit_count(0),
       units(width, height)
 {
     set_obstacles();
@@ -61,6 +63,15 @@ void Board::set_obstacles() {
    
 }
 
+bool Board::out_of_range(int col, int row) {
+    if (col < 0 || col > width) {
+        return true;
+    }
+    if (row < 0 || row > height) {
+        return true;
+    }
+}
+
 std::string Board::get_tile_info(int col, int row) const {
     for (size_t i = 0; i < obstacles.size(); ++i) {
         if (obstacles[i].x == col && obstacles[i].y == row) {
@@ -73,7 +84,7 @@ std::string Board::get_tile_info(int col, int row) const {
     return " ";
 }
 
-void Board::draw() {
+void Board::draw() const {
     for (int row = 0; row < height; ++row) {
         for (int col = 0; col < width; ++col) {
             std::cout << "[ ";
@@ -94,15 +105,22 @@ void Board::draw() {
     }
 }
 
-void Board::set_unit(int col, int row, TURN player, int choice) {
+bool Board::set_unit(int col, int row, TURN player, int choice) {
     if (col < 0 || col >= width) {
-        return;
+        return false;
     }
     if (row < (height - 5) || row >= height) {
-        return;
+        return false;
+    }
+    if (choice < 1 && choice > 3) {
+        return false;
     }
     if (get_tile_info(col, row) != " ") {
-        return;
+        return false;
+    }
+    if (unit_count == MAX_UNIT_COUNT) {
+        current_state = STATE::INITIALIZED;
+        return false;
     }
 
     //first we have to choose the type of unit to set
@@ -130,47 +148,70 @@ void Board::set_unit(int col, int row, TURN player, int choice) {
     std::cout << "unit created owner: " << static_cast<int>(units[row][col]->get_owner()) << '\n';
     //second we set the desired field with the chosen unit
     units[row][col]->set_position(col, row);
+    unit_count++;
+    return true;
 }
 
 void Board::remove_unit(int col, int row) {
     units[row][col].reset();
+    unit_count--;
 }
 
-void Board::move_unit(std::pair<int, int> from, std::pair<int, int> to) {
-    //under the condition that:
-    // -- the field we move to is empty
-    // -- the field we want move from has a unit
-    // -- the field we move from is on map
-    // -- the field we move to is on map
-    units[to.second][to.first].swap(units[from.second][from.first]);
+bool Board::can_move(Tile from, Tile to) const {
+    if (out_of_range(from.x, from.y)) {
+        return false;
+    }
+    if (out_of_range(to.x, to.y)) {
+        return false;
+    }
+    if (!units[from.y][from.x]) {
+        return false;
+    }
+    if (!units[from.y][from.x]->can_move(to.x, to.y)) {
+        return false;
+    }
+    return true;
 }
 
-Board::tile Board::point_reflection(int col, int row) {
-    Board::tile distance;
-    Board::tile distance_point;
-    Board::tile reflection;
-    Board::tile reflection_point;
+void Board::move_unit(Tile from, Tile to) {
+    if (can_move(from, to)) {
+    units[to.y][to.x].swap(units[from.y][from.x]);
+    }
+}
+
+void Board::reverse_move_unit(Tile from, Tile to) {
+    Tile rev_from = point_reflection(from.x, from.y);
+    Tile rev_to = point_reflection(to.x, to.y);
+    move_unit(rev_from, rev_to);   
+}
+
+
+Board::Tile Board::point_reflection(int col, int row) {
+    Board::Tile distance;
+    Board::Tile distance_point;
+    Board::Tile reflection;
+    Board::Tile reflection_point;
     if (col >= 5 && row <= 5) {  //first quarter of the board
-        distance_point = Board::tile(4, 6);
-        reflection_point = Board::tile(5, 5);
+        distance_point = Board::Tile(4, 6);
+        reflection_point = Board::Tile(5, 5);
     }
     if (col <= 4 && row <= 5) {  //second quarter of the board
-        distance_point = Board::tile(5, 6);
-        reflection_point = Board::tile(4, 5);
+        distance_point = Board::Tile(5, 6);
+        reflection_point = Board::Tile(4, 5);
     }
     if (col <= 4 && row >= 6) {  //third quarter of the board
-        distance_point = Board::tile(5, 5);
-        reflection_point = Board::tile(4, 6);
+        distance_point = Board::Tile(5, 5);
+        reflection_point = Board::Tile(4, 6);
     }
     if (col >= 5 && row >= 6) {  //fourth quarter of the board
-        distance_point = Board::tile(4, 5);
-        reflection_point = Board::tile(5, 6);
+        distance_point = Board::Tile(4, 5);
+        reflection_point = Board::Tile(5, 6);
     }
     distance.x = col - distance_point.x;
     distance.y = row - distance_point.y;
     reflection.x = -distance.x;
     reflection.y = -distance.y;
-    return Board::tile(reflection_point.x + reflection.x, reflection_point.y + reflection.y);
+    return Board::Tile(reflection_point.x + reflection.x, reflection_point.y + reflection.y);
 }
 
 Board& Board::operator=(const Board& rhs) {
@@ -182,27 +223,7 @@ Board& Board::operator=(const Board& rhs) {
     set_default_units();
     for (int row = 0; row < height; ++row) {
         for (int col = 0; col < width; ++col) {
-            if (!rhs.units[row][col].get()) {
-                continue;
-            }
-            if (rhs.units[row][col]->get_type() == "regular") {
-                units[row][col] = std::make_shared<RegularUnit>(*rhs.units[row][col]);
-            }
-            if (rhs.units[row][col]->get_type() == "bomb") {
-                units[row][col] = std::make_shared<BombUnit>(*rhs.units[row][col]);
-            }
-            if (rhs.units[row][col]->get_type() == "miner") {
-                units[row][col] = std::make_shared<MinerUnit>(*rhs.units[row][col]);
-            }
-            // if (rhs.units[row][col]->get_type() == "flag") {
-            //     units[row][col] = std::make_shared<FlagUnit>(*rhs.units[row][col]);
-            // }
-            // if (rhs.units[row][col]->get_type() == "spy") {
-            //     units[row][col] = std::make_shared<SpyUnit>(*rhs.units[row][col]);
-            // }
-            // if (rhs.units[row][col]->get_type() == "scout") {
-            //     units[row][col] = std::make_shared<ScoutUnit>(*rhs.units[row][col]);
-            // }
+            units[row][col] = rhs.units[row][col];
         }
     }
     for (int i = 0; i < obstacles.size(); ++i) {
@@ -212,7 +233,7 @@ Board& Board::operator=(const Board& rhs) {
 }
 
 void Board::update(const Board& other_board) {
-    Board::tile other_unit;
+    Board::Tile other_unit;
     *this = other_board;
     for (int row = 0; row < height / 2; ++row) {
         for (int col = 0; col < width; ++col) {
