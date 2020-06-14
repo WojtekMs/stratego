@@ -20,15 +20,19 @@ enum class STATE {
 
 constexpr int MAX_UNIT_COUNT = 40;
 
-
 class Board {
-    struct Tile {
+public:
+    class Tile {
+    public:
         int x;
         int y;
-        explicit Tile(int col = 0, int row = 0) { x = col; y = row; };
-        Tile& operator=(const Tile& rhs) {x = rhs.x; y = rhs.y; };
+        explicit Tile(int col = 0, int row = 0) {
+            x = col;
+            y = row;
+        };
     };
 
+private:
     int height;
     int width;
     STATE current_state;
@@ -56,5 +60,4 @@ public:
     void update(const Board& other_board);
     Board& operator=(const Board& rhs);
     STATE get_state() const { return current_state; };
-
 };

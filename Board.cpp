@@ -63,7 +63,7 @@ void Board::set_obstacles() {
    
 }
 
-bool Board::out_of_range(int col, int row) {
+bool Board::out_of_range(int col, int row) const {
     if (col < 0 || col > width) {
         return true;
     }
@@ -226,7 +226,7 @@ Board& Board::operator=(const Board& rhs) {
             units[row][col] = rhs.units[row][col];
         }
     }
-    for (int i = 0; i < obstacles.size(); ++i) {
+    for (size_t i = 0; i < obstacles.size(); ++i) {
         obstacles[i] = rhs.obstacles[i];
     }
     return *this;
