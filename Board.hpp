@@ -1,8 +1,8 @@
 #pragma once
 #include <array>
+#include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "Array2D.h"
@@ -39,6 +39,7 @@ private:
     int unit_count;
     Array2D<std::shared_ptr<Unit>> units;
     std::array<Tile, 8> obstacles;
+    std::map<const std::string, const int> max_count_of_each_unit;
 
     void set_default_units();
     void set_obstacles();
@@ -47,10 +48,9 @@ private:
 
 public:
     Board();
-    void draw() const;
     bool set_unit(int col, int row, TURN player, int choice);
     void remove_unit(int col, int row);
-    std::string get_tile_info(int col, int row) const;
+    std::string get_tile_info(int col, int row, TURN player) const;
     int get_height() const { return height; };
     int get_width() const { return width; };
     std::shared_ptr<Unit> get_unit(int col, int row) const { return units[row][col]; };

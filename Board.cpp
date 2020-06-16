@@ -6,7 +6,6 @@
 
 #include "BombUnit.hpp"
 #include "FlagUnit.hpp"
-#include "MarshalUnit.hpp"  // -> perhaps is unnecesary
 #include "MinerUnit.hpp"
 #include "RegularUnit.hpp"
 #include "ScoutUnit.hpp"
@@ -17,8 +16,20 @@ Board::Board()
       width(10),
       current_state(STATE::UNINITIALIZED),
       unit_count(0),
-      units(width, height)
-{
+      units(width, height),
+      max_count_of_each_unit( std::initializer_list<std::pair<const std::string, const int>> {
+          {"flag", 1},
+          {"scout", 8},
+          {"miner", 5},
+          {"bomb", 6},
+          {"spy", 1},
+          {"regular4", 4},
+          {"regular5", 4},
+          {"regular6", 4},
+          {"regular7", 3},
+          {"regular8", 2},
+          {"regular9", 1},
+          {"regular10", 1} } ) {
     set_obstacles();
     set_default_units();
 }
@@ -59,8 +70,6 @@ void Board::set_obstacles() {
         }
         j++;
     }
-
-   
 }
 
 bool Board::out_of_range(int col, int row) const {
@@ -70,52 +79,36 @@ bool Board::out_of_range(int col, int row) const {
     if (row < 0 || row > height) {
         return true;
     }
+    return false;
 }
 
-std::string Board::get_tile_info(int col, int row) const {
+std::string Board::get_tile_info(int col, int row, TURN player) const {
     for (size_t i = 0; i < obstacles.size(); ++i) {
         if (obstacles[i].x == col && obstacles[i].y == row) {
             return "O";
         }
     }
     if (units[row][col] != nullptr) {
-        return units[row][col]->get_type();
+        if (units[row][col]->get_owner() != player) {
+            return "enemy";
+        } else {
+            return units[row][col]->get_type();
+        }
     }
     return " ";
-}
-
-void Board::draw() const {
-    for (int row = 0; row < height; ++row) {
-        for (int col = 0; col < width; ++col) {
-            std::cout << "[ ";
-            if (get_tile_info(col, row) == "regular") {
-                std::cout << "R";
-            } else if (get_tile_info(col, row) == "O") {
-                std::cout << "O";
-            } else if (get_tile_info(col, row) == "bomb") {
-                std::cout << "B";
-            } else if (get_tile_info(col, row) == "miner") {
-                std::cout << "M";
-            } else {
-                std::cout << " ";
-            }
-            std::cout << " ]";
-        }
-        std::cout << '\n';
-    }
 }
 
 bool Board::set_unit(int col, int row, TURN player, int choice) {
     if (col < 0 || col >= width) {
         return false;
     }
-    if (row < (height - 5) || row >= height) {
+    if (row < (height - 4) || row >= height) {
         return false;
     }
-    if (choice < 1 && choice > 3) {
+    if (choice < 0 && choice > 12) {
         return false;
     }
-    if (get_tile_info(col, row) != " ") {
+    if (get_tile_info(col, row, player) != " ") {
         return false;
     }
     if (unit_count == MAX_UNIT_COUNT) {
@@ -124,27 +117,28 @@ bool Board::set_unit(int col, int row, TURN player, int choice) {
     }
 
     //first we have to choose the type of unit to set
-    switch (choice) {
-    case 1: {
-        units[row][col] = std::make_shared<RegularUnit>(5, player);
-    } break;
+    switch (choice + 2) {
     case 2: {
-        units[row][col] = std::make_shared<BombUnit>(player);
+        units[row][col] = std::make_shared<ScoutUnit>(player);
     } break;
     case 3: {
         units[row][col] = std::make_shared<MinerUnit>(player);
     } break;
-        // case 4: {
-        //     units[row][col] = std::make_shared<FlagUnit>(5, player);
-        // } break;
-        // case 5: {
-        //     units[row][col] = std::make_shared<SpyUnit>(5, player);
-        // } break;
-        // case 6: {
-        //     units[row][col] = std::make_shared<ScoutUnit>(5, player);
-        // } break;
+    case 11: {
+        units[row][col] = std::make_shared<BombUnit>(player);
+    } break;
+    case 12: {
+        units[row][col] = std::make_shared<FlagUnit>(player);
+    } break;
+    case 13: {
+        units[row][col] = std::make_shared<SpyUnit>(player);
+    }
+    }
+    if (choice + 2 > 3 && choice + 2 < 11) {
+        units[row][col] = std::make_shared<RegularUnit>(choice + 2, player);
     }
     std::cout << "unit created type: " << units[row][col]->get_type() << '\n';
+    std::cout << "unit created value: " << units[row][col]->get_value() << '\n';
     std::cout << "unit created owner: " << static_cast<int>(units[row][col]->get_owner()) << '\n';
     //second we set the desired field with the chosen unit
     units[row][col]->set_position(col, row);
@@ -175,16 +169,15 @@ bool Board::can_move(Tile from, Tile to) const {
 
 void Board::move_unit(Tile from, Tile to) {
     if (can_move(from, to)) {
-    units[to.y][to.x].swap(units[from.y][from.x]);
+        units[to.y][to.x].swap(units[from.y][from.x]);
     }
 }
 
 void Board::reverse_move_unit(Tile from, Tile to) {
     Tile rev_from = point_reflection(from.x, from.y);
     Tile rev_to = point_reflection(to.x, to.y);
-    move_unit(rev_from, rev_to);   
+    move_unit(rev_from, rev_to);
 }
-
 
 Board::Tile Board::point_reflection(int col, int row) {
     Board::Tile distance;
