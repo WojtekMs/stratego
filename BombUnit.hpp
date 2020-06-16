@@ -1,15 +1,14 @@
 #pragma once
+
 #include "Unit.hpp"
 
 enum class TURN;
-class BombUnit :public Unit 
-{
-
-    public:
-    BombUnit(const Unit& rhs);
-    BombUnit(TURN player); 
-    ~BombUnit();
-    virtual bool can_move(int col, int row) { return false; };
-
+class BombUnit : public Unit {
+public:
+    BombUnit(TURN player): Unit(0, "bomb", player){};
+    virtual ~BombUnit(){};
+    virtual bool can_move(int col, int row) const override { return false; };
+    virtual RESULT attack(const Unit& rhs) override {
+        return RESULT::LOST;
+    }
 };
-
