@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <unordered_map>
 #include <string>
 
 #include "Player.hpp"
@@ -18,24 +19,31 @@ class GameView {
     float mouseObjectOffSetX;
     float mouseObjectOffSetY;
     sf::Sprite* unit_it;
+    sf::Vector2f sprite_initial_position;
+    bool unit_chosen;
 
     sf::Sprite board_border;
     sf::Sprite grass_light;
     sf::Sprite grass_dark;
-    std::array<sf::Sprite, 13> red_units_sprites;
+    std::array<sf::Sprite, 12> red_units_sprites;
+    sf::Sprite red_back_sprite;
+    // std::unordered_map<std::string, sf::Sprite> red_units_sprites;
 
     sf::Texture board_border_texture;
     sf::Texture grass_light_texture;
     sf::Texture grass_dark_texture;
     std::array<std::pair<sf::Sprite, std::string>, 8> obstacle_sprites;
     std::array<std::pair<sf::Texture, std::string>, 8> obstacle_textures;
-    std::array<sf::Texture, 13> red_unit_textures;
+    std::array<sf::Texture, 12> red_unit_textures;
+    sf::Texture red_back_texture;
 
     void load_red_units_textures();
     void set_red_units_sprites();
     void draw_grass(sf::RenderWindow& win);
     void draw_obstacles(sf::RenderWindow& win);
     void draw_units_for_init(sf::RenderWindow& win);
+    void draw_board(sf::RenderWindow& win);
+    void draw_red_sprite(sf::RenderWindow& win, int idx, int sprite_pos_x, int sprite_pos_y);
 
 public:
     GameView(Player& pA, Player& pB);
