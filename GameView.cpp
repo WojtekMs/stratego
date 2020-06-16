@@ -163,22 +163,6 @@ void GameView::draw_units_for_init(sf::RenderWindow& win) {
             j++;
         }
     }
-    // red_bomb_sprite.setPosition(x_denting + j * TILE_SIZE, y_denting + k * TILE_SIZE);
-    // win.draw(red_bomb_sprite);
-    // j++;
-    // red_spy_sprite.setPosition(x_denting + j * TILE_SIZE, y_denting + k * TILE_SIZE);
-    // win.draw(red_spy_sprite);
-    // j++;
-    // if (dragging == false) {
-    //     red_flag_sprite.setPosition(x_denting + j * TILE_SIZE, y_denting + k * TILE_SIZE);
-    // }
-    // } else {
-    //     red_flag_sprite.setPosition(mouseX - mouseObjectOffSetX, mouseY - mouseObjectOffSetY);
-    // }
-    //     win.draw(red_flag_sprite);
-    // } else {
-    //     // blue units draw
-    // }
 }
 
 void GameView::draw(sf::RenderWindow& win) {
