@@ -190,7 +190,6 @@ void GameView::draw(sf::RenderWindow& win) {
 
 void GameView::handle_events(sf::Event& event) {
     if (event.type == sf::Event::MouseButtonPressed) {
-        std::cout << "mouseX: " << mouseX << ", mouseY: " << mouseY << '\n';
         unit_it = std::find_if(red_units_sprites.begin(), red_units_sprites.end(),
                                [&event](const sf::Sprite& unit_sprite) {
                                    return unit_sprite.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y);
@@ -199,9 +198,6 @@ void GameView::handle_events(sf::Event& event) {
             dragging = true;
             mouseObjectOffSetY = event.mouseButton.x - unit_it->getGlobalBounds().left;
             mouseObjectOffSetX = event.mouseButton.y - unit_it->getGlobalBounds().top;
-            // std::cout << "mouseX: " << mouseX << ", mouseY: " << mouseY << '\n';
-            // unit_it->setPosition(mouseX - mouseObjectOffSetX, mouseY - mouseObjectOffSetY);
-            // std::cout << "unit_it_x: " << unit_it->getPosition().x << ", unit_it_y: " << unit_it->getPosition().y << "\n";
         }
     }
     if (event.type == sf::Event::MouseButtonReleased) {
@@ -210,17 +206,5 @@ void GameView::handle_events(sf::Event& event) {
     if (event.type == sf::Event::MouseMoved) {
         mouseX = event.mouseMove.x;
         mouseY = event.mouseMove.y;
-        // std::cout << "mouseX: " << mouseX << ", mouseY: " << mouseY << '\n';
     }
-    // if (unit_it) {
-    // unit_it->setPosition(mouseX - mouseObjectOffSetX, mouseY - mouseObjectOffSetY);
-    // std::cout << "unit_it_x: " << unit_it->getPosition().x << ", unit_it_y: " << unit_it->getPosition().y << "\n";
-
-    // }
-    // if (dragging == true) {
-    // if (unit_it) {
-    // unit_it->setPosition(mouseX - mouseObjectOffSetX, mouseY - mouseObjectOffSetY);
-    // }
-
-    // }
 }
