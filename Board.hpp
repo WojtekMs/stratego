@@ -20,6 +20,7 @@ enum class STATE {
 
 constexpr int MAX_UNIT_COUNT = 40;
 
+
 class Board {
 public:
     class Tile {
@@ -39,7 +40,7 @@ private:
     int unit_count;
     Array2D<std::shared_ptr<Unit>> units;
     std::array<Tile, 8> obstacles;
-    std::map<const std::string, const int> max_count_of_each_unit;
+    const std::map<std::string, int> max_count_of_each_unit;
 
     void set_default_units();
     void set_obstacles();
@@ -60,4 +61,6 @@ public:
     void update(const Board& other_board);
     Board& operator=(const Board& rhs);
     STATE get_state() const { return current_state; };
+    int get_max_unit_count(const std::string& unit_type) const { return max_count_of_each_unit.at(unit_type); };
+    int get_max_unit_count(int idx) const;
 };

@@ -17,7 +17,7 @@ Board::Board()
       current_state(STATE::UNINITIALIZED),
       unit_count(0),
       units(width, height),
-      max_count_of_each_unit( std::initializer_list<std::pair<const std::string, const int>> {
+      max_count_of_each_unit(  {
           {"flag", 1},
           {"scout", 8},
           {"miner", 5},
@@ -96,6 +96,36 @@ std::string Board::get_tile_info(int col, int row, TURN player) const {
         }
     }
     return " ";
+}
+
+int Board::get_max_unit_count(int idx) const {
+    switch(idx) {
+        case 0:
+        return max_count_of_each_unit.at("scout");
+        case 1:
+        return max_count_of_each_unit.at("miner");
+        case 2:
+        return max_count_of_each_unit.at("regular4");
+        case 3:
+        return max_count_of_each_unit.at("regular5");
+        case 4:
+        return max_count_of_each_unit.at("regular6");
+        case 5:
+        return max_count_of_each_unit.at("regular7");
+        case 6:
+        return max_count_of_each_unit.at("regular8");
+        case 7:
+        return max_count_of_each_unit.at("regular9");
+        case 8:
+        return max_count_of_each_unit.at("regular10");
+        case 9:
+        return max_count_of_each_unit.at("bomb");
+        case 10:
+        return max_count_of_each_unit.at("flag");
+        case 11:
+        return max_count_of_each_unit.at("spy");
+    }
+    return -1;
 }
 
 bool Board::set_unit(int col, int row, TURN player, int choice) {
