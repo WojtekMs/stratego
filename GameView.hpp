@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Player.hpp"
+#include "Button.hpp"
 
 class GameView {
     Player& playerA;
@@ -38,6 +39,7 @@ class GameView {
 
     sf::Font font;
     sf::Text text;
+    Button done_button;
 
     void load_red_units_textures();
     void set_red_units_sprites();
@@ -46,6 +48,10 @@ class GameView {
     void draw_units_for_init(sf::RenderWindow& win);
     void draw_board(sf::RenderWindow& win);
     void draw_red_sprite(sf::RenderWindow& win, int idx, int sprite_pos_x, int sprite_pos_y);
+
+    void drag_red_player(sf::Event& event);
+    void change_turn(sf::Event& event, Player* player);
+    void set_unit(sf::Event& event, Player* player);
 
 public:
     GameView(Player& pA, Player& pB);
