@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "Player.hpp"
+
 GameView::GameView(Player& pA, Player& pB)
     : playerA(pA),
       playerB(pB),
@@ -17,7 +19,9 @@ GameView::GameView(Player& pA, Player& pB)
       unit_it(nullptr),
       sprite_initial_position(-1, -1),
       unit_chosen(true),
-      done_button("brak") {
+      done_button("brak"),
+      board_a_initialized(false),
+      board_b_initialized(false) {
     for (size_t i = 0; i < obstacle_textures.size(); i++) {
         if (i <= 3) {
             obstacle_textures[i] = (std::pair<sf::Texture, std::string>(sf::Texture(), "lake1_" + std::to_string(i + 1) + ".png"));
@@ -57,23 +61,25 @@ GameView::GameView(Player& pA, Player& pB)
 
     load_red_units_textures();
     set_red_units_sprites();
+    load_blue_units_textures();
+    set_blue_units_sprites();
     board_border.setTexture(board_border_texture);
     grass_light.setTexture(grass_light_texture);
     grass_dark.setTexture(grass_dark_texture);
 }
 
 void GameView::load_blue_units_textures() {
-    for(size_t i = 0; i < 9; ++i) {
-        if(!blue_unit_textures[i].loadFromFile("images/pieces/blue/blue_" + std::to_string(i + 2) + ".png")) {
+    for (size_t i = 0; i < 9; ++i) {
+        if (!blue_unit_textures[i].loadFromFile("images/pieces/blue/blue_" + std::to_string(i + 2) + ".png")) {
             std::cerr << "blue unit" + std::to_string(i + 2) + "failed to load a texture!\n";
             abort();
         }
     }
     if (!blue_unit_textures[9].loadFromFile("images/pieces/blue/blue_bomb.png")) {
         std::cerr << "blue bomb loading texture failed! \n";
-        abort();      
+        abort();
     }
-     if (!blue_unit_textures[10].loadFromFile("images/pieces/blue/blue_flag.png")) {
+    if (!blue_unit_textures[10].loadFromFile("images/pieces/blue/blue_flag.png")) {
         std::cerr << "blue flag loading texture failed! \n";
         abort();
     }
@@ -173,12 +179,12 @@ void GameView::draw_obstacles(sf::RenderWindow& win) {
 
 void GameView::draw_units_for_init(sf::RenderWindow& win) {
     if (current_player_turn == TURN::PLAYER_A) {
-        if (playerA.get_board().get_state() == STATE::INITIALIZED) {
+        if (board_a_initialized) {
             return;
         }
     }
     if (current_player_turn == TURN::PLAYER_B) {
-        if (playerB.get_board().get_state() == STATE::INITIALIZED) {
+        if (board_b_initialized) {
             return;
         }
     }
@@ -186,7 +192,7 @@ void GameView::draw_units_for_init(sf::RenderWindow& win) {
     if (current_player_turn == TURN::PLAYER_A) {
         draw_red_init_units(win);
     } else {
-        //draw blue init units
+        draw_blue_init_units(win);
     }
 }
 
@@ -214,6 +220,36 @@ void GameView::draw_red_init_units(sf::RenderWindow& win) {
         col_count++;
         i++;
     }
+    done_button.set_position(x_denting + (X_ADDITIONAL_SPACE - done_button.get_width()) / 2, y_denting * 6);
+    done_button.set_text("Done");
+    done_button.draw(win);
+}
+
+void GameView::draw_blue_init_units(sf::RenderWindow& win) {
+    const int x_denting = board_border.getGlobalBounds().width;
+    const int y_denting = TILE_SIZE;
+    int col_count = 0;
+    int row_count = 0;
+    for (size_t i = 0; i < blue_units_sprites.size(); ++i) {
+        if (i != 0 && i % 4 == 0) {
+            col_count = 0;
+            row_count++;
+        }
+        blue_units_sprites[i].setPosition(x_denting + 2 * col_count * TILE_SIZE, y_denting + row_count * TILE_SIZE);
+        text.setPosition(x_denting + TILE_SIZE + 2 * col_count * TILE_SIZE, y_denting + TILE_SIZE / 4 + row_count * TILE_SIZE);
+        text.setString("x" + std::to_string(playerB.get_board().get_max_unit_count(i) - playerB.get_units_count(i)));
+        if (dragging == true) {
+            if (unit_it) {
+                unit_it->setPosition(mouseX - mouseObjectOffSetX, mouseY - mouseObjectOffSetY);
+            }
+        }
+        win.draw(blue_units_sprites[i]);
+        win.draw(text);
+        col_count++;
+    }
+    done_button.set_position(x_denting + (X_ADDITIONAL_SPACE - done_button.get_width()) / 2, y_denting * 6);
+    done_button.set_text("Done");
+    done_button.draw(win);
 }
 
 void GameView::draw_board(sf::RenderWindow& win) {
@@ -236,37 +272,53 @@ void GameView::draw_board(sf::RenderWindow& win) {
             object_x_pos = (col + 1) * TILE_SIZE;
             if (player->get_tile_info(col, row) == "regular") {
                 unit_idx = player->get_board().get_unit(col, row)->get_value() - 2;
-                draw_red_sprite(win, unit_idx, object_x_pos, object_y_pos);
+                draw_sprite(win, unit_idx, object_x_pos, object_y_pos);
             }
             if (player->get_tile_info(col, row) == "scout") {
-                draw_red_sprite(win, 0, object_x_pos, object_y_pos);
+                draw_sprite(win, 0, object_x_pos, object_y_pos);
             }
             if (player->get_tile_info(col, row) == "miner") {
-                draw_red_sprite(win, 1, object_x_pos, object_y_pos);
+                draw_sprite(win, 1, object_x_pos, object_y_pos);
             }
             if (player->get_tile_info(col, row) == "bomb") {
-                draw_red_sprite(win, 9, object_x_pos, object_y_pos);
+                draw_sprite(win, 9, object_x_pos, object_y_pos);
             }
             if (player->get_tile_info(col, row) == "flag") {
-                draw_red_sprite(win, 10, object_x_pos, object_y_pos);
+                draw_sprite(win, 10, object_x_pos, object_y_pos);
             }
             if (player->get_tile_info(col, row) == "spy") {
-                draw_red_sprite(win, 11, object_x_pos, object_y_pos);
+                draw_sprite(win, 11, object_x_pos, object_y_pos);
             }
             if (player->get_tile_info(col, row) == "enemy") {
-                // draw blue back
+                draw_sprite(win, 12, object_x_pos, object_y_pos);
             }
         }
     }
 }
 
-void GameView::draw_red_sprite(sf::RenderWindow& win, int idx, int sprite_pos_x, int sprite_pos_y) {
+void GameView::draw_sprite(sf::RenderWindow& win, int idx, int sprite_pos_x, int sprite_pos_y) {
     //needs to be changed -> draw_sprite (add argument TURN player)
-
-    sprite_initial_position = red_units_sprites[idx].getPosition();
-    red_units_sprites[idx].setPosition(sprite_pos_x, sprite_pos_y);
-    win.draw(red_units_sprites[idx]);
-    red_units_sprites[idx].setPosition(sprite_initial_position);
+    if (idx == 12) {
+        if (current_player_turn == TURN::PLAYER_A) {
+            blue_back_sprite.setPosition(sprite_pos_x, sprite_pos_y);
+            win.draw(blue_back_sprite);
+        } else {
+            red_back_sprite.setPosition(sprite_pos_x, sprite_pos_y);
+            win.draw(red_back_sprite);
+        }
+    } else {
+        if (current_player_turn == TURN::PLAYER_A) {
+            sprite_initial_position = red_units_sprites[idx].getPosition();
+            red_units_sprites[idx].setPosition(sprite_pos_x, sprite_pos_y);
+            win.draw(red_units_sprites[idx]);
+            red_units_sprites[idx].setPosition(sprite_initial_position);
+        } else {
+            sprite_initial_position = blue_units_sprites[idx].getPosition();
+            blue_units_sprites[idx].setPosition(sprite_pos_x, sprite_pos_y);
+            win.draw(blue_units_sprites[idx]);
+            blue_units_sprites[idx].setPosition(sprite_initial_position);
+        }
+    }
 }
 
 void GameView::draw(sf::RenderWindow& win) {
@@ -285,7 +337,11 @@ void GameView::handle_events(sf::Event& event) {
         player = &playerB;
     }
     if (event.type == sf::Event::MouseButtonPressed) {
-        drag_red_player(event);
+        if (current_player_turn == TURN::PLAYER_A) {
+            drag_red_player(event);
+        } else {
+            drag_blue_player(event);
+        }
         change_init_turn(event, player);
     }
     if (event.type == sf::Event::MouseButtonReleased) {
@@ -294,6 +350,11 @@ void GameView::handle_events(sf::Event& event) {
     if (event.type == sf::Event::MouseMoved) {
         mouseX = event.mouseMove.x;
         mouseY = event.mouseMove.y;
+        if (done_button.contains(mouseX, mouseY)) {
+            done_button.highlight_on();
+        } else {
+            done_button.highlight_off();
+        }
     }
 }
 
@@ -310,11 +371,30 @@ void GameView::drag_red_player(sf::Event& event) {
     }
 }
 
+void GameView::drag_blue_player(sf::Event& event) {
+    unit_it = std::find_if(blue_units_sprites.begin(), blue_units_sprites.end(),
+                           [&event](const sf::Sprite& unit_sprite) {
+                               return unit_sprite.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y);
+                           });
+    if (unit_it != blue_units_sprites.end()) {
+        dragging = true;
+        unit_chosen = true;
+        mouseObjectOffSetX = event.mouseButton.x - unit_it->getGlobalBounds().left;
+        mouseObjectOffSetY = event.mouseButton.y - unit_it->getGlobalBounds().top;
+    }
+}
+
 void GameView::change_init_turn(sf::Event& event, Player* player) {
     if (done_button.contains(event.mouseButton.x, event.mouseButton.y)) {
-        if (player->get_board().get_state() == STATE::INITIALIZED) {
+        if (playerA.get_board().get_state() == STATE::FULL) {
+            board_a_initialized = true;
             current_player_turn = TURN::PLAYER_B;
             playerB.update_board(playerA.get_board());
+        }
+        if (playerB.get_board().get_state() == STATE::FULL) {
+            board_b_initialized = true;
+            current_player_turn = TURN::PLAYER_A;
+            playerA.update_board(playerB.get_board());
         }
     }
 }
@@ -325,13 +405,15 @@ void GameView::set_unit(sf::Event& event, Player* player) {
     int row = -1;
     col = (event.mouseButton.x - 64) / TILE_SIZE;
     row = (event.mouseButton.y - 64) / TILE_SIZE;
-    int idx = unit_it - &red_units_sprites[0];
+    int idx = -1;
+    if (current_player_turn == TURN::PLAYER_A) {
+        idx = unit_it - &red_units_sprites[0];
+    } else {
+        idx = unit_it - &blue_units_sprites[0];
+    }
+
     if (unit_chosen == true && player->get_units_count(idx) < player->get_board().get_max_unit_count(idx)) {
-        if (current_player_turn == TURN::PLAYER_A) {
-            player->set_unit(col, row, idx);
-        } else {
-            //blue units
-        }
+        player->set_unit(col, row, idx);
         unit_chosen = false;
     }
 }

@@ -128,6 +128,10 @@ int Board::get_max_unit_count(int idx) const {
     return -1;
 }
 
+void Board::set_state(STATE state) {
+    current_state = state;
+}
+
 bool Board::set_unit(int col, int row, TURN player, int choice) {
     if (col < 0 || col >= width) {
         return false;
@@ -141,10 +145,10 @@ bool Board::set_unit(int col, int row, TURN player, int choice) {
     if (get_tile_info(col, row, player) != " ") {
         return false;
     }
-    if (unit_count == MAX_UNIT_COUNT) {
-        current_state = STATE::INITIALIZED;
+    if (current_state == STATE::INITIALIZED) {
         return false;
     }
+   
 
     //first we have to choose the type of unit to set
     switch (choice + 2) {
@@ -173,6 +177,9 @@ bool Board::set_unit(int col, int row, TURN player, int choice) {
     //second we set the desired field with the chosen unit
     units[row][col]->set_position(col, row);
     unit_count++;
+    if (unit_count == MAX_UNIT_COUNT) {
+        current_state = STATE::FULL;
+    }
     return true;
 }
 

@@ -7,6 +7,7 @@
 
 #include "Array2D.h"
 #include "Unit.hpp"
+#include "GameView.hpp"
 
 enum class TURN {
     PLAYER_A,
@@ -16,6 +17,7 @@ enum class TURN {
 enum class STATE {
     UNINITIALIZED,
     INITIALIZED,
+    FULL,
 };
 
 constexpr int MAX_UNIT_COUNT = 40;
@@ -46,6 +48,7 @@ private:
     void set_obstacles();
     Tile point_reflection(int col, int row);
     bool out_of_range(int col, int row) const;
+    void set_state(STATE state);
 
 public:
     Board();

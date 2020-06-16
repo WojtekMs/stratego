@@ -11,7 +11,7 @@ find_package(SFML 2 COMPONENTS window graphics audio REQUIRED)
 
 add_compile_options(-Wall -Wextra -Wconversion -pedantic)
 
-add_executable(a.out main.cpp Board.cpp Player.cpp GameView.cpp RegularUnit.cpp BombUnit.cpp MinerUnit.cpp test.cpp) 
+add_executable(a.out main.cpp Board.cpp Player.cpp GameView.cpp Button.cpp test.cpp) 
 
 target_link_libraries(a.out sfml-system sfml-window sfml-graphics sfml-audio)
 
