@@ -48,6 +48,11 @@ GameView::GameView(Player& pA, Player& pB)
     for (size_t i = 0; i < obstacle_sprites.size(); ++i) {
         obstacle_sprites[i].first.setTexture(obstacle_textures[i].first);
     }
+    if (!font.loadFromFile("font/chandas1-2.ttf")) {
+        std::cerr << "font loading failed!\n";
+        abort();
+    }
+    text.setFont(font);
 
     load_red_units_textures();
     set_red_units_sprites();
@@ -155,13 +160,16 @@ void GameView::draw_units_for_init(sf::RenderWindow& win) {
                 col_count = 0;
                 row_count++;
             }
-            elem.setPosition(x_denting + col_count * TILE_SIZE, y_denting + row_count * TILE_SIZE);
+            elem.setPosition(x_denting + 2 * col_count * TILE_SIZE, y_denting + row_count * TILE_SIZE);
+            text.setPosition(x_denting + TILE_SIZE + 2 * col_count * TILE_SIZE, y_denting + TILE_SIZE/4 + row_count * TILE_SIZE);
+            text.setString("x" + std::to_string(playerA.get_board().get_max_unit_count(i) - playerA.get_units_count(i)));
             if (dragging == true) {
                 if (unit_it) {
                     unit_it->setPosition(mouseX - mouseObjectOffSetX, mouseY - mouseObjectOffSetY);
                 }
             }
             win.draw(elem);
+            win.draw(text);
             col_count++;
             i++;
         }

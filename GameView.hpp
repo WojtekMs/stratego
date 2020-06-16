@@ -27,7 +27,6 @@ class GameView {
     sf::Sprite grass_dark;
     std::array<sf::Sprite, 12> red_units_sprites;
     sf::Sprite red_back_sprite;
-    // std::unordered_map<std::string, sf::Sprite> red_units_sprites;
 
     sf::Texture board_border_texture;
     sf::Texture grass_light_texture;
@@ -36,6 +35,9 @@ class GameView {
     std::array<std::pair<sf::Texture, std::string>, 8> obstacle_textures;
     std::array<sf::Texture, 12> red_unit_textures;
     sf::Texture red_back_texture;
+
+    sf::Font font;
+    sf::Text text;
 
     void load_red_units_textures();
     void set_red_units_sprites();
