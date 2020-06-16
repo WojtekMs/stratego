@@ -150,30 +150,37 @@ void GameView::draw_units_for_init(sf::RenderWindow& win) {
             return;
         }
     }
+
+    if (current_player_turn == TURN::PLAYER_A) {
+        draw_red_init_units(win);
+    } else {
+        //draw blue init units
+    }
+}
+
+void GameView::draw_red_init_units(sf::RenderWindow& win) {
     const int x_denting = board_border.getGlobalBounds().width;
     const int y_denting = TILE_SIZE;
     int col_count = 0;
     int row_count = 0;
-    if (current_player_turn == TURN::PLAYER_A) {
-        int i = 0;
-        for (auto& elem : red_units_sprites) {
-            if (i != 0 && i % 4 == 0) {
-                col_count = 0;
-                row_count++;
-            }
-            elem.setPosition(x_denting + 2 * col_count * TILE_SIZE, y_denting + row_count * TILE_SIZE);
-            text.setPosition(x_denting + TILE_SIZE + 2 * col_count * TILE_SIZE, y_denting + TILE_SIZE / 4 + row_count * TILE_SIZE);
-            text.setString("x" + std::to_string(playerA.get_board().get_max_unit_count(i) - playerA.get_units_count(i)));
-            if (dragging == true) {
-                if (unit_it) {
-                    unit_it->setPosition(mouseX - mouseObjectOffSetX, mouseY - mouseObjectOffSetY);
-                }
-            }
-            win.draw(elem);
-            win.draw(text);
-            col_count++;
-            i++;
+    int i = 0;
+    for (auto& elem : red_units_sprites) {
+        if (i != 0 && i % 4 == 0) {
+            col_count = 0;
+            row_count++;
         }
+        elem.setPosition(x_denting + 2 * col_count * TILE_SIZE, y_denting + row_count * TILE_SIZE);
+        text.setPosition(x_denting + TILE_SIZE + 2 * col_count * TILE_SIZE, y_denting + TILE_SIZE / 4 + row_count * TILE_SIZE);
+        text.setString("x" + std::to_string(playerA.get_board().get_max_unit_count(i) - playerA.get_units_count(i)));
+        if (dragging == true) {
+            if (unit_it) {
+                unit_it->setPosition(mouseX - mouseObjectOffSetX, mouseY - mouseObjectOffSetY);
+            }
+        }
+        win.draw(elem);
+        win.draw(text);
+        col_count++;
+        i++;
     }
 }
 
@@ -239,7 +246,6 @@ void GameView::draw(sf::RenderWindow& win) {
 }
 
 void GameView::handle_events(sf::Event& event) {
-    
     Player* player = nullptr;
     if (current_player_turn == TURN::PLAYER_A) {
         player = &playerA;
@@ -248,7 +254,7 @@ void GameView::handle_events(sf::Event& event) {
     }
     if (event.type == sf::Event::MouseButtonPressed) {
         drag_red_player(event);
-        change_turn(event, player);
+        change_init_turn(event, player);
     }
     if (event.type == sf::Event::MouseButtonReleased) {
         set_unit(event, player);
@@ -272,12 +278,11 @@ void GameView::drag_red_player(sf::Event& event) {
     }
 }
 
-void GameView::change_turn(sf::Event& event, Player* player) {
-    if (done_button.contains(event.mouseButton.x, event.mouseButton.y) && player->get_board().get_state() == STATE::INITIALIZED) {
-        if (current_player_turn == TURN::PLAYER_A) {
+void GameView::change_init_turn(sf::Event& event, Player* player) {
+    if (done_button.contains(event.mouseButton.x, event.mouseButton.y)) {
+        if (player->get_board().get_state() == STATE::INITIALIZED) {
             current_player_turn = TURN::PLAYER_B;
-        } else {
-            current_player_turn = TURN::PLAYER_A;
+            playerB.update_board(playerA.get_board());
         }
     }
 }
@@ -291,7 +296,7 @@ void GameView::set_unit(sf::Event& event, Player* player) {
     int idx = unit_it - &red_units_sprites[0];
     if (unit_chosen == true && player->get_units_count(idx) < player->get_board().get_max_unit_count(idx)) {
         if (current_player_turn == TURN::PLAYER_A) {
-        player->set_unit(col, row, idx);
+            player->set_unit(col, row, idx);
         } else {
             //blue units
         }
