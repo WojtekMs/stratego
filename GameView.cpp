@@ -62,6 +62,38 @@ GameView::GameView(Player& pA, Player& pB)
     grass_dark.setTexture(grass_dark_texture);
 }
 
+void GameView::load_blue_units_textures() {
+    for(size_t i = 0; i < 9; ++i) {
+        if(!blue_unit_textures[i].loadFromFile("images/pieces/blue/blue_" + std::to_string(i + 2) + ".png")) {
+            std::cerr << "blue unit" + std::to_string(i + 2) + "failed to load a texture!\n";
+            abort();
+        }
+    }
+    if (!blue_unit_textures[9].loadFromFile("images/pieces/blue/blue_bomb.png")) {
+        std::cerr << "blue bomb loading texture failed! \n";
+        abort();      
+    }
+     if (!blue_unit_textures[10].loadFromFile("images/pieces/blue/blue_flag.png")) {
+        std::cerr << "blue flag loading texture failed! \n";
+        abort();
+    }
+    if (!blue_unit_textures[11].loadFromFile("images/pieces/blue/blue_spy.png")) {
+        std::cerr << "blue spy loading texture failed! \n";
+        abort();
+    }
+    if (!blue_back_texture.loadFromFile("images/pieces/blue/blue_back.png")) {
+        std::cerr << "blue back loading texture failed! \n";
+        abort();
+    }
+}
+
+void GameView::set_blue_units_sprites() {
+    for (size_t i = 0; i < blue_units_sprites.size(); ++i) {
+        blue_units_sprites[i].setTexture(blue_unit_textures[i]);
+    }
+    blue_back_sprite.setTexture(blue_back_texture);
+}
+
 void GameView::load_red_units_textures() {
     for (size_t i = 0; i < 9; ++i) {  //only numeric red units textures are loaded
         if (!red_unit_textures[i].loadFromFile("images/pieces/red/red_" + std::to_string(i + 2) + ".png")) {

@@ -47,6 +47,8 @@ class GameView {
 
     void load_red_units_textures();
     void set_red_units_sprites();
+    void load_blue_units_textures();
+    void set_blue_units_sprites();
     void draw_grass(sf::RenderWindow& win);
     void draw_obstacles(sf::RenderWindow& win);
     void draw_units_for_init(sf::RenderWindow& win);
