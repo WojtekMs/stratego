@@ -63,8 +63,13 @@ GameView::GameView(Player& pA, Player& pB)
         std::cerr << "yellow highlight texture failed!\n";
         abort();
     }
+    if (!white_highlight_texture.loadFromFile("images/board/highlight_white")) {
+        std::cerr << "white highlight texture failed! \n";
+        abort();
+    }
     text.setFont(font);
     yellow_highlight_sprite.setTexture(yellow_highlight_texture);
+    white_highlight_sprite.setTexture(white_highlight_texture);
 
     load_red_units_textures();
     set_red_units_sprites();
@@ -358,6 +363,7 @@ void GameView::handle_events(sf::Event& event) {
     }
     if (event.type == sf::Event::MouseButtonPressed) {
         handle_initialization(event, player);
+        set_active_unit(event, player);
     }
     if (event.type == sf::Event::MouseButtonReleased) {
         set_unit(event, player);
@@ -378,7 +384,6 @@ void GameView::handle_initialization(sf::Event& event, Player* player) {
     } else {
         drag_blue_player(event);
     }
-    set_active_unit(event, player);
     remove_unit(player);
     change_init_turn(event);
 }

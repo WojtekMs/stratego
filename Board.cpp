@@ -186,6 +186,9 @@ bool Board::set_unit(int col, int row, TURN player, int choice) {
 void Board::remove_unit(int col, int row) {
     units[row][col].reset();
     unit_count--;
+    if (current_state == STATE::FULL) {
+        current_state == STATE::UNINITIALIZED;
+    }
 }
 
 bool Board::can_move(Tile from, Tile to) const {

@@ -37,6 +37,7 @@ class GameView {
     std::array<sf::Sprite, 12> blue_units_sprites;
     sf::Sprite blue_back_sprite;
     sf::Sprite yellow_highlight_sprite;
+    sf::Sprite white_highlight_sprite;
 
     sf::Texture board_border_texture;
     sf::Texture grass_light_texture;
@@ -48,6 +49,7 @@ class GameView {
     std::array<sf::Texture, 12> blue_unit_textures;
     sf::Texture blue_back_texture;
     sf::Texture yellow_highlight_texture;
+    sf::Texture white_highlight_texture;
 
     sf::Font font;
     sf::Text text;
