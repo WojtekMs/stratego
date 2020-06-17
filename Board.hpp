@@ -33,6 +33,8 @@ public:
             y = row;
         };
         bool operator==(const Tile& rhs) { return x == rhs.x && y == rhs.y; };
+        void set_cords(const Board::Tile& rhs) { x = rhs.x; y = rhs.y; };
+        void set_cords(int Ax, int Ay) { x = Ax; y = Ay; };
     };
 
 private:
