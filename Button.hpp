@@ -28,6 +28,7 @@ public:
     bool contains(int x, int y) { return button_box.getGlobalBounds().contains(x, y); };
     void highlight_on() { highlighted = true; };
     void highlight_off() { highlighted = false; };
+    bool get_is_highlighted() const { return highlighted; };
 };
 
 
