@@ -52,11 +52,13 @@ class GameView {
     sf::Font font;
     sf::Text text;
     Button done_button;
+    Button remove_button;
 
     void load_red_units_textures();
-    void set_red_units_sprites();
     void load_blue_units_textures();
+    void set_red_units_sprites();
     void set_blue_units_sprites();
+
     void draw_grass(sf::RenderWindow& win);
     void draw_obstacles(sf::RenderWindow& win);
     void draw_units_for_init(sf::RenderWindow& win);
@@ -64,6 +66,9 @@ class GameView {
     void draw_sprite(sf::RenderWindow& win, int idx, int sprite_pos_x, int sprite_pos_y);
     void draw_red_init_units(sf::RenderWindow& win);
     void draw_blue_init_units(sf::RenderWindow& win);
+    void draw_done_button(sf::RenderWindow& win);
+    void draw_remove_button(sf::RenderWindow& win);
+
     sf::Vector2f return_pixels(int col, int row) const;
     Board::Tile return_tile(const sf::Vector2f& coords) const;
     Board::Tile return_tile(int x, int y) const;
@@ -73,6 +78,7 @@ class GameView {
     void change_init_turn(sf::Event& event);
     void set_unit(sf::Event& event, Player* player);
     void set_active_unit(sf::Event& event, Player* player);
+    void set_button_highlights(int mouse_x, int mouse_y);
 
 public:
     GameView(Player& pA, Player& pB);

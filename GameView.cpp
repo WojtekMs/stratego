@@ -18,7 +18,8 @@ GameView::GameView(Player& pA, Player& pB)
       mouseObjectOffSetY(0),
       unit_it(nullptr),
       sprite_initial_position(-1, -1),
-      done_button("brak"),
+      done_button("Done"),
+      remove_button("Remove"),
       board_a_initialized(false),
       board_b_initialized(false),
       active_unit(-1, -1),
@@ -200,6 +201,10 @@ void GameView::draw_units_for_init(sf::RenderWindow& win) {
     } else {
         draw_blue_init_units(win);
     }
+    draw_done_button(win);
+    if (is_active_unit) {
+        draw_remove_button(win);
+    }
 }
 
 void GameView::draw_red_init_units(sf::RenderWindow& win) {
@@ -226,9 +231,6 @@ void GameView::draw_red_init_units(sf::RenderWindow& win) {
         col_count++;
         i++;
     }
-    done_button.set_position(x_denting + (X_ADDITIONAL_SPACE - done_button.get_width()) / 2, y_denting * 6);
-    done_button.set_text("Done");
-    done_button.draw(win);
 }
 
 void GameView::draw_blue_init_units(sf::RenderWindow& win) {
@@ -253,9 +255,18 @@ void GameView::draw_blue_init_units(sf::RenderWindow& win) {
         win.draw(text);
         col_count++;
     }
-    done_button.set_position(x_denting + (X_ADDITIONAL_SPACE - done_button.get_width()) / 2, y_denting * 6);
-    done_button.set_text("Done");
+}
+
+void GameView::draw_done_button(sf::RenderWindow& win) {
+    const int x_denting = board_border.getGlobalBounds().width;
+    done_button.set_position(x_denting + (X_ADDITIONAL_SPACE - done_button.get_width()) / 2, TILE_SIZE * 6);
+    // done_button.set_text("Done");
     done_button.draw(win);
+}
+
+void GameView::draw_remove_button(sf::RenderWindow& win) {
+    remove_button.set_position(done_button.get_position().x, done_button.get_position().y + done_button.get_height() + TILE_SIZE);
+    remove_button.draw(win);
 }
 
 void GameView::draw_board(sf::RenderWindow& win) {
@@ -352,6 +363,9 @@ void GameView::handle_events(sf::Event& event) {
             drag_blue_player(event);
         }
         set_active_unit(event, player);
+        // if (is_active_unit && ) {
+
+        // }
         change_init_turn(event);
     }
     if (event.type == sf::Event::MouseButtonReleased) {
@@ -360,11 +374,20 @@ void GameView::handle_events(sf::Event& event) {
     if (event.type == sf::Event::MouseMoved) {
         mouseX = event.mouseMove.x;
         mouseY = event.mouseMove.y;
-        if (done_button.contains(mouseX, mouseY)) {
-            done_button.highlight_on();
-        } else {
-            done_button.highlight_off();
-        }
+        set_button_highlights(mouseX, mouseY);
+    }
+}
+
+void GameView::set_button_highlights(int mouse_x, int mouse_y) {
+    if (done_button.contains(mouse_x, mouse_y)) {
+        done_button.highlight_on();
+    } else {
+        done_button.highlight_off();
+    }
+    if (remove_button.contains(mouse_x, mouse_y)) {
+        remove_button.highlight_on();
+    } else {
+        remove_button.highlight_off();
     }
 }
 
