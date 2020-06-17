@@ -21,7 +21,6 @@ enum class STATE {
 
 constexpr int MAX_UNIT_COUNT = 40;
 
-
 class Board {
 public:
     class Tile {
@@ -60,12 +59,14 @@ public:
     int get_height() const { return height; };
     int get_width() const { return width; };
     std::shared_ptr<Unit> get_unit(int col, int row) const;
+    std::shared_ptr<Unit> get_unit(Tile chosen_unit) const;
     bool can_move(Tile from, Tile to) const;
-    void move_unit(Tile from, Tile to);
+    bool move_unit(Tile from, Tile to);
     void reverse_move_unit(Tile from, Tile to);
     void update(const Board& other_board);
     Board& operator=(const Board& rhs);
     STATE get_state() const { return current_state; };
     int get_max_unit_count(const std::string& unit_type) const { return max_count_of_each_unit.at(unit_type); };
     int get_max_unit_count(int idx) const;
+
 };

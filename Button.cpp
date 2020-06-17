@@ -41,6 +41,10 @@ void Button::set_position(int x, int y) {
     update_text_pos();
 }
 
+void Button::set_position(sf::Vector2f coords) {
+    set_position(coords.x, coords.y);
+}
+
 void Button::set_text(const std::string& text) {
     button_text.setString(text);
     update_text_pos();

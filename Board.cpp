@@ -1,5 +1,6 @@
 #include "Board.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <map>
 #include <string>
@@ -83,10 +84,14 @@ bool Board::out_of_range(int col, int row) const {
 }
 
 std::string Board::get_tile_info(int col, int row, TURN player) const {
-    for (size_t i = 0; i < obstacles.size(); ++i) {
-        if (obstacles[i].x == col && obstacles[i].y == row) {
-            return "O";
-        }
+    if (out_of_range(col, row)) {
+        return "#";
+    }
+    if (std::find_if(obstacles.begin(), obstacles.end(), [col, row](const Board::Tile& tile)
+    {
+        return tile.x == col && tile.y == row;
+    }) != obstacles.end()) {
+        return "O";
     }
     if (units[row][col] != nullptr) {
         if (units[row][col]->get_owner() != player) {
@@ -187,7 +192,7 @@ void Board::remove_unit(int col, int row) {
     units[row][col].reset();
     unit_count--;
     if (current_state == STATE::FULL) {
-        current_state == STATE::UNINITIALIZED;
+        current_state = STATE::UNINITIALIZED;
     }
 }
 
@@ -207,10 +212,12 @@ bool Board::can_move(Tile from, Tile to) const {
     return true;
 }
 
-void Board::move_unit(Tile from, Tile to) {
+bool Board::move_unit(Tile from, Tile to) {
     if (can_move(from, to)) {
         units[to.y][to.x].swap(units[from.y][from.x]);
+        return true;
     }
+    return false;
 }
 
 void Board::reverse_move_unit(Tile from, Tile to) {
@@ -281,4 +288,11 @@ std::shared_ptr<Unit> Board::get_unit(int col, int row) const {
         return std::shared_ptr<Unit>{};
     }
     return units[row][col];
+}
+
+std::shared_ptr<Unit> Board::get_unit(Tile chosen_unit) const {
+    if (out_of_range(chosen_unit.x, chosen_unit.y)) {
+        return std::shared_ptr<Unit>{};
+    }
+    return units[chosen_unit.y][chosen_unit.x];
 }

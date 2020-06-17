@@ -22,6 +22,7 @@ public:
     Button(const std::string& text);
     void set_text(const std::string& text);
     void set_position(int x, int y);
+    void set_position(sf::Vector2f coords);
     void draw(sf::RenderWindow& win);
     float get_height() { return button_box.getGlobalBounds().height; };
     float get_width() { return button_box.getGlobalBounds().width; };

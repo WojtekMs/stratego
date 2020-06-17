@@ -20,9 +20,8 @@ class Player
     TURN get_player_number() { return player; };
     void set_unit(int col, int row, int choice);
     void remove_unit(int col, int row);
-    void move_unit(Board::Tile from, Board::Tile to);
+    bool move_unit(Board::Tile from, Board::Tile to);
     void update_board(const Board& other_player_board);
     const Board& get_board() { return board; };
-    bool can_move(int col, int row);
     std::string get_tile_info(int col, int row);
 };

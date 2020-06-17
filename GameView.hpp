@@ -28,6 +28,9 @@ class GameView {
     bool board_b_initialized;
     Board::Tile active_unit;
     bool is_active_unit;
+    Board::Tile hovering_tile;
+    Player* current_player;
+    bool unit_moved_this_round;
 
     sf::Sprite board_border;
     sf::Sprite grass_light;
@@ -38,6 +41,7 @@ class GameView {
     sf::Sprite blue_back_sprite;
     sf::Sprite yellow_highlight_sprite;
     sf::Sprite white_highlight_sprite;
+    sf::Sprite green_highlight_sprite;
 
     sf::Texture board_border_texture;
     sf::Texture grass_light_texture;
@@ -50,11 +54,13 @@ class GameView {
     sf::Texture blue_back_texture;
     sf::Texture yellow_highlight_texture;
     sf::Texture white_highlight_texture;
+    sf::Texture green_highlight_texture;
 
     sf::Font font;
     sf::Text text;
     Button done_button;
     Button remove_button;
+    Button end_turn_button;
 
     void load_red_units_textures();
     void load_blue_units_textures();
@@ -70,6 +76,7 @@ class GameView {
     void draw_blue_init_units(sf::RenderWindow& win);
     void draw_done_button(sf::RenderWindow& win);
     void draw_remove_button(sf::RenderWindow& win);
+    void draw_possible_moves_for_active_unit(sf::RenderWindow& win);
 
     sf::Vector2f return_pixels(int col, int row) const;
     Board::Tile return_tile(const sf::Vector2f& coords) const;
@@ -83,6 +90,13 @@ class GameView {
     void set_active_unit(sf::Event& event, Player* player);
     void set_button_highlights(int mouse_x, int mouse_y);
     void handle_initialization(sf::Event& event, Player* player);
+    void set_hovering_tile(int mouse_x, int mouse_y);
+    void change_player_turn(sf::Event& event);
+    void move_active_unit(sf::Event& event);
+
+    bool check_if_viable(Board::Tile from, Board::Tile to);
+    void highlight_regular_moves(sf::RenderWindow& win);
+    void highlight_scout_moves(sf::RenderWindow& win);
 
 public:
     GameView(Player& pA, Player& pB);

@@ -39,9 +39,9 @@ void Player::remove_unit(int col, int row) {
     }
 }
 
-void Player::move_unit(Board::Tile from, Board::Tile to) {
+bool Player::move_unit(Board::Tile from, Board::Tile to) {
     // check if the variables are correct
-    board.move_unit(from, to);
+    return board.move_unit(from, to);
 }
 
 void Player::update_board(const Board& other_player_board) {
