@@ -357,17 +357,7 @@ void GameView::handle_events(sf::Event& event) {
         player = &playerB;
     }
     if (event.type == sf::Event::MouseButtonPressed) {
-        if (current_player_turn == TURN::PLAYER_A) {
-            drag_red_player(event);
-        } else {
-            drag_blue_player(event);
-        }
-        set_active_unit(event, player);
-        if (is_active_unit && remove_button.is_highlighted()) {
-            player->remove_unit(active_unit.x, active_unit.y);
-            active_unit = Board::Tile(-1, -1);
-        }
-        change_init_turn(event);
+        handle_initialization(event, player);
     }
     if (event.type == sf::Event::MouseButtonReleased) {
         set_unit(event, player);
@@ -376,6 +366,27 @@ void GameView::handle_events(sf::Event& event) {
         mouseX = event.mouseMove.x;
         mouseY = event.mouseMove.y;
         set_button_highlights(mouseX, mouseY);
+    }
+}
+
+void GameView::handle_initialization(sf::Event& event, Player* player) {
+    if (board_a_initialized && board_b_initialized) {
+        return;
+    }
+    if (current_player_turn == TURN::PLAYER_A) {
+        drag_red_player(event);
+    } else {
+        drag_blue_player(event);
+    }
+    set_active_unit(event, player);
+    remove_unit(player);
+    change_init_turn(event);
+}
+
+void GameView::remove_unit(Player* player) {
+    if (is_active_unit && remove_button.is_highlighted()) {
+        player->remove_unit(active_unit.x, active_unit.y);
+        active_unit = Board::Tile(-1, -1);
     }
 }
 

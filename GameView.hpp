@@ -77,8 +77,10 @@ class GameView {
     void drag_blue_player(sf::Event& event);
     void change_init_turn(sf::Event& event);
     void set_unit(sf::Event& event, Player* player);
+    void remove_unit(Player* player);
     void set_active_unit(sf::Event& event, Player* player);
     void set_button_highlights(int mouse_x, int mouse_y);
+    void handle_initialization(sf::Event& event, Player* player);
 
 public:
     GameView(Player& pA, Player& pB);
