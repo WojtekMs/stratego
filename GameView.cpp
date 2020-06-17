@@ -363,9 +363,10 @@ void GameView::handle_events(sf::Event& event) {
             drag_blue_player(event);
         }
         set_active_unit(event, player);
-        // if (is_active_unit && ) {
-
-        // }
+        if (is_active_unit && remove_button.is_highlighted()) {
+            player->remove_unit(active_unit.x, active_unit.y);
+            active_unit = Board::Tile(-1, -1);
+        }
         change_init_turn(event);
     }
     if (event.type == sf::Event::MouseButtonReleased) {

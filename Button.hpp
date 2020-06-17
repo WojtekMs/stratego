@@ -28,7 +28,7 @@ public:
     bool contains(int x, int y) { return button_box.getGlobalBounds().contains(x, y); };
     void highlight_on() { highlighted = true; };
     void highlight_off() { highlighted = false; };
-    bool get_is_highlighted() const { return highlighted; };
+    bool is_highlighted() const { return highlighted; };
     sf::Vector2f get_position() const { return button_box.getPosition(); };
 };
 
