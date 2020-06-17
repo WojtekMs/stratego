@@ -7,7 +7,6 @@
 
 #include "Array2D.h"
 #include "Unit.hpp"
-#include "GameView.hpp"
 
 enum class TURN {
     PLAYER_A,
@@ -33,6 +32,7 @@ public:
             x = col;
             y = row;
         };
+        bool operator==(const Tile& rhs) { return x == rhs.x && y == rhs.y; };
     };
 
 private:
@@ -57,7 +57,7 @@ public:
     std::string get_tile_info(int col, int row, TURN player) const;
     int get_height() const { return height; };
     int get_width() const { return width; };
-    std::shared_ptr<Unit> get_unit(int col, int row) const { return units[row][col]; };
+    std::shared_ptr<Unit> get_unit(int col, int row) const;
     bool can_move(Tile from, Tile to) const;
     void move_unit(Tile from, Tile to);
     void reverse_move_unit(Tile from, Tile to);

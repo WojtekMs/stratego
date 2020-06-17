@@ -73,10 +73,10 @@ void Board::set_obstacles() {
 }
 
 bool Board::out_of_range(int col, int row) const {
-    if (col < 0 || col > width) {
+    if (col < 0 || col >= width) {
         return true;
     }
-    if (row < 0 || row > height) {
+    if (row < 0 || row >= height) {
         return true;
     }
     return false;
@@ -271,4 +271,11 @@ void Board::update(const Board& other_board) {
             units[other_unit.y][other_unit.x].swap(units[row][col]);
         }
     }
+}
+
+std::shared_ptr<Unit> Board::get_unit(int col, int row) const {
+    if (out_of_range(col, row)) {
+        return std::shared_ptr<Unit>{};
+    }
+    return units[row][col];
 }
