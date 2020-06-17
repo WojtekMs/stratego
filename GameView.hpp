@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Button.hpp"
+#include "Board.hpp"
 
 class Player;
 enum class TURN;
@@ -23,9 +24,10 @@ class GameView {
     float mouseObjectOffSetY;
     sf::Sprite* unit_it;
     sf::Vector2f sprite_initial_position;
-    bool unit_chosen;
     bool board_a_initialized;
     bool board_b_initialized;
+    Board::Tile active_unit;
+    bool is_active_unit;
 
     sf::Sprite board_border;
     sf::Sprite grass_light;
@@ -34,6 +36,7 @@ class GameView {
     sf::Sprite red_back_sprite;
     std::array<sf::Sprite, 12> blue_units_sprites;
     sf::Sprite blue_back_sprite;
+    sf::Sprite yellow_highlight_sprite;
 
     sf::Texture board_border_texture;
     sf::Texture grass_light_texture;
@@ -44,6 +47,7 @@ class GameView {
     sf::Texture red_back_texture;
     std::array<sf::Texture, 12> blue_unit_textures;
     sf::Texture blue_back_texture;
+    sf::Texture yellow_highlight_texture;
 
     sf::Font font;
     sf::Text text;
@@ -60,11 +64,15 @@ class GameView {
     void draw_sprite(sf::RenderWindow& win, int idx, int sprite_pos_x, int sprite_pos_y);
     void draw_red_init_units(sf::RenderWindow& win);
     void draw_blue_init_units(sf::RenderWindow& win);
+    sf::Vector2f return_pixels(int col, int row) const;
+    Board::Tile return_tile(const sf::Vector2f& coords) const;
+    Board::Tile return_tile(int x, int y) const;
 
     void drag_red_player(sf::Event& event);
     void drag_blue_player(sf::Event& event);
-    void change_init_turn(sf::Event& event, Player* player);
+    void change_init_turn(sf::Event& event);
     void set_unit(sf::Event& event, Player* player);
+    void set_active_unit(sf::Event& event, Player* player);
 
 public:
     GameView(Player& pA, Player& pB);
