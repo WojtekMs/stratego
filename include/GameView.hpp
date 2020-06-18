@@ -10,6 +10,15 @@
 class Player;
 enum class TURN;
 
+enum class GAME_STATE {
+    BOARDS_NOT_SET,
+    BOARD_A_SET,
+    BOARD_B_SET,
+    BOTH_BOARDS_SET,
+    UNIT_MOVED,
+    GAME_FINISHED,
+};
+
 class GameView {
     Player& playerA;
     Player& playerB;
@@ -30,6 +39,7 @@ class GameView {
     bool is_active_unit;
     Board::Tile hovering_tile;
     Player* current_player;
+    Player* other_player;
     bool unit_moved_this_round;
 
     sf::Sprite board_border;
@@ -85,18 +95,22 @@ class GameView {
     void drag_red_player(sf::Event& event);
     void drag_blue_player(sf::Event& event);
     void change_init_turn(sf::Event& event);
-    void set_unit(sf::Event& event, Player* player);
-    void remove_unit(Player* player);
-    void set_active_unit(sf::Event& event, Player* player);
+    void set_unit(sf::Event& event);
+    void remove_unit();
+    void set_active_unit(sf::Event& event);
     void set_button_highlights(int mouse_x, int mouse_y);
-    void handle_initialization(sf::Event& event, Player* player);
+    void handle_initialization(sf::Event& event);
     void set_hovering_tile(int mouse_x, int mouse_y);
-    void change_player_turn(sf::Event& event);
+    void change_player_turn();
     void move_active_unit(sf::Event& event);
+    bool is_out_of_the_board(int x, int y);
 
-    bool check_if_viable(Board::Tile from, Board::Tile to);
+    bool check_if_viable(Board::Tile from, int to_x, int to_y);
     void highlight_regular_moves(sf::RenderWindow& win);
     void highlight_scout_moves(sf::RenderWindow& win);
+    bool highlight_green_tile(sf::RenderWindow& win, int to_x, int to_y);
+
+    void TEST_SET_RANDOM_UNITS();
 
 public:
     GameView(Player& pA, Player& pB);

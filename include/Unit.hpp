@@ -12,24 +12,26 @@ class Unit {
     int value;
     std::string type;
     TURN owner;
+    bool is_movable;
     int x;
     int y;
 
 public:
     Unit(){};
-    Unit(int v, const std::string& t, TURN player)
-        : value(v), type(t), owner(player) {
+    Unit(int v, const std::string& t, TURN player, bool m)
+        : value(v), type(t), owner(player), is_movable(m) {
         x = -1;
         y = -1;
     };
     inline Unit(const Unit& rhs);
-    inline virtual bool can_move(int col, int row) const = 0;
+    // inline virtual bool can_move(int col, int row) const = 0;
     inline virtual RESULT attack(const Unit& rhs) = 0;
     int get_value() const { return value; };
     std::string get_type() const { return type; };
     int get_x() const { return x; };
     int get_y() const { return y; };
     TURN get_owner() const { return owner; };
+    bool get_movable() const { return is_movable; };
     inline void set_position(int Ax, int Ay);
     virtual ~Unit(){};
 };
@@ -38,6 +40,7 @@ Unit::Unit(const Unit& rhs) {
     value = rhs.value;
     type = rhs.type;
     owner = rhs.owner;
+    is_movable = rhs.is_movable;
     x = rhs.x;
     y = rhs.y;
 }
@@ -47,21 +50,21 @@ void Unit::set_position(int Ax, int Ay) {
     y = Ay;
 }
 
-bool Unit::can_move(int col, int row) const {
-    if (col == get_x() + 1 && row == get_y()) {
-        return true;
-    }
-    if (col == get_x() - 1 && row == get_y()) {
-        return true;
-    }
-    if (row == get_y() + 1 && col == get_x()) {
-        return true;
-    }
-    if (row == get_y() - 1 && col == get_x()) {
-        return true;
-    }
-    return false;
-}
+// bool Unit::can_move(int col, int row) const {
+//     if (col == get_x() + 1 && row == get_y()) {
+//         return true;
+//     }
+//     if (col == get_x() - 1 && row == get_y()) {
+//         return true;
+//     }
+//     if (row == get_y() + 1 && col == get_x()) {
+//         return true;
+//     }
+//     if (row == get_y() - 1 && col == get_x()) {
+//         return true;
+//     }
+//     return false;
+// }
 
 RESULT Unit::attack(const Unit& rhs) {
     if (rhs.get_type() == "bomb") {

@@ -21,7 +21,10 @@ class Player
     void set_unit(int col, int row, int choice);
     void remove_unit(int col, int row);
     bool move_unit(Board::Tile from, Board::Tile to);
+    void reverse_move_unit(Board::Tile from, Board::Tile to);
     void update_board(const Board& other_player_board);
     const Board& get_board() { return board; };
-    std::string get_tile_info(int col, int row);
+    std::string get_tile_info(int col, int row) const;
+    std::string get_tile_info(Board::Tile tile) const;
+    bool can_move(Board::Tile from, Board::Tile to);
 };

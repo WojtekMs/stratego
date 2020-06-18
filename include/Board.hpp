@@ -56,10 +56,11 @@ public:
     bool set_unit(int col, int row, TURN player, int choice);
     void remove_unit(int col, int row);
     std::string get_tile_info(int col, int row, TURN player) const;
+    std::string get_tile_info(Tile tile, TURN player) const;
     int get_height() const { return height; };
     int get_width() const { return width; };
     std::shared_ptr<Unit> get_unit(int col, int row) const;
-    std::shared_ptr<Unit> get_unit(Tile chosen_unit) const;
+    std::shared_ptr<Unit> get_unit(Board::Tile chosen_unit) const;
     bool can_move(Tile from, Tile to) const;
     bool move_unit(Tile from, Tile to);
     void reverse_move_unit(Tile from, Tile to);

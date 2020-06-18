@@ -39,6 +39,8 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "ctime": "cpp",
+        "iterator": "cpp"
     }
 }

@@ -18,19 +18,18 @@ Board::Board()
       current_state(STATE::UNINITIALIZED),
       unit_count(0),
       units(width, height),
-      max_count_of_each_unit(  {
-          {"flag", 1},
-          {"scout", 8},
-          {"miner", 5},
-          {"bomb", 6},
-          {"spy", 1},
-          {"regular4", 4},
-          {"regular5", 4},
-          {"regular6", 4},
-          {"regular7", 3},
-          {"regular8", 2},
-          {"regular9", 1},
-          {"regular10", 1} } ) {
+      max_count_of_each_unit({{"flag", 1},
+                              {"scout", 8},
+                              {"miner", 5},
+                              {"bomb", 6},
+                              {"spy", 1},
+                              {"regular4", 4},
+                              {"regular5", 4},
+                              {"regular6", 4},
+                              {"regular7", 3},
+                              {"regular8", 2},
+                              {"regular9", 1},
+                              {"regular10", 1}}) {
     set_obstacles();
     set_default_units();
 }
@@ -87,13 +86,12 @@ std::string Board::get_tile_info(int col, int row, TURN player) const {
     if (out_of_range(col, row)) {
         return "#";
     }
-    if (std::find_if(obstacles.begin(), obstacles.end(), [col, row](const Board::Tile& tile)
-    {
-        return tile.x == col && tile.y == row;
-    }) != obstacles.end()) {
+    if (std::find_if(obstacles.begin(), obstacles.end(), [col, row](const Board::Tile& tile) {
+            return tile.x == col && tile.y == row;
+        }) != obstacles.end()) {
         return "O";
     }
-    if (units[row][col] != nullptr) {
+    if (units[row][col]) {
         if (units[row][col]->get_owner() != player) {
             return "enemy";
         } else {
@@ -103,31 +101,35 @@ std::string Board::get_tile_info(int col, int row, TURN player) const {
     return " ";
 }
 
+std::string Board::get_tile_info(Tile tile, TURN player) const {
+    return get_tile_info(tile.x, tile.y, player);
+}
+
 int Board::get_max_unit_count(int idx) const {
-    switch(idx) {
-        case 0:
+    switch (idx) {
+    case 0:
         return max_count_of_each_unit.at("scout");
-        case 1:
+    case 1:
         return max_count_of_each_unit.at("miner");
-        case 2:
+    case 2:
         return max_count_of_each_unit.at("regular4");
-        case 3:
+    case 3:
         return max_count_of_each_unit.at("regular5");
-        case 4:
+    case 4:
         return max_count_of_each_unit.at("regular6");
-        case 5:
+    case 5:
         return max_count_of_each_unit.at("regular7");
-        case 6:
+    case 6:
         return max_count_of_each_unit.at("regular8");
-        case 7:
+    case 7:
         return max_count_of_each_unit.at("regular9");
-        case 8:
+    case 8:
         return max_count_of_each_unit.at("regular10");
-        case 9:
+    case 9:
         return max_count_of_each_unit.at("bomb");
-        case 10:
+    case 10:
         return max_count_of_each_unit.at("flag");
-        case 11:
+    case 11:
         return max_count_of_each_unit.at("spy");
     }
     return -1;
@@ -144,16 +146,15 @@ bool Board::set_unit(int col, int row, TURN player, int choice) {
     if (row < (height - 4) || row >= height) {
         return false;
     }
-    if (choice < 0 && choice > 12) {
+    if (choice < 0 && choice >= 12) {
         return false;
     }
     if (get_tile_info(col, row, player) != " ") {
         return false;
     }
-    if (current_state == STATE::INITIALIZED) {
+    if (current_state == STATE::FULL) {
         return false;
     }
-   
 
     //first we have to choose the type of unit to set
     switch (choice + 2) {
@@ -200,21 +201,22 @@ bool Board::can_move(Tile from, Tile to) const {
     if (out_of_range(from.x, from.y)) {
         return false;
     }
-    if (out_of_range(to.x, to.y)) {
-        return false;
-    }
     if (!units[from.y][from.x]) {
         return false;
     }
-    if (!units[from.y][from.x]->can_move(to.x, to.y)) {
+    if (!units[from.y][from.x]->get_movable()) {
         return false;
     }
+    // if (!units[from.y][from.x]->can_move(to.x, to.y)) {
+    //     return false;
+    // }
     return true;
 }
 
 bool Board::move_unit(Tile from, Tile to) {
     if (can_move(from, to)) {
-        units[to.y][to.x].swap(units[from.y][from.x]);
+        units[from.y][from.x].swap(units[to.y][to.x]);
+        // units[to.y][to.x]->set_position(to.x, to.y);
         return true;
     }
     return false;
@@ -223,7 +225,10 @@ bool Board::move_unit(Tile from, Tile to) {
 void Board::reverse_move_unit(Tile from, Tile to) {
     Tile rev_from = point_reflection(from.x, from.y);
     Tile rev_to = point_reflection(to.x, to.y);
-    move_unit(rev_from, rev_to);
+    std::shared_ptr<Unit> temp_ptr = units[rev_from.y][rev_from.x]; //<---- this does! (whaaat?)
+    units[rev_from.y][rev_from.x] = units[rev_to.y][rev_to.x];
+    units[rev_to.y][rev_to.x] = temp_ptr;
+    // units[rev_from.y][rev_from.y].swap(units[rev_to.y][rev_to.x]); <---- this doesnt work!
 }
 
 Board::Tile Board::point_reflection(int col, int row) {
@@ -251,6 +256,10 @@ Board::Tile Board::point_reflection(int col, int row) {
     distance.y = row - distance_point.y;
     reflection.x = -distance.x;
     reflection.y = -distance.y;
+    if (out_of_range(reflection_point.x + reflection.x, reflection_point.y + reflection.y)) {
+        std::cerr << " reflection points out of range! inside update_board\n";
+        abort();
+    }
     return Board::Tile(reflection_point.x + reflection.x, reflection_point.y + reflection.y);
 }
 
@@ -260,7 +269,7 @@ Board& Board::operator=(const Board& rhs) {
     }
     height = rhs.height;
     width = rhs.width;
-    set_default_units();
+    // set_default_units();
     for (int row = 0; row < height; ++row) {
         for (int col = 0; col < width; ++col) {
             units[row][col] = rhs.units[row][col];
@@ -290,7 +299,7 @@ std::shared_ptr<Unit> Board::get_unit(int col, int row) const {
     return units[row][col];
 }
 
-std::shared_ptr<Unit> Board::get_unit(Tile chosen_unit) const {
+std::shared_ptr<Unit> Board::get_unit(Board::Tile chosen_unit) const {
     if (out_of_range(chosen_unit.x, chosen_unit.y)) {
         return std::shared_ptr<Unit>{};
     }

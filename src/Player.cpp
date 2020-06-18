@@ -19,11 +19,11 @@ void Player::set_units_count() {
 void Player::set_unit(int col, int row, int choice) {
     // check if the variables are correct
     if (board.set_unit(col, row, player, choice)) {
-        std::shared_ptr<Unit> temp_unit = board.get_unit(col, row);
-        if (temp_unit->get_type() == "regular") {
-            units_count[temp_unit->get_type() + std::to_string(temp_unit->get_value())]++;
+        std::shared_ptr<Unit> chosen_unit = board.get_unit(col, row);
+        if (chosen_unit->get_type() == "regular") {
+            units_count[chosen_unit->get_type() + std::to_string(chosen_unit->get_value())]++;
         }
-        units_count[temp_unit->get_type()]++;
+        units_count[chosen_unit->get_type()]++;
     }
 }
 
@@ -34,8 +34,8 @@ void Player::remove_unit(int col, int row) {
         if (temp_unit->get_type() == "regular") {
             units_count[temp_unit->get_type() + std::to_string(temp_unit->get_value())]--;
         }
-    units_count[board.get_unit(col, row)->get_type()]--;
-    board.remove_unit(col, row);
+        units_count[board.get_unit(col, row)->get_type()]--;
+        board.remove_unit(col, row);
     }
 }
 
@@ -44,12 +44,39 @@ bool Player::move_unit(Board::Tile from, Board::Tile to) {
     return board.move_unit(from, to);
 }
 
+void Player::reverse_move_unit(Board::Tile from, Board::Tile to) {
+    board.reverse_move_unit(from, to);
+}
+
+bool Player::can_move(Board::Tile from, Board::Tile to) {
+    if (board.get_tile_info(to.x, to.y, player) == "#") {
+        return false;
+    }
+    if (board.get_tile_info(to.x, to.y, player) == "O") {
+        return false;
+    }
+    if (board.get_unit(to.x, to.y)) {
+        if (board.get_unit(to.x, to.y)->get_owner() == player) {
+            return false;
+        }
+    }
+    if (!board.can_move(from, to)) {
+        return false;
+    }
+
+    return true;
+}
+
 void Player::update_board(const Board& other_player_board) {
     board.update(other_player_board);
 }
 
-std::string Player::get_tile_info(int col, int row) {
+std::string Player::get_tile_info(int col, int row) const {
     return board.get_tile_info(col, row, player);
+}
+
+std::string Player::get_tile_info(Board::Tile tile) const {
+    return board.get_tile_info(tile, player);
 }
 
 int Player::get_units_count(int idx) {
