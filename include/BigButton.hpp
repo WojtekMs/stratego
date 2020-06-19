@@ -1,13 +1,17 @@
 #pragma once
 
-#include "Button.hpp"
+#include "ButtonInterface.hpp"
 
-class BigButton : public Button 
+class BigButton : public ButtonInterface
 {
     protected:
+    sf::Texture button_texture;
+    sf::Texture highlighted_button_texture;
+
     void load_button_texture();
     void load_highlighted_button_texture();
     
     public:
     explicit BigButton(const std::string& button_text);
+    void draw(sf::RenderWindow& win);
 };
