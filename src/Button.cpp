@@ -3,51 +3,26 @@
 #include <iostream>
 
 Button::Button(const std::string& text)
+:ButtonInterface(text)
 {
-    if(!font.loadFromFile("font/chandas1-2.ttf")) {
-        std::cerr << "font failed loading inside Button class!\n";
-        abort();
-    }
-    if (!button_texture.loadFromFile("images/board/button.png")) {
+    load_button_texture();
+    load_highlighted_button_texture();
+    button.setTexture(button_texture);
+    highlighted_button.setTexture(highlighted_button_texture);
+}
+
+void Button::load_button_texture() {
+    if (!button_texture.loadFromFile(path_to_textures + "button.png")) {
         std::cerr << "wooden texture loading inside Button class failed!\n";
         abort();
     }
-    if (!highlighted_button_texture.loadFromFile("images/board/button_highlighted.png")) {
+}
+
+void Button::load_highlighted_button_texture() {
+    if (!highlighted_button_texture.loadFromFile(path_to_textures + "button_highlighted.png")) {
         std::cerr << "highlighted wooden texture loading inside Button class failed!\n";
         abort();
     }
-    button_text.setFont(font);
-    button_text.setString(text);
-    button_text.setFillColor(sf::Color::Yellow);
-    update_text_pos();
-    button.setTexture(button_texture);
-    highlighted_button.setTexture(highlighted_button_texture);
-    highlighted = false;
-    // button_box.setOutlineColor(sf::Color::Red);
-    // button_box.setOutlineThickness(3);
-    // button_box.setFillColor(sf::Color(150, 75, 0, 130));
-}
-
-void Button::update_text_pos() {
-    text_x_pos = (button.getPosition().x + (button.getGlobalBounds().width - button_text.getLocalBounds().width) / 2);
-    text_y_pos = (button.getPosition().y + (button.getGlobalBounds().height - button_text.getCharacterSize()) / 2);
-    button_text.setPosition(text_x_pos, text_y_pos);
-
-}
-
-void Button::set_position(int x, int y) {
-    button.setPosition(x, y);
-    highlighted_button.setPosition(x, y);
-    update_text_pos();
-}
-
-void Button::set_position(sf::Vector2f coords) {
-    set_position(coords.x, coords.y);
-}
-
-void Button::set_text(const std::string& text) {
-    button_text.setString(text);
-    update_text_pos();
 }
 
 void Button::draw(sf::RenderWindow& win) {
