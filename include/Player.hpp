@@ -20,7 +20,10 @@ class Player
     TURN get_player_number() { return player; };
     void set_unit(int col, int row, int choice);
     void remove_unit(int col, int row);
+    void remove_unit(Board::Tile chosen_unit);
+    void reverse_remove_unit(Board::Tile unit);
     bool move_unit(Board::Tile from, Board::Tile to);
+    RESULT attack(Board::Tile attacker, Board::Tile attacked);
     void reverse_move_unit(Board::Tile from, Board::Tile to);
     void update_board(const Board& other_player_board);
     const Board& get_board() { return board; };

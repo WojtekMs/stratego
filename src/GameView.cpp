@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+// #include "Unit.hpp"
 #include "Player.hpp"
 
 GameView::GameView(Player& pA, Player& pB)
@@ -28,7 +29,11 @@ GameView::GameView(Player& pA, Player& pB)
       unit_moved_this_round(false),
       done_button("Done"),
       remove_button("Remove"),
-      end_turn_button("End Turn") {
+      end_turn_button("End Turn"),
+      board_textures_path("images/board/"),
+      pieces_textures_path("images/pieces/"),
+      global_game_state(GAME_STATE::BOARDS_NOT_SET),
+      local_game_state(GAME_STATE::BOARDS_NOT_SET) {
     for (size_t i = 0; i < obstacle_textures.size(); i++) {
         if (i <= 3) {
             obstacle_textures[i] = (std::pair<sf::Texture, std::string>(sf::Texture(), "lake1_" + std::to_string(i + 1) + ".png"));
@@ -64,30 +69,45 @@ GameView::GameView(Player& pA, Player& pB)
         std::cerr << "font loading failed!\n";
         abort();
     }
-    if (!yellow_highlight_texture.loadFromFile("images/board/highlight_yellow.png")) {
-        std::cerr << "yellow highlight texture failed!\n";
-        abort();
-    }
-    if (!green_highlight_texture.loadFromFile("images/board/highlight_green.png")) {
-        std::cerr << "green highlight texture failed!\n";
-        abort();
-    }
+
     // if (!white_highlight_texture.loadFromFile("images/board/highlight_white.png")) {
     //     std::cerr << "white highlight texture failed! \n";
     //     abort();
     // }
     text.setFont(font);
-    yellow_highlight_sprite.setTexture(yellow_highlight_texture);
-    green_highlight_sprite.setTexture(green_highlight_texture);
+
     // white_highlight_sprite.setTexture(white_highlight_texture);
 
     load_red_units_textures();
-    set_red_units_sprites();
     load_blue_units_textures();
+    load_highlight_textures();
+    set_red_units_sprites();
     set_blue_units_sprites();
+    set_highlight_sprites();
     board_border.setTexture(board_border_texture);
     grass_light.setTexture(grass_light_texture);
     grass_dark.setTexture(grass_dark_texture);
+}
+
+void GameView::load_highlight_textures() {
+    if (!red_highlight_texture.loadFromFile(board_textures_path + "highlight_red.png")) {
+        std::cerr << "red highlight texture failed!\n";
+        abort();
+    }
+    if (!yellow_highlight_texture.loadFromFile(board_textures_path + "highlight_yellow.png")) {
+        std::cerr << "yellow highlight texture failed!\n";
+        abort();
+    }
+    if (!green_highlight_texture.loadFromFile(board_textures_path + "highlight_green.png")) {
+        std::cerr << "green highlight texture failed!\n";
+        abort();
+    }
+}
+
+void GameView::set_highlight_sprites() {
+    yellow_highlight_sprite.setTexture(yellow_highlight_texture);
+    green_highlight_sprite.setTexture(green_highlight_texture);
+    red_highlight_sprite.setTexture(red_highlight_texture);
 }
 
 void GameView::load_blue_units_textures() {
@@ -370,52 +390,62 @@ void GameView::draw_possible_moves_for_active_unit(sf::RenderWindow& win) {
 }
 
 void GameView::highlight_regular_moves(sf::RenderWindow& win) {
-    if (check_if_viable(active_unit, active_unit.x - 1, active_unit.y)) {
-        green_highlight_sprite.setPosition(return_pixels(active_unit.x - 1, active_unit.y));
-        win.draw(green_highlight_sprite);
-    }
+    highlight_tile(win, active_unit.x - 1, active_unit.y);
+    highlight_tile(win, active_unit.x + 1, active_unit.y);
+    highlight_tile(win, active_unit.x, active_unit.y + 1);
+    highlight_tile(win, active_unit.x, active_unit.y - 1);
+    // if (check_if_viable(active_unit, active_unit.x - 1, active_unit.y)) {
+    //     green_highlight_sprite.setPosition(return_pixels(active_unit.x - 1, active_unit.y));
+    //     win.draw(green_highlight_sprite);
+    // }
 
-    if (check_if_viable(active_unit, active_unit.x + 1, active_unit.y)) {
-        green_highlight_sprite.setPosition(return_pixels(active_unit.x + 1, active_unit.y));
-        win.draw(green_highlight_sprite);
-    }
-    if (check_if_viable(active_unit, active_unit.x, active_unit.y + 1)) {
-        green_highlight_sprite.setPosition(return_pixels(active_unit.x, active_unit.y + 1));
-        win.draw(green_highlight_sprite);
-    }
-    if (check_if_viable(active_unit, active_unit.x, active_unit.y - 1)) {
-        green_highlight_sprite.setPosition(return_pixels(active_unit.x, active_unit.y - 1));
-        win.draw(green_highlight_sprite);
-    }
+    // if (check_if_viable(active_unit, active_unit.x + 1, active_unit.y)) {
+    //     green_highlight_sprite.setPosition(return_pixels(active_unit.x + 1, active_unit.y));
+    //     win.draw(green_highlight_sprite);
+    // }
+    // if (check_if_viable(active_unit, active_unit.x, active_unit.y + 1)) {
+    //     green_highlight_sprite.setPosition(return_pixels(active_unit.x, active_unit.y + 1));
+    //     win.draw(green_highlight_sprite);
+    // }
+    // if (check_if_viable(active_unit, active_unit.x, active_unit.y - 1)) {
+    //     green_highlight_sprite.setPosition(return_pixels(active_unit.x, active_unit.y - 1));
+    //     win.draw(green_highlight_sprite);
+    // }
 }
 
 void GameView::highlight_scout_moves(sf::RenderWindow& win) {
-    for (int col = active_unit.x; col < current_player->get_board().get_width(); ++col) {
-        if (!highlight_green_tile(win, col, active_unit.y)) {
+    for (int col = active_unit.x + 1; col < current_player->get_board().get_width(); ++col) {
+        if (!highlight_tile(win, col, active_unit.y)) {
             break;
         }
     }
-    for (int col = active_unit.x; col > 0; --col) {
-        if (!highlight_green_tile(win, col, active_unit.y)) {
+    for (int col = active_unit.x - 1; col >= 0; --col) {
+        if (!highlight_tile(win, col, active_unit.y)) {
             break;
         }
     }
-    for (int row = active_unit.y; row < current_player->get_board().get_height(); ++row) {
-        if (!highlight_green_tile(win, active_unit.x, row)) {
+    for (int row = active_unit.y + 1; row < current_player->get_board().get_height(); ++row) {
+        if (!highlight_tile(win, active_unit.x, row)) {
             break;
         }
     }
-    for (int row = active_unit.y; row > 0; --row) {
-        if (!highlight_green_tile(win, active_unit.x, row)) {
+    for (int row = active_unit.y - 1; row >= 0; --row) {
+        if (!highlight_tile(win, active_unit.x, row)) {
             break;
         }
     }
 }
 
-bool GameView::highlight_green_tile(sf::RenderWindow& win, int to_x, int to_y) {
+bool GameView::highlight_tile(sf::RenderWindow& win, int to_x, int to_y) {
     if (check_if_viable(active_unit, to_x, to_y)) {
-        green_highlight_sprite.setPosition(return_pixels(to_x, to_y));
-        win.draw(green_highlight_sprite);
+        if (current_player->get_tile_info(to_x, to_y) == "enemy") {
+            red_highlight_sprite.setPosition(return_pixels(to_x, to_y));
+            win.draw(red_highlight_sprite);
+            return false;
+        } else {
+            green_highlight_sprite.setPosition(return_pixels(to_x, to_y));
+            win.draw(green_highlight_sprite);
+        }
         return true;
     }
     return false;
@@ -436,13 +466,25 @@ void GameView::draw(sf::RenderWindow& win) {
 
 void GameView::handle_events(sf::Event& event) {
     if (event.type == sf::Event::MouseButtonPressed) {
+        // switch (global_game_state) {
+        // case GAME_STATE::BOARDS_NOT_SET:
         handle_initialization(event);
         set_active_unit(event);
+        // break;
+        // case GAME_STATE::BOTH_BOARDS_SET:
         change_player_turn();
         move_active_unit(event);
+        // break;
+        // case GAME_STATE::GAME_FINISHED:
+        // return;
+        // default:
+        // break;
+        // }
     }
     if (event.type == sf::Event::MouseButtonReleased) {
-        set_unit(event);
+        if (global_game_state == GAME_STATE::BOARDS_NOT_SET) {
+            set_unit(event);
+        }
     }
     if (event.type == sf::Event::MouseMoved) {
         mouseX = event.mouseMove.x;
@@ -469,6 +511,8 @@ void GameView::TEST_SET_RANDOM_UNITS() {
     }
 }
 void GameView::move_active_unit(sf::Event& event) {
+    Board::Tile chosen_tile(return_tile(event.mouseButton.x, event.mouseButton.y));
+    std::cout << "chosen tile at the beggining: " << chosen_tile.x << ", " << chosen_tile.y << "\n";
     if (!is_active_unit) {
         return;
     }
@@ -479,15 +523,39 @@ void GameView::move_active_unit(sf::Event& event) {
         std::cout << "unit already moved this round!\n";
         return;
     }
-    if (!current_player->can_move(active_unit, return_tile(event.mouseButton.x, event.mouseButton.y))) {
-        std::cout << active_unit.x << ", " << active_unit.y << '\n';
+    if (!current_player->can_move(active_unit, chosen_tile)) {
+        std::cout << "active unit inside can move: " << active_unit.x << ", " << active_unit.y << '\n';
         std::cout << "this unit cant move to this tile!\n";
         return;
     }
-    if (current_player->move_unit(active_unit, return_tile(event.mouseButton.x, event.mouseButton.y))) {
+    if (current_player->get_tile_info(chosen_tile) == "enemy") {
+        local_game_state = GAME_STATE::UNIT_ATTACKED;
+        switch (current_player->attack(active_unit, chosen_tile)) {
+        case RESULT::WON:
+            std::cout << chosen_tile.x << ", " << chosen_tile.y << "\n";
+            current_player->remove_unit(chosen_tile);
+            other_player->reverse_remove_unit(chosen_tile);
+            break;
+        case RESULT::DRAW:
+            current_player->remove_unit(active_unit);
+            current_player->remove_unit(chosen_tile);
+            other_player->reverse_remove_unit(active_unit);
+            other_player->reverse_remove_unit(chosen_tile);
+            active_unit.set_cords(-1, -1);
+            break;
+        case RESULT::LOST:
+            current_player->remove_unit(active_unit);
+            other_player->reverse_remove_unit(active_unit);
+            active_unit.set_cords(-1, -1);
+            break;
+        }
+        unit_moved_this_round = true;
+    }
+    if (current_player->move_unit(active_unit, chosen_tile)) {
+        local_game_state = GAME_STATE::UNIT_MOVED;
         std::cout << "current: " << static_cast<int>(current_player->get_player_number()) << '\n';
         std::cout << "other: " << static_cast<int>(other_player->get_player_number()) << '\n';
-        other_player->reverse_move_unit(active_unit, return_tile(event.mouseButton.x, event.mouseButton.y));
+        other_player->reverse_move_unit(active_unit, chosen_tile);
         unit_moved_this_round = true;
         active_unit.set_cords(-1, -1);
     }
@@ -502,6 +570,7 @@ void GameView::move_active_unit(sf::Event& event) {
 
 void GameView::handle_initialization(sf::Event& event) {
     if (board_a_initialized && board_b_initialized) {
+        global_game_state = GAME_STATE::BOTH_BOARDS_SET;
         return;
     }
     if (current_player_turn == TURN::PLAYER_A) {

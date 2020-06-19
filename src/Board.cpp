@@ -101,7 +101,7 @@ std::string Board::get_tile_info(int col, int row, TURN player) const {
     return " ";
 }
 
-std::string Board::get_tile_info(Tile tile, TURN player) const {
+std::string Board::get_tile_info(const Tile& tile, TURN player) const {
     return get_tile_info(tile.x, tile.y, player);
 }
 
@@ -197,7 +197,12 @@ void Board::remove_unit(int col, int row) {
     }
 }
 
-bool Board::can_move(Tile from, Tile to) const {
+void Board::reverse_remove_unit(int col, int row) {
+    Board::Tile unit = point_reflection(col, row);
+    units[unit.y][unit.x].reset();
+}
+
+bool Board::can_move(const Tile& from, const Tile& to) const {
     if (out_of_range(from.x, from.y)) {
         return false;
     }
@@ -206,14 +211,46 @@ bool Board::can_move(Tile from, Tile to) const {
     }
     if (!units[from.y][from.x]->get_movable()) {
         return false;
+    } else {
+        if (units[from.y][from.x]->get_type() == "scout") {
+            return check_scout_moves(from, to);
+        } else {
+            return check_regular_moves(from, to);
+        }
+        // Movable* temp_ptr = units[from.y][from.x].get();
+        // temp_ptr->can_move
     }
-    // if (!units[from.y][from.x]->can_move(to.x, to.y)) {
-    //     return false;
-    // }
+   
     return true;
 }
 
-bool Board::move_unit(Tile from, Tile to) {
+bool Board::check_scout_moves(const Board::Tile& from, const Board::Tile& to) const {
+    if (from.x == to.x) {
+        return true;
+    }
+    if (from.y == to.y) {
+        return true;
+    }
+    return false;
+}
+
+bool Board::check_regular_moves(const Board::Tile& from, const Board::Tile& to) const {
+    if (from.x + 1 == to.x && from.y == to.y) {
+        return true;
+    }
+    if (from.x - 1 == to.x && from.y == to.y) {
+        return true;
+    }
+    if (from.x == to.x && from.y + 1 == to.y) {
+        return true;
+    }
+    if (from.x == to.x && from.y - 1 == to.y) {
+        return true;
+    }
+    return false;
+}
+
+bool Board::move_unit(const Tile& from, const Tile& to) {
     if (can_move(from, to)) {
         units[from.y][from.x].swap(units[to.y][to.x]);
         // units[to.y][to.x]->set_position(to.x, to.y);
@@ -222,7 +259,7 @@ bool Board::move_unit(Tile from, Tile to) {
     return false;
 }
 
-void Board::reverse_move_unit(Tile from, Tile to) {
+void Board::reverse_move_unit(const Tile& from, const Tile& to) {
     Tile rev_from = point_reflection(from.x, from.y);
     Tile rev_to = point_reflection(to.x, to.y);
     std::shared_ptr<Unit> temp_ptr = units[rev_from.y][rev_from.x]; //<---- this does! (whaaat?)
@@ -299,7 +336,7 @@ std::shared_ptr<Unit> Board::get_unit(int col, int row) const {
     return units[row][col];
 }
 
-std::shared_ptr<Unit> Board::get_unit(Board::Tile chosen_unit) const {
+std::shared_ptr<Unit> Board::get_unit(const Board::Tile& chosen_unit) const {
     if (out_of_range(chosen_unit.x, chosen_unit.y)) {
         return std::shared_ptr<Unit>{};
     }

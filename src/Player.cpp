@@ -39,9 +39,21 @@ void Player::remove_unit(int col, int row) {
     }
 }
 
+void Player::remove_unit(Board::Tile chosen_unit) {
+    remove_unit(chosen_unit.x, chosen_unit.y);
+}
+
+void Player::reverse_remove_unit(Board::Tile unit) {
+    board.reverse_remove_unit(unit.x, unit.y);
+}
+
 bool Player::move_unit(Board::Tile from, Board::Tile to) {
     // check if the variables are correct
     return board.move_unit(from, to);
+}
+
+RESULT Player::attack(Board::Tile attacker, Board::Tile attacked) {
+    return board.get_unit(attacker)->attack(board.get_unit(attacked));
 }
 
 void Player::reverse_move_unit(Board::Tile from, Board::Tile to) {
