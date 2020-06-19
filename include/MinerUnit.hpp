@@ -10,8 +10,8 @@ public:
     // virtual bool can_move(int col, int row) const override {
     //     return Unit::can_move(col, row);
     // }
-    virtual RESULT attack(const Unit& rhs) override {
-        if (rhs.get_type() == "bomb") {
+    virtual RESULT attack(const std::shared_ptr<Unit>& rhs) override {
+        if (rhs->get_type() == "bomb") {
             return RESULT::WON;
         }
         return Unit::attack(rhs);

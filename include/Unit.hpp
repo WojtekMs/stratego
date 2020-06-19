@@ -1,13 +1,17 @@
 #pragma once
+
+#include <memory>
 #include <string>
 
 enum class RESULT {
     LOST,
     DRAW,
-    WON
+    WON,
 };
-
+class Board;
+// class Board::Tile;
 enum class TURN;
+
 class Unit {
     int value;
     std::string type;
@@ -25,7 +29,7 @@ public:
     };
     inline Unit(const Unit& rhs);
     // inline virtual bool can_move(int col, int row) const = 0;
-    inline virtual RESULT attack(const Unit& rhs) = 0;
+    inline virtual RESULT attack(const std::shared_ptr<Unit>& rhs) = 0;
     int get_value() const { return value; };
     std::string get_type() const { return type; };
     int get_x() const { return x; };
@@ -66,17 +70,39 @@ void Unit::set_position(int Ax, int Ay) {
 //     return false;
 // }
 
-RESULT Unit::attack(const Unit& rhs) {
-    if (rhs.get_type() == "bomb") {
-        return RESULT::LOST;
-    }
-    if (get_value() > rhs.get_value()) {
-        return RESULT::WON;
-    }
-    if (get_value() == rhs.get_value()) {
-        return RESULT::DRAW;
-    }
-    if (get_value() < rhs.get_value()) {
-        return RESULT::LOST;
+RESULT Unit::attack(const std::shared_ptr<Unit>& rhs) {
+    if (rhs) {
+        if (rhs->get_type() == "bomb") {
+            return RESULT::LOST;
+        }
+        if (get_value() > rhs->get_value()) {
+            return RESULT::WON;
+        }
+        if (get_value() == rhs->get_value()) {
+            return RESULT::DRAW;
+        }
+        if (get_value() < rhs->get_value()) {
+            return RESULT::LOST;
+        }
     }
 }
+
+
+
+// bool Movable::can_move(Board::Tile from, Board::Tile to) const {
+//     if (to.x == from.x + 1 && to.y == from.y) {
+//         return true;
+//     }
+//     if (to.x == from.x - 1 && to.y == from.y) {
+//         return true;
+//     }
+//     if (to.x == from.x && to.y == from.y + 1) {
+//         return true;
+//     }
+//     if (to.x == from.x && to.y == from.y - 1) {
+//         return true;
+//     }
+//     return false;
+// }
+
+

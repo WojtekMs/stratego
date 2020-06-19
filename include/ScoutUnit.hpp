@@ -16,7 +16,7 @@ public:
     //     }
     //     return false;
     // }
-    virtual RESULT attack(const Unit& rhs) override {
+    virtual RESULT attack(const std::shared_ptr<Unit>& rhs) override {
         return Unit::attack(rhs);
     }
 };

@@ -16,6 +16,8 @@ enum class GAME_STATE {
     BOARD_B_SET,
     BOTH_BOARDS_SET,
     UNIT_MOVED,
+    UNIT_ATTACKED,
+    TURN_ENDED,
     GAME_FINISHED,
 };
 
@@ -41,6 +43,11 @@ class GameView {
     Player* current_player;
     Player* other_player;
     bool unit_moved_this_round;
+    const std::string board_textures_path;
+    const std::string pieces_textures_path;
+    GAME_STATE global_game_state;
+    GAME_STATE local_game_state;
+
 
     sf::Sprite board_border;
     sf::Sprite grass_light;
@@ -52,6 +59,7 @@ class GameView {
     sf::Sprite yellow_highlight_sprite;
     sf::Sprite white_highlight_sprite;
     sf::Sprite green_highlight_sprite;
+    sf::Sprite red_highlight_sprite;
 
     sf::Texture board_border_texture;
     sf::Texture grass_light_texture;
@@ -65,6 +73,7 @@ class GameView {
     sf::Texture yellow_highlight_texture;
     sf::Texture white_highlight_texture;
     sf::Texture green_highlight_texture;
+    sf::Texture red_highlight_texture;
 
     sf::Font font;
     sf::Text text;
@@ -74,8 +83,10 @@ class GameView {
 
     void load_red_units_textures();
     void load_blue_units_textures();
+    void load_highlight_textures();
     void set_red_units_sprites();
     void set_blue_units_sprites();
+    void set_highlight_sprites();
 
     void draw_grass(sf::RenderWindow& win);
     void draw_obstacles(sf::RenderWindow& win);
@@ -108,7 +119,7 @@ class GameView {
     bool check_if_viable(Board::Tile from, int to_x, int to_y);
     void highlight_regular_moves(sf::RenderWindow& win);
     void highlight_scout_moves(sf::RenderWindow& win);
-    bool highlight_green_tile(sf::RenderWindow& win, int to_x, int to_y);
+    bool highlight_tile(sf::RenderWindow& win, int to_x, int to_y);
 
     void TEST_SET_RANDOM_UNITS();
 

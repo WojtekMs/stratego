@@ -11,7 +11,7 @@ public:
     // virtual bool can_move(int col, int row) const override {
     //     return Unit::can_move(col, row);
     // }
-    virtual RESULT attack(const Unit& rhs) override {
+    virtual RESULT attack(const std::shared_ptr<Unit>& rhs) override {
         return Unit::attack(rhs);
     }
 };
