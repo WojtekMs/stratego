@@ -37,8 +37,8 @@ class GameView {
     Player* current_player;
     Player* other_player;
     bool dragging;
-    float mouseX;
-    float mouseY;
+    float mouse_x;
+    float mouse_y;
     float mouseObjectOffSetX;
     float mouseObjectOffSetY;
     sf::Sprite* unit_it;
@@ -139,6 +139,7 @@ class GameView {
     void change_player_turn();
     void move_active_unit(sf::Event& event);
     bool is_out_of_the_board(int x, int y);
+    void set_buttons_pressed();
 
     bool check_if_viable(Board::Tile from, int to_x, int to_y);
     void highlight_regular_moves(sf::RenderWindow& win);

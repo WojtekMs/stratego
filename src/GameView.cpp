@@ -15,8 +15,8 @@ GameView::GameView(Player& pA, Player& pB)
       current_player(&playerA),
       other_player(&playerB),
       dragging(false),
-      mouseX(0),
-      mouseY(0),
+      mouse_x(0),
+      mouse_y(0),
       mouseObjectOffSetX(0),
       mouseObjectOffSetY(0),
       unit_it(nullptr),
@@ -268,7 +268,7 @@ void GameView::draw_red_init_units(sf::RenderWindow& win) {
         text.setString("x" + std::to_string(playerA.get_board().get_max_unit_count(i) - playerA.get_units_count(i)));
         if (dragging == true) {
             if (unit_it) {
-                unit_it->setPosition(mouseX - mouseObjectOffSetX, mouseY - mouseObjectOffSetY);
+                unit_it->setPosition(mouse_x - mouseObjectOffSetX, mouse_y - mouseObjectOffSetY);
             }
         }
         win.draw(elem);
@@ -293,7 +293,7 @@ void GameView::draw_blue_init_units(sf::RenderWindow& win) {
         text.setString("x" + std::to_string(playerB.get_board().get_max_unit_count(i) - playerB.get_units_count(i)));
         if (dragging == true) {
             if (unit_it) {
-                unit_it->setPosition(mouseX - mouseObjectOffSetX, mouseY - mouseObjectOffSetY);
+                unit_it->setPosition(mouse_x - mouseObjectOffSetX, mouse_y - mouseObjectOffSetY);
             }
         }
         win.draw(blue_units_sprites[i]);
@@ -532,15 +532,14 @@ void GameView::handle_events(sf::Event& event) {
         }
     }
     if (event.type == sf::Event::MouseButtonReleased) {
-        if (global_game_state == GAME_STATE::BOARDS_NOT_SET) {
+        if (!(board_a_initialized && board_b_initialized)) {
             set_unit(event);
         }
     }
     if (event.type == sf::Event::MouseMoved) {
-        mouseX = event.mouseMove.x;
-        mouseY = event.mouseMove.y;
-        set_button_highlights(mouseX, mouseY);
-        // set_hovering_tile(mouseX, mouseY);
+        mouse_x = event.mouseMove.x;
+        mouse_y = event.mouseMove.y;
+        set_button_highlights(mouse_x, mouse_y);
     }
     if (event.type == sf::Event::KeyPressed) {
         if (event.key.code == sf::Keyboard::A) {
@@ -676,7 +675,7 @@ void GameView::set_button_highlights(int mouse_x, int mouse_y) {
     } else {
         info_box.set_button_highlight_off();
     }
-    if (end_game_info_box.button_contains(mouse_x, mouse_y) && global_game_state == GAME_STATE::GAME_FINISHED) {
+    if (end_game_info_box.button_contains(mouse_x, mouse_y)) {
         end_game_info_box.set_button_highlight_on();
     } else {
         end_game_info_box.set_button_highlight_off();
@@ -749,9 +748,6 @@ void GameView::change_init_turn(sf::Event& event) {
 }
 
 void GameView::set_unit(sf::Event& event) {
-    if (board_a_initialized && board_b_initialized) {
-        return;
-    }
     dragging = false;
     Board::Tile tile(return_tile(event.mouseButton.x, event.mouseButton.y));
     int idx = -1;
@@ -760,7 +756,6 @@ void GameView::set_unit(sf::Event& event) {
     } else {
         idx = unit_it - &blue_units_sprites[0];
     }
-
     if (current_player->get_units_count(idx) < current_player->get_board().get_max_unit_count(idx)) {
         current_player->set_unit(tile.x, tile.y, idx);
     }
