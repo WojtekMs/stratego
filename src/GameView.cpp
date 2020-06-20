@@ -38,7 +38,11 @@ GameView::GameView(Player& pA, Player& pB)
       local_game_state(GAME_STATE::BOARDS_NOT_SET),
       end_turn_button_pressed(false),
       turn_approved(false),
-      unit_attacked(false) {
+      unit_attacked(false),
+      attack_info_box(red_units_sprites, blue_units_sprites),
+      clock_started(false),
+      remove_button_pressed(false),
+      done_button_pressed(false) {
     for (size_t i = 0; i < obstacle_textures.size(); i++) {
         if (i <= 3) {
             obstacle_textures[i] = (std::pair<sf::Texture, std::string>(sf::Texture(), "lake1_" + std::to_string(i + 1) + ".png"));
@@ -311,11 +315,44 @@ void GameView::draw_remove_button(sf::RenderWindow& win) {
 
 void GameView::draw_board(sf::RenderWindow& win) {
     if (end_turn_button_pressed) {
-        info_box.set_text(other_player->get_player_name() + "'s turn!");
-        info_box.set_position((win.getSize().x - info_box.get_width()) / 2, (win.getSize().y - info_box.get_height()) / 2);
-        info_box.draw(win);
+        draw_info_box(win);
         return;
     }
+    if (unit_attacked) {
+        draw_attack_info_box(win);
+        return;
+    }
+    draw_units(win);
+    if (is_active_unit) {
+        draw_unit_highlight(win);
+    }
+    if (board_b_initialized && board_a_initialized) {
+        end_turn_button.set_position(done_button.get_position());
+        end_turn_button.draw(win);
+    }
+}
+
+void GameView::draw_info_box(sf::RenderWindow& win) {
+    info_box.set_text(other_player->get_player_name() + "'s turn!");
+    info_box.set_position((win.getSize().x - info_box.get_width()) / 2, (win.getSize().y - info_box.get_height()) / 2);
+    info_box.draw(win);
+}
+
+void GameView::draw_attack_info_box(sf::RenderWindow& win) {
+    if (!clock_started) {
+        clock.restart();
+        clock_started = true;
+    }
+    sf::Time time_past = clock.getElapsedTime();
+    attack_info_box.set_position((window_size.x - attack_info_box.get_width()) / 2, (window_size.y - attack_info_box.get_height()) / 2);
+    attack_info_box.draw(win);
+    if (time_past.asSeconds() > 1.5) {
+        unit_attacked = false;
+        clock_started = false;
+    }
+}
+
+void GameView::draw_units(sf::RenderWindow& win) {
     int object_x_pos = -1;
     int object_y_pos = -1;
     int unit_idx = -1;
@@ -345,16 +382,19 @@ void GameView::draw_board(sf::RenderWindow& win) {
             if (current_player->get_tile_info(col, row) == "enemy") {
                 draw_sprite(win, 12, object_x_pos, object_y_pos);
             }
-            if (active_unit.x == col && active_unit.y == row) {
-                yellow_highlight_sprite.setPosition(return_pixels(col, row));
-                win.draw(yellow_highlight_sprite);
-            }
-            if (board_b_initialized && board_a_initialized) {
-                end_turn_button.set_position(done_button.get_position());
-                end_turn_button.draw(win);
-            }
+            // if (active_unit.x == col && active_unit.y == row) {
+            //     yellow_highlight_sprite.setPosition(return_pixels(col, row));
+            //     win.draw(yellow_highlight_sprite);
+            // }
         }
     }
+}
+
+void GameView::draw_unit_highlight(sf::RenderWindow& win) {
+    // std::cout << active_unit.x << ", " << active_unit.y << "\n";
+    // std::cout << return_pixels(active_unit.x, active_unit.y).x << ", " << return_pixels(active_unit.x, active_unit.y).y << "\n";
+    yellow_highlight_sprite.setPosition(return_pixels(active_unit.x, active_unit.y));
+    win.draw(yellow_highlight_sprite);
 }
 
 void GameView::draw_sprite(sf::RenderWindow& win, int idx, int sprite_pos_x, int sprite_pos_y) {
@@ -405,23 +445,6 @@ void GameView::highlight_regular_moves(sf::RenderWindow& win) {
     highlight_tile(win, active_unit.x + 1, active_unit.y);
     highlight_tile(win, active_unit.x, active_unit.y + 1);
     highlight_tile(win, active_unit.x, active_unit.y - 1);
-    // if (check_if_viable(active_unit, active_unit.x - 1, active_unit.y)) {
-    //     green_highlight_sprite.setPosition(return_pixels(active_unit.x - 1, active_unit.y));
-    //     win.draw(green_highlight_sprite);
-    // }
-
-    // if (check_if_viable(active_unit, active_unit.x + 1, active_unit.y)) {
-    //     green_highlight_sprite.setPosition(return_pixels(active_unit.x + 1, active_unit.y));
-    //     win.draw(green_highlight_sprite);
-    // }
-    // if (check_if_viable(active_unit, active_unit.x, active_unit.y + 1)) {
-    //     green_highlight_sprite.setPosition(return_pixels(active_unit.x, active_unit.y + 1));
-    //     win.draw(green_highlight_sprite);
-    // }
-    // if (check_if_viable(active_unit, active_unit.x, active_unit.y - 1)) {
-    //     green_highlight_sprite.setPosition(return_pixels(active_unit.x, active_unit.y - 1));
-    //     win.draw(green_highlight_sprite);
-    // }
 }
 
 void GameView::highlight_scout_moves(sf::RenderWindow& win) {
@@ -477,12 +500,21 @@ void GameView::draw(sf::RenderWindow& win) {
 
 void GameView::handle_events(sf::Event& event) {
     if (event.type == sf::Event::MouseButtonPressed) {
-        if (end_turn_button.is_highlighted()) {
+        if (end_turn_button.is_highlighted() && unit_moved_this_round) {
+            std::cout << "end turn button is highlighted and mouse button pressed\n";
             end_turn_button_pressed = true;
+            // is_active_unit = false;
         }
         if (info_box.button_is_highlighted()) {
+            std::cout << "info button is highlighted and mouse button pressed\n";
             turn_approved = true;
             end_turn_button_pressed = false;
+        }
+        if (!(board_a_initialized && board_b_initialized) && remove_button.is_highlighted()) {
+            remove_button_pressed = true;
+        }
+        if (!(board_a_initialized && board_b_initialized) && done_button.is_highlighted()) {
+            done_button_pressed = true; //REMEMBER TO TAKE CARE OF DONE_BUTTON_PRESSED = FALSE!
         }
         // if (end_turn_button.is_highlighted() && unit_moved_this_round) {
         //     std::cout << "end turn butto is highlighted, mouse presed and unit moved\n";
@@ -498,7 +530,9 @@ void GameView::handle_events(sf::Event& event) {
         // break;
         // case GAME_STATE::BOTH_BOARDS_SET:
         // if (global_game_state == GAME_STATE::TURN_APPROVED) {
-        change_player_turn();
+        if (turn_approved) {
+            change_player_turn();
+        }
         // }
         move_active_unit(event);
         // break;
@@ -555,6 +589,9 @@ void GameView::move_active_unit(sf::Event& event) {
     }
     if (current_player->get_tile_info(chosen_tile) == "enemy") {
         local_game_state = GAME_STATE::UNIT_ATTACKED;
+        unit_attacked = true;
+        attack_info_box.set_attacking_unit(current_player->get_board().get_unit(active_unit));
+        attack_info_box.set_attacked_unit(current_player->get_board().get_unit(chosen_tile));
         switch (current_player->attack(active_unit, chosen_tile)) {
         case RESULT::WON:
             std::cout << chosen_tile.x << ", " << chosen_tile.y << "\n";
@@ -581,6 +618,7 @@ void GameView::move_active_unit(sf::Event& event) {
         other_player->reverse_move_unit(active_unit, chosen_tile);
         unit_moved_this_round = true;
         active_unit.set_cords(-1, -1);
+        is_active_unit = false;
     }
 }
 
@@ -609,10 +647,11 @@ void GameView::remove_unit() {
     if (board_b_initialized && board_a_initialized) {
         return;
     }
-    if (is_active_unit && remove_button.is_highlighted()) {
+    if (is_active_unit && remove_button_pressed) {
         current_player->remove_unit(active_unit.x, active_unit.y);
         active_unit.set_cords(-1, -1);
         is_active_unit = false;
+        remove_button_pressed = false;
     }
 }
 
@@ -637,7 +676,7 @@ void GameView::set_button_highlights(int mouse_x, int mouse_y) {
     // } else {
     //     start_screen_button.highlight_off();
     // }
-    if (info_box.button_contains(mouse_x, mouse_y)) {
+    if (info_box.button_contains(mouse_x, mouse_y) && end_turn_button_pressed) {
         info_box.set_button_highlight_on();
     } else {
         info_box.set_button_highlight_off();
@@ -686,6 +725,7 @@ void GameView::change_player_turn() {
         }
         unit_moved_this_round = false;
         turn_approved = false;
+        is_active_unit = false;
     }
 }
 
@@ -694,7 +734,7 @@ void GameView::change_init_turn(sf::Event& event) {
     if (board_b_initialized && board_a_initialized) {
         return;
     }
-    if (done_button.contains(event.mouseButton.x, event.mouseButton.y)) {
+    if (done_button_pressed) {
         if (current_player_turn == TURN::PLAYER_A) {
             if (playerA.get_board().get_state() == STATE::FULL) {
                 board_a_initialized = true;
@@ -712,6 +752,8 @@ void GameView::change_init_turn(sf::Event& event) {
                 playerA.update_board(playerB.get_board());
             }
         }
+        is_active_unit = false;
+        done_button_pressed = false;
     }
 }
 
@@ -736,6 +778,7 @@ void GameView::set_unit(sf::Event& event) {
 void GameView::set_active_unit(sf::Event& event) {
     if (is_out_of_the_board(event.mouseButton.x, event.mouseButton.y)) {
         active_unit.set_cords(-1, -1);
+        is_active_unit = false;
     }
     Board::Tile chosen_tile(return_tile(event.mouseButton.x, event.mouseButton.y));
     if (!current_player->get_board().get_unit(chosen_tile)) {

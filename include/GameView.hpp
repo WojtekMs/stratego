@@ -1,13 +1,14 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
+#include "AttackInfoBox.hpp"
 #include "BigButton.hpp"
-#include "Button.hpp"
 #include "Board.hpp"
 #include "Box.hpp"
+#include "Button.hpp"
 
 class Player;
 enum class TURN;
@@ -55,7 +56,11 @@ class GameView {
     bool end_turn_button_pressed;
     bool turn_approved;
     bool unit_attacked;
-
+    Board::Tile attacking_unit;
+    Board::Tile attacked_unit;
+    bool clock_started;
+    bool remove_button_pressed;
+    bool done_button_pressed;
 
     sf::Sprite board_border;
     sf::Sprite grass_light;
@@ -83,6 +88,7 @@ class GameView {
     sf::Texture green_highlight_texture;
     sf::Texture red_highlight_texture;
 
+    sf::Clock clock;
     sf::Font font;
     sf::Text text;
     Button done_button;
@@ -90,6 +96,7 @@ class GameView {
     Button end_turn_button;
     BigButton start_screen_button;
     Box info_box;
+    AttackInfoBox attack_info_box;
 
     void load_red_units_textures();
     void load_blue_units_textures();
@@ -108,6 +115,10 @@ class GameView {
     void draw_done_button(sf::RenderWindow& win);
     void draw_remove_button(sf::RenderWindow& win);
     void draw_possible_moves_for_active_unit(sf::RenderWindow& win);
+    void draw_info_box(sf::RenderWindow& win);
+    void draw_attack_info_box(sf::RenderWindow& win);
+    void draw_units(sf::RenderWindow& win);
+    void draw_unit_highlight(sf::RenderWindow& win);
 
     sf::Vector2f return_pixels(int col, int row) const;
     Board::Tile return_tile(const sf::Vector2f& coords) const;

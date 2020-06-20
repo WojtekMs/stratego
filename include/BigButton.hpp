@@ -12,6 +12,6 @@ class BigButton : public ButtonInterface
     void load_highlighted_button_texture();
     
     public:
-    explicit BigButton(const std::string& button_text);
+    explicit BigButton(const std::string& button_text = "default");
     void draw(sf::RenderWindow& win);
 };
