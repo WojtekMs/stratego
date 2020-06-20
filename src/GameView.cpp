@@ -489,6 +489,12 @@ bool GameView::check_if_viable(Board::Tile from, int to_x, int to_y) {
     return current_player->can_move(from, Board::Tile(to_x, to_y));
 }
 
+void GameView::draw_end_game_screen(sf::RenderWindow& win) {
+    info_box.set_text("Congratulations " + victorious_player_name + " you won!");
+    info_box.draw(win);
+
+}
+
 void GameView::draw(sf::RenderWindow& win) {
     win.draw(board_border);
     draw_grass(win);
@@ -496,6 +502,10 @@ void GameView::draw(sf::RenderWindow& win) {
     draw_units_for_init(win);
     draw_board(win);
     draw_possible_moves_for_active_unit(win);
+    std::cout << static_cast<int>(global_game_state) << "\n";
+    if (global_game_state == GAME_STATE::GAME_FINISHED) {
+        draw_end_game_screen(win);
+    }
 }
 
 void GameView::handle_events(sf::Event& event) {
@@ -588,6 +598,10 @@ void GameView::move_active_unit(sf::Event& event) {
         return;
     }
     if (current_player->get_tile_info(chosen_tile) == "enemy") {
+        if (current_player->get_board().get_unit(chosen_tile)->get_type() == "flag") {
+            global_game_state = GAME_STATE::GAME_FINISHED;
+            victorious_player_name = current_player->get_player_name();
+        }
         local_game_state = GAME_STATE::UNIT_ATTACKED;
         unit_attacked = true;
         attack_info_box.set_attacking_unit(current_player->get_board().get_unit(active_unit));
@@ -631,7 +645,7 @@ void GameView::move_active_unit(sf::Event& event) {
 
 void GameView::handle_initialization(sf::Event& event) {
     if (board_a_initialized && board_b_initialized) {
-        global_game_state = GAME_STATE::BOTH_BOARDS_SET;
+        // global_game_state = GAME_STATE::BOTH_BOARDS_SET;
         return;
     }
     if (current_player_turn == TURN::PLAYER_A) {
@@ -716,12 +730,12 @@ void GameView::change_player_turn() {
             current_player_turn = TURN::PLAYER_B;
             current_player = &playerB;
             other_player = &playerA;
-            global_game_state = GAME_STATE::PLAYER_B_MOVE;
+            // global_game_state = GAME_STATE::PLAYER_B_MOVE;
         } else {
             current_player_turn = TURN::PLAYER_A;
             current_player = &playerA;
             other_player = &playerB;
-            global_game_state = GAME_STATE::PLAYER_A_MOVE;
+            // global_game_state = GAME_STATE::PLAYER_A_MOVE;
         }
         unit_moved_this_round = false;
         turn_approved = false;

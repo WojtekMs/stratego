@@ -61,6 +61,7 @@ class GameView {
     bool clock_started;
     bool remove_button_pressed;
     bool done_button_pressed;
+    std::string victorious_player_name;
 
     sf::Sprite board_border;
     sf::Sprite grass_light;
@@ -119,6 +120,7 @@ class GameView {
     void draw_attack_info_box(sf::RenderWindow& win);
     void draw_units(sf::RenderWindow& win);
     void draw_unit_highlight(sf::RenderWindow& win);
+    void draw_end_game_screen(sf::RenderWindow& win);
 
     sf::Vector2f return_pixels(int col, int row) const;
     Board::Tile return_tile(const sf::Vector2f& coords) const;

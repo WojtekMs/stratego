@@ -8,6 +8,8 @@ class Box
 {
     protected:
     const std::string path_to_textures;
+    size_t max_char_count_inside_box;
+    size_t max_number_of_text_lines_inside_box;
     int box_text_x_pos;
     int box_text_y_pos;
     int button_x_pos;
@@ -23,6 +25,8 @@ class Box
     void set_default_text(const std::string& text);
     void update_text_pos();
     void update_button_pos();
+    void break_text_into_lines();
+    void update_max_char_count();
     public:
     explicit Box(const std::string& text = "default");
     void set_position(int x, int y);
@@ -37,6 +41,7 @@ class Box
     float get_height() const { return box_sprite.getGlobalBounds().height; };
     float get_width() const { return box_sprite.getGlobalBounds().width; };
     sf::Vector2f get_position() const { return box_sprite.getPosition(); };
+    size_t get_max_char_count_inside_box() const { return max_char_count_inside_box; };
 
 
 };

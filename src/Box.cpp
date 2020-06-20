@@ -1,9 +1,12 @@
 #include "Box.hpp"
 
 #include <iostream>
+#include <sstream>
 
 Box::Box(const std::string& text)
     : path_to_textures("images/board/"),
+      max_char_count_inside_box(12),
+      max_number_of_text_lines_inside_box(3),
       box_text_x_pos(-1),
       box_text_y_pos(-1),
       button_x_pos(-1),
@@ -11,6 +14,7 @@ Box::Box(const std::string& text)
     load_box_texture();
     load_font();
     set_default_text(text);
+    update_max_char_count();
     set_button_text();
     box_sprite.setTexture(box_texture);
     // box_sprite.setColor(sf::Color(150, 80, 80));
@@ -40,9 +44,15 @@ void Box::set_default_text(const std::string& text) {
 }
 
 void Box::update_text_pos() {
-    box_text_x_pos = (box_sprite.getPosition().x + (box_sprite.getGlobalBounds().width - box_text.getLocalBounds().width) / 2);
-    box_text_y_pos = (box_sprite.getPosition().y + 2 * box_text.getCharacterSize());
-    box_text.setPosition(box_text_x_pos, box_text_y_pos);
+    if (box_text.getLocalBounds().width < box_sprite.getLocalBounds().width) {
+        box_text_x_pos = (box_sprite.getPosition().x + (box_sprite.getGlobalBounds().width - box_text.getLocalBounds().width) / 2);
+        box_text_y_pos = (box_sprite.getPosition().y + 2 * box_text.getCharacterSize());
+        box_text.setPosition(box_text_x_pos, box_text_y_pos);
+
+    } else {
+        std::stringstream temp_stream;
+        temp_stream.str(box_text.getString());
+    }
 }
 
 void Box::update_button_pos() {
@@ -65,6 +75,7 @@ void Box::set_position(const sf::Vector2f& coords) {
 
 void Box::set_text(const std::string& text) {
     box_text.setString(text);
+    break_text_into_lines();
     update_text_pos();
 }
 
@@ -76,4 +87,51 @@ void Box::draw(sf::RenderWindow& win) {
     win.draw(box_sprite);
     win.draw(box_text);
     button.draw(win);
+}
+
+void Box::update_max_char_count() {
+    int max_chars_per_line = box_sprite.getLocalBounds().width / box_text.getCharacterSize();
+    max_char_count_inside_box = max_chars_per_line * max_number_of_text_lines_inside_box;
+}
+
+void Box::break_text_into_lines() {
+    if (box_text.getString().getSize() * box_text.getCharacterSize() < box_sprite.getLocalBounds().width) {
+        return;
+    }
+    std::istringstream temp_stream(box_text.getString());
+    std::vector<std::string> words((std::istream_iterator<std::string>(temp_stream)), std::istream_iterator<std::string>());
+    std::string temp_text;
+    size_t char_count_inside_line = 0;
+    size_t line_count = 0;
+    size_t space_count_in_line = 0;
+    size_t char_count_that_will_fit_in_line = 0;
+    size_t char_count_of_next_word = 0;
+    size_t idx_of_the_first_char_in_new_line = 0;
+    for (size_t i = 0; i < words.size() - 1; ++i) {
+        char_count_of_next_word = words[i + 1].size();
+        char_count_inside_line += words[i].size();
+        if (char_count_inside_line * box_text.getCharacterSize() > get_width()) {
+            temp_text += (words[i] + "\n");
+            line_count++;
+            idx_of_the_first_char_in_new_line = char_count_inside_line + 2;
+            char_count_inside_line = 0;
+        } else {
+            char_count_that_will_fit_in_line = box_sprite.getLocalBounds().width - char_count_inside_line * box_text.getCharacterSize();
+            if (char_count_of_next_word > char_count_that_will_fit_in_line || i == words.size() - 2) {
+                float denting = (box_sprite.getLocalBounds().width - char_count_inside_line * box_text.getCharacterSize()) / 2;
+                std::cout << denting << "\n";
+                std::cout << box_text.getCharacterSize() << "\n";
+                int spaces = (denting / box_text.getCharacterSize() + 0.5);
+                temp_text.insert(idx_of_the_first_char_in_new_line, spaces, ' ');
+            }
+            temp_text += (words[i] + " ");
+        }
+        if (line_count > 3) {
+            break;
+        }
+        if (i == words.size() - 2) {
+            temp_text += words[i + 1];
+        }
+    }
+    box_text.setString(temp_text);
 }
