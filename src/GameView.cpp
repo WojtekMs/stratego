@@ -513,47 +513,23 @@ void GameView::draw(sf::RenderWindow& win) {
 
 void GameView::handle_events(sf::Event& event) {
     if (event.type == sf::Event::MouseButtonPressed) {
-        if (end_turn_button.is_highlighted() && unit_moved_this_round) {
-            std::cout << "end turn button is highlighted and mouse button pressed\n";
-            end_turn_button_pressed = true;
-            // is_active_unit = false;
+        set_buttons_pressed();
+        if (!(board_a_initialized && board_b_initialized)) {
+            if (current_player_turn == TURN::PLAYER_A) {
+                drag_red_player(event);
+            } else {
+                drag_blue_player(event);
+            }
+            remove_unit();
+            change_init_turn(event);
         }
-        if (info_box.button_is_highlighted()) {
-            std::cout << "info button is highlighted and mouse button pressed\n";
-            turn_approved = true;
-            end_turn_button_pressed = false;
+        if (!is_out_of_the_board(event.mouseButton.x, event.mouseButton.y)) {
+            set_active_unit(event);
         }
-        if (!(board_a_initialized && board_b_initialized) && remove_button.is_highlighted()) {
-            remove_button_pressed = true;
-        }
-        if (!(board_a_initialized && board_b_initialized) && done_button.is_highlighted()) {
-            done_button_pressed = true;  //REMEMBER TO TAKE CARE OF DONE_BUTTON_PRESSED = FALSE!
-        }
-        // if (end_turn_button.is_highlighted() && unit_moved_this_round) {
-        //     std::cout << "end turn butto is highlighted, mouse presed and unit moved\n";
-        //     global_game_state = GAME_STATE::TURN_ENDED;
-        // }
-        // if (info_box.button_is_highlighted()) {
-        //     global_game_state = GAME_STATE::TURN_APPROVED;
-        // }
-        // switch (global_game_state) {
-        // case GAME_STATE::BOARDS_NOT_SET:
-        handle_initialization(event);
-        set_active_unit(event);
-        // break;
-        // case GAME_STATE::BOTH_BOARDS_SET:
-        // if (global_game_state == GAME_STATE::TURN_APPROVED) {
-        if (turn_approved) {
+        if (board_a_initialized && board_b_initialized) {
             change_player_turn();
+            move_active_unit(event);
         }
-        // }
-        move_active_unit(event);
-        // break;
-        // case GAME_STATE::GAME_FINISHED:
-        // return;
-        // default:
-        // break;
-        // }
     }
     if (event.type == sf::Event::MouseButtonReleased) {
         if (global_game_state == GAME_STATE::BOARDS_NOT_SET) {
@@ -573,6 +549,22 @@ void GameView::handle_events(sf::Event& event) {
     }
 }
 
+void GameView::set_buttons_pressed() {
+    if (end_turn_button.is_highlighted() && unit_moved_this_round) {
+        end_turn_button_pressed = true;
+    }
+    if (info_box.button_is_highlighted()) {
+        turn_approved = true;
+        end_turn_button_pressed = false;
+    }
+    if (!(board_a_initialized && board_b_initialized) && remove_button.is_highlighted()) {
+        remove_button_pressed = true;
+    }
+    if (!(board_a_initialized && board_b_initialized) && done_button.is_highlighted()) {
+        done_button_pressed = true;
+    }
+}
+
 void GameView::TEST_SET_RANDOM_UNITS() {
     while (current_player->get_board().get_state() != STATE::FULL) {
         for (int row = 8; row < current_player->get_board().get_height(); ++row) {
@@ -586,11 +578,7 @@ void GameView::TEST_SET_RANDOM_UNITS() {
 }
 void GameView::move_active_unit(sf::Event& event) {
     Board::Tile chosen_tile(return_tile(event.mouseButton.x, event.mouseButton.y));
-    // std::cout << "chosen tile at the beggining: " << chosen_tile.x << ", " << chosen_tile.y << "\n";
     if (!is_active_unit) {
-        return;
-    }
-    if (!(board_b_initialized || board_a_initialized)) {
         return;
     }
     if (unit_moved_this_round) {
@@ -651,19 +639,9 @@ void GameView::handle_initialization(sf::Event& event) {
         // global_game_state = GAME_STATE::BOTH_BOARDS_SET;
         return;
     }
-    if (current_player_turn == TURN::PLAYER_A) {
-        drag_red_player(event);
-    } else {
-        drag_blue_player(event);
-    }
-    remove_unit();
-    change_init_turn(event);
 }
 
 void GameView::remove_unit() {
-    if (board_b_initialized && board_a_initialized) {
-        return;
-    }
     if (is_active_unit && remove_button_pressed) {
         current_player->remove_unit(active_unit.x, active_unit.y);
         active_unit.set_cords(-1, -1);
@@ -730,9 +708,6 @@ void GameView::drag_blue_player(sf::Event& event) {
 }
 
 void GameView::change_player_turn() {
-    if (!(board_a_initialized || board_b_initialized)) {
-        return;
-    }
     if (unit_moved_this_round && turn_approved) {
         if (current_player_turn == TURN::PLAYER_A) {
             current_player_turn = TURN::PLAYER_B;
@@ -750,10 +725,6 @@ void GameView::change_player_turn() {
 }
 
 void GameView::change_init_turn(sf::Event& event) {
-    //unnecesary check -> handle_init function does that
-    if (board_b_initialized && board_a_initialized) {
-        return;
-    }
     if (done_button_pressed) {
         if (current_player_turn == TURN::PLAYER_A) {
             if (playerA.get_board().get_state() == STATE::FULL) {
@@ -796,10 +767,6 @@ void GameView::set_unit(sf::Event& event) {
 }
 
 void GameView::set_active_unit(sf::Event& event) {
-    if (is_out_of_the_board(event.mouseButton.x, event.mouseButton.y)) {
-        active_unit.set_cords(-1, -1);
-        is_active_unit = false;
-    }
     Board::Tile chosen_tile(return_tile(event.mouseButton.x, event.mouseButton.y));
     if (!current_player->get_board().get_unit(chosen_tile)) {
         return;
