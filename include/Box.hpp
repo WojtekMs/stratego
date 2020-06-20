@@ -28,7 +28,7 @@ class Box
     void set_position(int x, int y);
     void set_position(const sf::Vector2f& coords);
     void set_text(const std::string& text);
-    void set_button_text(const std::string& text);
+    void set_button_text(const std::string& text = "OK");
     void set_button_highlight_on() { button.highlight_on(); };
     void set_button_highlight_off() { button.highlight_off(); };
     bool button_contains(int x, int y) const { return button.contains(x, y); };

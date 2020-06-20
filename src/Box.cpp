@@ -11,7 +11,10 @@ Box::Box(const std::string& text)
     load_box_texture();
     load_font();
     set_default_text(text);
+    set_button_text();
     box_sprite.setTexture(box_texture);
+    // box_sprite.setColor(sf::Color(150, 80, 80));
+    // box_sprite.s
     update_button_pos();
     update_text_pos();
 }
@@ -44,7 +47,7 @@ void Box::update_text_pos() {
 
 void Box::update_button_pos() {
     button_x_pos = box_sprite.getPosition().x + (box_sprite.getGlobalBounds().width - button.get_width()) / 2;
-    button_y_pos = box_sprite.getPosition().y + box_sprite.getGlobalBounds().height - box_text.getCharacterSize() - button.get_height();
+    button_y_pos = box_sprite.getPosition().y + box_sprite.getGlobalBounds().height - 2 * box_text.getCharacterSize() - button.get_height();
     button.set_position(button_x_pos, button_y_pos);
 }
 

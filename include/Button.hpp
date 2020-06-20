@@ -13,7 +13,7 @@ protected:
     void load_button_texture();
     void load_highlighted_button_texture();
 public:
-    explicit Button(const std::string& text);
+    explicit Button(const std::string& text = "default");
     void draw(sf::RenderWindow& win);
 };
 

@@ -12,7 +12,7 @@ ButtonInterface::ButtonInterface(const std::string& text)
 
 void ButtonInterface::load_font() {
     if (!font.loadFromFile("font/chandas1-2.ttf")) {
-        std::cerr << "font failed loading inside Button class!\n";
+        std::cerr << "font failed loading inside ButtonInterface class!\n";
         abort();
     }
 }
