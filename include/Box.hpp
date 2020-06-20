@@ -8,8 +8,10 @@ class Box
 {
     protected:
     const std::string path_to_textures;
-    int text_x_pos;
-    int text_y_pos;
+    int box_text_x_pos;
+    int box_text_y_pos;
+    int button_x_pos;
+    int button_y_pos;
     Button button;
     sf::Font font;
     sf::Text box_text;
@@ -20,6 +22,7 @@ class Box
     void load_font();
     void set_default_text(const std::string& text);
     void update_text_pos();
+    void update_button_pos();
     public:
     explicit Box(const std::string& text = "default");
     void set_position(int x, int y);
