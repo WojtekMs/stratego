@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-// #include "Unit.hpp"
 #include "Player.hpp"
 
 GameView::GameView(Player& pA, Player& pB)
@@ -44,21 +43,40 @@ GameView::GameView(Player& pA, Player& pB)
       remove_button_pressed(false),
       done_button_pressed(false),
       end_game_info_box("None") {
-    for (size_t i = 0; i < obstacle_textures.size(); i++) {
-        if (i <= 3) {
-            obstacle_textures[i] = (std::pair<sf::Texture, std::string>(sf::Texture(), "lake1_" + std::to_string(i + 1) + ".png"));
-        } else {
-            obstacle_textures[i] = (std::pair<sf::Texture, std::string>(sf::Texture(), "lake2_" + std::to_string(i - 3) + ".png"));
-        }
-    }
-    for (size_t i = 0; i < obstacle_sprites.size(); i++) {
-        obstacle_sprites[i] = (std::pair<sf::Sprite, std::string>(sf::Sprite(), "lake2_" + std::to_string(i + 1) + ".png"));
-    }
+        load_obstacle_textures();
+    load_grass_textures();
+    load_board_border_texture();
+    load_red_units_textures();
+    load_blue_units_textures();
+    load_highlight_textures();
 
+    set_obstacle_sprites();
+    set_red_units_sprites();
+    set_blue_units_sprites();
+    set_highlight_sprites();
+
+    load_font();
+    text.setFont(font);
+
+    board_border.setTexture(board_border_texture);
+    grass_light.setTexture(grass_light_texture);
+    grass_dark.setTexture(grass_dark_texture);
+}
+
+void GameView::set_obstacle_sprites() {
+    for (size_t i = 0; i < obstacle_sprites.size(); i++) {
+        obstacle_sprites[i].setTexture(obstacle_textures[i]);
+    }
+}
+
+void GameView::load_board_border_texture() {
     if (!board_border_texture.loadFromFile("images/board/border_scaled.png")) {
         std::cerr << "board border error loading from file!\n";
         abort();
     }
+}
+
+void GameView::load_grass_textures() {
     if (!grass_light_texture.loadFromFile("images/board/grass1_scaled.png")) {
         std::cerr << "grass light error loading from file!\n";
         abort();
@@ -67,36 +85,29 @@ GameView::GameView(Player& pA, Player& pB)
         std::cerr << "grass dark error loading from file!\n";
         abort();
     }
-    for (auto& [texture, texture_name] : obstacle_textures) {
-        if (!texture.loadFromFile("images/board/" + texture_name)) {
-            std::cerr << texture_name << " error loading from file!\n";
+}
+
+void GameView::load_obstacle_textures() {
+    for (size_t i = 0; i < obstacle_textures.size(); ++i) {
+        if (i <= 3) {
+            if (!obstacle_textures[i].loadFromFile(board_textures_path + "lake1_" + std::to_string(i + 1) + ".png")) {
+                std::cerr << "obstacle texture lake1_" + std::to_string(i + 1) + "failed to load!\n";
+                abort();
+            }
+        } else {
+            if (!obstacle_textures[i].loadFromFile(board_textures_path + "lake2_" + std::to_string(i - 3) + ".png")) {
+                std::cerr << "obstacle texture lake2_" + std::to_string(i + 1) + "failed to load!\n";
+                abort();
+            }
         }
     }
-    for (size_t i = 0; i < obstacle_sprites.size(); ++i) {
-        obstacle_sprites[i].first.setTexture(obstacle_textures[i].first);
-    }
+}
+
+void GameView::load_font() {
     if (!font.loadFromFile("font/chandas1-2.ttf")) {
         std::cerr << "font loading failed!\n";
         abort();
     }
-
-    // if (!white_highlight_texture.loadFromFile("images/board/highlight_white.png")) {
-    //     std::cerr << "white highlight texture failed! \n";
-    //     abort();
-    // }
-    text.setFont(font);
-
-    // white_highlight_sprite.setTexture(white_highlight_texture);
-
-    load_red_units_textures();
-    load_blue_units_textures();
-    load_highlight_textures();
-    set_red_units_sprites();
-    set_blue_units_sprites();
-    set_highlight_sprites();
-    board_border.setTexture(board_border_texture);
-    grass_light.setTexture(grass_light_texture);
-    grass_dark.setTexture(grass_dark_texture);
 }
 
 void GameView::load_highlight_textures() {
@@ -216,31 +227,20 @@ void GameView::draw_obstacles(sf::RenderWindow& win) {
         int obstacle_y_pos = TILE_SIZE * (row + 1);
         for (size_t col = 2; col < 4; ++col) {
             size_t obstacle_x_pos = TILE_SIZE * (col + 1);
-            obstacle_sprites[i].first.setPosition(obstacle_x_pos, obstacle_y_pos);
-            win.draw(obstacle_sprites[i].first);
+            obstacle_sprites[i].setPosition(obstacle_x_pos, obstacle_y_pos);
+            win.draw(obstacle_sprites[i]);
             i++;
         }
         for (size_t col = 6; col < 8; ++col) {
             size_t obstacle_x_pos = TILE_SIZE * (col + 1);
-            obstacle_sprites[j].first.setPosition(obstacle_x_pos, obstacle_y_pos);
-            win.draw(obstacle_sprites[j].first);
+            obstacle_sprites[j].setPosition(obstacle_x_pos, obstacle_y_pos);
+            win.draw(obstacle_sprites[j]);
             j++;
         }
     }
 }
 
 void GameView::draw_units_for_init(sf::RenderWindow& win) {
-    if (current_player_turn == TURN::PLAYER_A) {
-        if (board_a_initialized) {
-            return;
-        }
-    }
-    if (current_player_turn == TURN::PLAYER_B) {
-        if (board_b_initialized) {
-            return;
-        }
-    }
-
     if (current_player_turn == TURN::PLAYER_A) {
         draw_red_init_units(win);
     } else {
@@ -257,13 +257,12 @@ void GameView::draw_red_init_units(sf::RenderWindow& win) {
     const int y_denting = TILE_SIZE;
     int col_count = 0;
     int row_count = 0;
-    int i = 0;
-    for (auto& elem : red_units_sprites) {
+    for (size_t i = 0; i < red_units_sprites.size(); ++i) {
         if (i != 0 && i % 4 == 0) {
             col_count = 0;
             row_count++;
         }
-        elem.setPosition(x_denting + 2 * col_count * TILE_SIZE, y_denting + row_count * TILE_SIZE);
+        red_units_sprites[i].setPosition(x_denting + 2 * col_count * TILE_SIZE, y_denting + row_count * TILE_SIZE);
         text.setPosition(x_denting + TILE_SIZE + 2 * col_count * TILE_SIZE, y_denting + TILE_SIZE / 4 + row_count * TILE_SIZE);
         text.setString("x" + std::to_string(playerA.get_board().get_max_unit_count(i) - playerA.get_units_count(i)));
         if (dragging == true) {
@@ -271,10 +270,9 @@ void GameView::draw_red_init_units(sf::RenderWindow& win) {
                 unit_it->setPosition(mouse_x - mouseObjectOffSetX, mouse_y - mouseObjectOffSetY);
             }
         }
-        win.draw(elem);
+        win.draw(red_units_sprites[i]);
         win.draw(text);
         col_count++;
-        i++;
     }
 }
 
@@ -305,7 +303,6 @@ void GameView::draw_blue_init_units(sf::RenderWindow& win) {
 void GameView::draw_done_button(sf::RenderWindow& win) {
     const int x_denting = board_border.getGlobalBounds().width;
     done_button.set_position(x_denting + (X_ADDITIONAL_SPACE - done_button.get_width()) / 2, TILE_SIZE * 6);
-    // done_button.set_text("Done");
     done_button.draw(win);
 }
 
@@ -506,7 +503,9 @@ void GameView::draw(sf::RenderWindow& win) {
     win.draw(board_border);
     draw_grass(win);
     draw_obstacles(win);
-    draw_units_for_init(win);
+    if (!(board_a_initialized && board_b_initialized)) {
+        draw_units_for_init(win);
+    }
     draw_board(win);
     draw_possible_moves_for_active_unit(win);
 }

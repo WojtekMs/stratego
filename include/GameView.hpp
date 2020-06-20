@@ -78,8 +78,8 @@ class GameView {
     sf::Texture board_border_texture;
     sf::Texture grass_light_texture;
     sf::Texture grass_dark_texture;
-    std::array<std::pair<sf::Sprite, std::string>, 8> obstacle_sprites;
-    std::array<std::pair<sf::Texture, std::string>, 8> obstacle_textures;
+    std::array<sf::Sprite, 8> obstacle_sprites;
+    std::array<sf::Texture, 8> obstacle_textures;
     std::array<sf::Texture, 12> red_unit_textures;
     sf::Texture red_back_texture;
     std::array<sf::Texture, 12> blue_unit_textures;
@@ -100,9 +100,14 @@ class GameView {
     AttackInfoBox attack_info_box;
     Box end_game_info_box;
 
+    void load_obstacle_textures();
+    void load_grass_textures();
+    void load_board_border_texture();
     void load_red_units_textures();
     void load_blue_units_textures();
     void load_highlight_textures();
+    void load_font();
+    void set_obstacle_sprites();
     void set_red_units_sprites();
     void set_blue_units_sprites();
     void set_highlight_sprites();
