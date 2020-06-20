@@ -42,7 +42,8 @@ GameView::GameView(Player& pA, Player& pB)
       attack_info_box(red_units_sprites, blue_units_sprites),
       clock_started(false),
       remove_button_pressed(false),
-      done_button_pressed(false) {
+      done_button_pressed(false),
+      end_game_info_box("None") {
     for (size_t i = 0; i < obstacle_textures.size(); i++) {
         if (i <= 3) {
             obstacle_textures[i] = (std::pair<sf::Texture, std::string>(sf::Texture(), "lake1_" + std::to_string(i + 1) + ".png"));
@@ -319,8 +320,10 @@ void GameView::draw_board(sf::RenderWindow& win) {
         return;
     }
     if (unit_attacked) {
-        draw_attack_info_box(win);
-        return;
+        if (global_game_state != GAME_STATE::GAME_FINISHED) {
+            draw_attack_info_box(win);
+            return;
+        }
     }
     draw_units(win);
     if (is_active_unit) {
@@ -490,22 +493,22 @@ bool GameView::check_if_viable(Board::Tile from, int to_x, int to_y) {
 }
 
 void GameView::draw_end_game_screen(sf::RenderWindow& win) {
-    info_box.set_text("Congratulations " + victorious_player_name + " you won!");
-    info_box.draw(win);
-
+    end_game_info_box.set_text("Congratulations " + victorious_player_name + " you won!\n");
+    end_game_info_box.set_position(info_box.get_position());
+    end_game_info_box.draw(win);
 }
 
 void GameView::draw(sf::RenderWindow& win) {
+    if (global_game_state == GAME_STATE::GAME_FINISHED) {
+        draw_end_game_screen(win);
+        return;
+    }
     win.draw(board_border);
     draw_grass(win);
     draw_obstacles(win);
     draw_units_for_init(win);
     draw_board(win);
     draw_possible_moves_for_active_unit(win);
-    std::cout << static_cast<int>(global_game_state) << "\n";
-    if (global_game_state == GAME_STATE::GAME_FINISHED) {
-        draw_end_game_screen(win);
-    }
 }
 
 void GameView::handle_events(sf::Event& event) {
@@ -524,7 +527,7 @@ void GameView::handle_events(sf::Event& event) {
             remove_button_pressed = true;
         }
         if (!(board_a_initialized && board_b_initialized) && done_button.is_highlighted()) {
-            done_button_pressed = true; //REMEMBER TO TAKE CARE OF DONE_BUTTON_PRESSED = FALSE!
+            done_button_pressed = true;  //REMEMBER TO TAKE CARE OF DONE_BUTTON_PRESSED = FALSE!
         }
         // if (end_turn_button.is_highlighted() && unit_moved_this_round) {
         //     std::cout << "end turn butto is highlighted, mouse presed and unit moved\n";
@@ -695,6 +698,11 @@ void GameView::set_button_highlights(int mouse_x, int mouse_y) {
     } else {
         info_box.set_button_highlight_off();
     }
+    if (end_game_info_box.button_contains(mouse_x, mouse_y) && global_game_state == GAME_STATE::GAME_FINISHED) {
+        end_game_info_box.set_button_highlight_on();
+    } else {
+        end_game_info_box.set_button_highlight_off();
+    }
 }
 
 void GameView::drag_red_player(sf::Event& event) {
@@ -730,12 +738,10 @@ void GameView::change_player_turn() {
             current_player_turn = TURN::PLAYER_B;
             current_player = &playerB;
             other_player = &playerA;
-            // global_game_state = GAME_STATE::PLAYER_B_MOVE;
         } else {
             current_player_turn = TURN::PLAYER_A;
             current_player = &playerA;
             other_player = &playerB;
-            // global_game_state = GAME_STATE::PLAYER_A_MOVE;
         }
         unit_moved_this_round = false;
         turn_approved = false;

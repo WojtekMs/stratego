@@ -98,6 +98,7 @@ class GameView {
     BigButton start_screen_button;
     Box info_box;
     AttackInfoBox attack_info_box;
+    Box end_game_info_box;
 
     void load_red_units_textures();
     void load_blue_units_textures();

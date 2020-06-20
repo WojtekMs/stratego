@@ -17,8 +17,6 @@ Box::Box(const std::string& text)
     update_max_char_count();
     set_button_text();
     box_sprite.setTexture(box_texture);
-    // box_sprite.setColor(sf::Color(150, 80, 80));
-    // box_sprite.s
     update_button_pos();
     update_text_pos();
 }
@@ -119,8 +117,6 @@ void Box::break_text_into_lines() {
             char_count_that_will_fit_in_line = box_sprite.getLocalBounds().width - char_count_inside_line * box_text.getCharacterSize();
             if (char_count_of_next_word > char_count_that_will_fit_in_line || i == words.size() - 2) {
                 float denting = (box_sprite.getLocalBounds().width - char_count_inside_line * box_text.getCharacterSize()) / 2;
-                std::cout << denting << "\n";
-                std::cout << box_text.getCharacterSize() << "\n";
                 int spaces = (denting / box_text.getCharacterSize() + 0.5);
                 temp_text.insert(idx_of_the_first_char_in_new_line, spaces, ' ');
             }
