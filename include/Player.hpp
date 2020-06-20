@@ -18,6 +18,7 @@ class Player
     int get_units_count(const std::string& type) const { return units_count.at(type); };
     int get_units_count(int idx);
     TURN get_player_number() { return player; };
+    std::string get_player_name() { return name; };
     void set_unit(int col, int row, int choice);
     void remove_unit(int col, int row);
     void remove_unit(Board::Tile chosen_unit);

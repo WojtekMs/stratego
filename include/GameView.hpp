@@ -33,6 +33,8 @@ class GameView {
     int X_ADDITIONAL_SPACE;
     sf::Vector2f window_size;
     TURN current_player_turn;
+    Player* current_player;
+    Player* other_player;
     bool dragging;
     float mouseX;
     float mouseY;
@@ -45,8 +47,6 @@ class GameView {
     Board::Tile active_unit;
     bool is_active_unit;
     Board::Tile hovering_tile;
-    Player* current_player;
-    Player* other_player;
     bool unit_moved_this_round;
     const std::string board_textures_path;
     const std::string pieces_textures_path;

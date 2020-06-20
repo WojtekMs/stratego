@@ -181,7 +181,7 @@ bool Board::set_unit(int col, int row, TURN player, int choice) {
     std::cout << "unit created value: " << units[row][col]->get_value() << '\n';
     std::cout << "unit created owner: " << static_cast<int>(units[row][col]->get_owner()) << '\n';
     //second we set the desired field with the chosen unit
-    units[row][col]->set_position(col, row);
+    // units[row][col]->set_position(col, row);
     unit_count++;
     if (unit_count == MAX_UNIT_COUNT) {
         current_state = STATE::FULL;

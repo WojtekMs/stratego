@@ -11,7 +11,9 @@ GameView::GameView(Player& pA, Player& pB)
       TILE_SIZE(64),
       X_ADDITIONAL_SPACE(512),
       window_size(12 * TILE_SIZE + X_ADDITIONAL_SPACE, 14 * TILE_SIZE),
-      current_player_turn(TURN::PLAYER_B),
+      current_player_turn(TURN::PLAYER_A),
+      current_player(&playerA),
+      other_player(&playerB),
       dragging(false),
       mouseX(0),
       mouseY(0),
@@ -24,8 +26,6 @@ GameView::GameView(Player& pA, Player& pB)
       active_unit(-1, -1),
       is_active_unit(false),
       hovering_tile(-1, -1),
-      current_player(&playerB),
-      other_player(&playerA),
       unit_moved_this_round(false),
       done_button("Done"),
       remove_button("Remove"),
@@ -311,6 +311,7 @@ void GameView::draw_remove_button(sf::RenderWindow& win) {
 
 void GameView::draw_board(sf::RenderWindow& win) {
     if (end_turn_button_pressed) {
+        info_box.set_text(other_player->get_player_name() + "'s turn!");
         info_box.set_position((win.getSize().x - info_box.get_width()) / 2, (win.getSize().y - info_box.get_height()) / 2);
         info_box.draw(win);
         return;
@@ -538,7 +539,7 @@ void GameView::TEST_SET_RANDOM_UNITS() {
 }
 void GameView::move_active_unit(sf::Event& event) {
     Board::Tile chosen_tile(return_tile(event.mouseButton.x, event.mouseButton.y));
-    std::cout << "chosen tile at the beggining: " << chosen_tile.x << ", " << chosen_tile.y << "\n";
+    // std::cout << "chosen tile at the beggining: " << chosen_tile.x << ", " << chosen_tile.y << "\n";
     if (!is_active_unit) {
         return;
     }
@@ -550,8 +551,6 @@ void GameView::move_active_unit(sf::Event& event) {
         return;
     }
     if (!current_player->can_move(active_unit, chosen_tile)) {
-        std::cout << "active unit inside can move: " << active_unit.x << ", " << active_unit.y << '\n';
-        std::cout << "this unit cant move to this tile!\n";
         return;
     }
     if (current_player->get_tile_info(chosen_tile) == "enemy") {
@@ -579,8 +578,6 @@ void GameView::move_active_unit(sf::Event& event) {
     }
     if (current_player->move_unit(active_unit, chosen_tile)) {
         local_game_state = GAME_STATE::UNIT_MOVED;
-        std::cout << "current: " << static_cast<int>(current_player->get_player_number()) << '\n';
-        std::cout << "other: " << static_cast<int>(other_player->get_player_number()) << '\n';
         other_player->reverse_move_unit(active_unit, chosen_tile);
         unit_moved_this_round = true;
         active_unit.set_cords(-1, -1);
@@ -615,6 +612,7 @@ void GameView::remove_unit() {
     if (is_active_unit && remove_button.is_highlighted()) {
         current_player->remove_unit(active_unit.x, active_unit.y);
         active_unit.set_cords(-1, -1);
+        is_active_unit = false;
     }
 }
 
@@ -692,6 +690,7 @@ void GameView::change_player_turn() {
 }
 
 void GameView::change_init_turn(sf::Event& event) {
+    //unnecesary check -> handle_init function does that
     if (board_b_initialized && board_a_initialized) {
         return;
     }
