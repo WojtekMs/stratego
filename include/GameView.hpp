@@ -134,12 +134,11 @@ class GameView {
     void remove_unit();
     void set_active_unit(sf::Event& event);
     void set_button_highlights(int mouse_x, int mouse_y);
-    void handle_initialization(sf::Event& event);
-    void set_hovering_tile(int mouse_x, int mouse_y);
     void change_player_turn();
     void move_active_unit(sf::Event& event);
     bool is_out_of_the_board(int x, int y);
     void set_buttons_pressed();
+    void resolve_unit_conflict(const Board::Tile& attacked_unit);
 
     bool check_if_viable(Board::Tile from, int to_x, int to_y);
     void highlight_regular_moves(sf::RenderWindow& win);

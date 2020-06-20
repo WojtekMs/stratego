@@ -581,7 +581,6 @@ void GameView::move_active_unit(sf::Event& event) {
         return;
     }
     if (unit_moved_this_round) {
-        std::cout << "unit already moved this round!\n";
         return;
     }
     if (!current_player->can_move(active_unit, chosen_tile)) {
@@ -592,52 +591,40 @@ void GameView::move_active_unit(sf::Event& event) {
             global_game_state = GAME_STATE::GAME_FINISHED;
             victorious_player_name = current_player->get_player_name();
         }
-        local_game_state = GAME_STATE::UNIT_ATTACKED;
-        unit_attacked = true;
         attack_info_box.set_attacking_unit(current_player->get_board().get_unit(active_unit));
         attack_info_box.set_attacked_unit(current_player->get_board().get_unit(chosen_tile));
-        switch (current_player->attack(active_unit, chosen_tile)) {
-        case RESULT::WON:
-            std::cout << chosen_tile.x << ", " << chosen_tile.y << "\n";
-            current_player->remove_unit(chosen_tile);
-            other_player->reverse_remove_unit(chosen_tile);
-            break;
-        case RESULT::DRAW:
-            current_player->remove_unit(active_unit);
-            current_player->remove_unit(chosen_tile);
-            other_player->reverse_remove_unit(active_unit);
-            other_player->reverse_remove_unit(chosen_tile);
-            active_unit.set_cords(-1, -1);
-            break;
-        case RESULT::LOST:
-            current_player->remove_unit(active_unit);
-            other_player->reverse_remove_unit(active_unit);
-            active_unit.set_cords(-1, -1);
-            break;
-        }
+        resolve_unit_conflict(chosen_tile);
+        unit_attacked = true;
         unit_moved_this_round = true;
     }
     if (current_player->move_unit(active_unit, chosen_tile)) {
-        local_game_state = GAME_STATE::UNIT_MOVED;
         other_player->reverse_move_unit(active_unit, chosen_tile);
-        unit_moved_this_round = true;
         active_unit.set_cords(-1, -1);
+        unit_moved_this_round = true;
         is_active_unit = false;
     }
 }
 
-// void GameView::set_hovering_tile(int mouse_x, int mouse_y) {
-//     if (playerA.get_tile_info(return_tile(mouse_x, mouse_y).x, return_tile(mouse_x, mouse_y).y) == "#") {
-//         hovering_tile.set_cords(-1, -1);
-//     }
-//     hovering_tile.set_cords(return_tile(mouse_x, mouse_y));
-// }
-
-void GameView::handle_initialization(sf::Event& event) {
-    if (board_a_initialized && board_b_initialized) {
-        // global_game_state = GAME_STATE::BOTH_BOARDS_SET;
-        return;
+void GameView::resolve_unit_conflict(const Board::Tile& attacked_unit) {
+    switch (current_player->attack(active_unit, attacked_unit)) {
+    case RESULT::WON:
+        current_player->remove_unit(attacked_unit);
+        other_player->reverse_remove_unit(attacked_unit);
+        break;
+    case RESULT::DRAW:
+        current_player->remove_unit(active_unit);
+        current_player->remove_unit(attacked_unit);
+        other_player->reverse_remove_unit(active_unit);
+        other_player->reverse_remove_unit(attacked_unit);
+        active_unit.set_cords(-1, -1);
+        break;
+    case RESULT::LOST:
+        current_player->remove_unit(active_unit);
+        other_player->reverse_remove_unit(active_unit);
+        active_unit.set_cords(-1, -1);
+        break;
     }
+    is_active_unit = false;
 }
 
 void GameView::remove_unit() {
