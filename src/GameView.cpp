@@ -30,10 +30,15 @@ GameView::GameView(Player& pA, Player& pB)
       done_button("Done"),
       remove_button("Remove"),
       end_turn_button("End Turn"),
+      start_screen_button("Start Game"),
+      info_box("End of Turn"),
       board_textures_path("images/board/"),
       pieces_textures_path("images/pieces/"),
       global_game_state(GAME_STATE::BOARDS_NOT_SET),
-      local_game_state(GAME_STATE::BOARDS_NOT_SET) {
+      local_game_state(GAME_STATE::BOARDS_NOT_SET),
+      end_turn_button_pressed(false),
+      turn_approved(false),
+      unit_attacked(false) {
     for (size_t i = 0; i < obstacle_textures.size(); i++) {
         if (i <= 3) {
             obstacle_textures[i] = (std::pair<sf::Texture, std::string>(sf::Texture(), "lake1_" + std::to_string(i + 1) + ".png"));
@@ -305,6 +310,11 @@ void GameView::draw_remove_button(sf::RenderWindow& win) {
 }
 
 void GameView::draw_board(sf::RenderWindow& win) {
+    if (end_turn_button_pressed) {
+        info_box.set_position((win.getSize().x - info_box.get_width()) / 2, (win.getSize().y - info_box.get_height()) / 2);
+        info_box.draw(win);
+        return;
+    }
     int object_x_pos = -1;
     int object_y_pos = -1;
     int unit_idx = -1;
@@ -466,13 +476,29 @@ void GameView::draw(sf::RenderWindow& win) {
 
 void GameView::handle_events(sf::Event& event) {
     if (event.type == sf::Event::MouseButtonPressed) {
+        if (end_turn_button.is_highlighted()) {
+            end_turn_button_pressed = true;
+        }
+        if (info_box.button_is_highlighted()) {
+            turn_approved = true;
+            end_turn_button_pressed = false;
+        }
+        // if (end_turn_button.is_highlighted() && unit_moved_this_round) {
+        //     std::cout << "end turn butto is highlighted, mouse presed and unit moved\n";
+        //     global_game_state = GAME_STATE::TURN_ENDED;
+        // }
+        // if (info_box.button_is_highlighted()) {
+        //     global_game_state = GAME_STATE::TURN_APPROVED;
+        // }
         // switch (global_game_state) {
         // case GAME_STATE::BOARDS_NOT_SET:
         handle_initialization(event);
         set_active_unit(event);
         // break;
         // case GAME_STATE::BOTH_BOARDS_SET:
+        // if (global_game_state == GAME_STATE::TURN_APPROVED) {
         change_player_turn();
+        // }
         move_active_unit(event);
         // break;
         // case GAME_STATE::GAME_FINISHED:
@@ -608,6 +634,16 @@ void GameView::set_button_highlights(int mouse_x, int mouse_y) {
     } else {
         end_turn_button.highlight_off();
     }
+    // if (start_screen_button.contains(mouse_x, mouse_y)) {
+    //     start_screen_button.highlight_on();
+    // } else {
+    //     start_screen_button.highlight_off();
+    // }
+    if (info_box.button_contains(mouse_x, mouse_y)) {
+        info_box.set_button_highlight_on();
+    } else {
+        info_box.set_button_highlight_off();
+    }
 }
 
 void GameView::drag_red_player(sf::Event& event) {
@@ -638,17 +674,20 @@ void GameView::change_player_turn() {
     if (!(board_a_initialized || board_b_initialized)) {
         return;
     }
-    if (end_turn_button.is_highlighted() && unit_moved_this_round == true) {
+    if (unit_moved_this_round && turn_approved) {
         if (current_player_turn == TURN::PLAYER_A) {
             current_player_turn = TURN::PLAYER_B;
             current_player = &playerB;
             other_player = &playerA;
+            global_game_state = GAME_STATE::PLAYER_B_MOVE;
         } else {
             current_player_turn = TURN::PLAYER_A;
             current_player = &playerA;
             other_player = &playerB;
+            global_game_state = GAME_STATE::PLAYER_A_MOVE;
         }
         unit_moved_this_round = false;
+        turn_approved = false;
     }
 }
 

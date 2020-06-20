@@ -4,8 +4,10 @@
 #include <unordered_map>
 #include <string>
 
+#include "BigButton.hpp"
 #include "Button.hpp"
 #include "Board.hpp"
+#include "Box.hpp"
 
 class Player;
 enum class TURN;
@@ -18,6 +20,9 @@ enum class GAME_STATE {
     UNIT_MOVED,
     UNIT_ATTACKED,
     TURN_ENDED,
+    TURN_APPROVED,
+    PLAYER_A_MOVE,
+    PLAYER_B_MOVE,
     GAME_FINISHED,
 };
 
@@ -47,6 +52,9 @@ class GameView {
     const std::string pieces_textures_path;
     GAME_STATE global_game_state;
     GAME_STATE local_game_state;
+    bool end_turn_button_pressed;
+    bool turn_approved;
+    bool unit_attacked;
 
 
     sf::Sprite board_border;
@@ -80,6 +88,8 @@ class GameView {
     Button done_button;
     Button remove_button;
     Button end_turn_button;
+    BigButton start_screen_button;
+    Box info_box;
 
     void load_red_units_textures();
     void load_blue_units_textures();
