@@ -42,15 +42,9 @@ void Box::set_default_text(const std::string& text) {
 }
 
 void Box::update_text_pos() {
-    if (box_text.getLocalBounds().width < box_sprite.getLocalBounds().width) {
-        box_text_x_pos = (box_sprite.getPosition().x + (box_sprite.getGlobalBounds().width - box_text.getLocalBounds().width) / 2);
-        box_text_y_pos = (box_sprite.getPosition().y + 2 * box_text.getCharacterSize());
-        box_text.setPosition(box_text_x_pos, box_text_y_pos);
-
-    } else {
-        std::stringstream temp_stream;
-        temp_stream.str(box_text.getString());
-    }
+    box_text_x_pos = (box_sprite.getPosition().x + (box_sprite.getGlobalBounds().width - box_text.getLocalBounds().width) / 2);
+    box_text_y_pos = (box_sprite.getPosition().y + 2 * box_text.getCharacterSize());
+    box_text.setPosition(box_text_x_pos, box_text_y_pos);
 }
 
 void Box::update_button_pos() {
