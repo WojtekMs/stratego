@@ -1,9 +1,10 @@
 #pragma once
 
+#include "cScreen.hpp"
 #include "GameView.hpp"
 #include "GameController.hpp"
 
-class Game
+class Game :public cScreen
 {
     GameView& game_view;
     GameController& game_controller;
@@ -12,5 +13,5 @@ class Game
     void draw(sf::RenderWindow& win);
     public:
     Game(GameView& g_view, GameController& g_controller);
-    void run();
+    std::string run(sf::RenderWindow& win) override;
 };

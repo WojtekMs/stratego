@@ -45,6 +45,7 @@ class GameController {
     bool unit_attacked;
     bool remove_button_pressed;
     bool done_button_pressed;
+    bool end_game_info_box_button_pressed;
     bool game_finished;
     bool clock_started;
 
@@ -81,6 +82,7 @@ public:
     bool get_unit_attacked() const { return unit_attacked; };
     bool get_remove_button_pressed() { return remove_button_pressed; };
     bool get_done_button_pressed() { return done_button_pressed; };
+    bool get_end_game_info_box_button_pressed() { return end_game_info_box_button_pressed; };
     bool get_game_finished() { return game_finished; };
     bool both_boards_set() const;
     std::shared_ptr<Unit> get_attacker() const { return attacker; };

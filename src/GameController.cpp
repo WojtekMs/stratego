@@ -27,6 +27,7 @@ GameController::GameController(Player& pA, Player& pB, GameView& g_view)
       unit_attacked(false),
       remove_button_pressed(false),
       done_button_pressed(false),
+      end_game_info_box_button_pressed(false),
       game_finished(false),
       active_unit(-1, -1),
       attacking_unit(-1, -1),
@@ -251,6 +252,9 @@ void GameController::set_buttons_pressed() {
     }
     if (!(board_a_initialized && board_b_initialized) && game_view.get_done_button().is_highlighted()) {
         done_button_pressed = true;
+    }
+    if (game_finished && game_view.get_end_game_info_box().button_is_highlighted()) {
+        end_game_info_box_button_pressed = true;
     }
 }
 

@@ -17,7 +17,6 @@ void Player::set_units_count() {
 }
 
 void Player::set_unit(int col, int row, int choice) {
-    // check if the variables are correct
     if (board.set_unit(col, row, player, choice)) {
         std::shared_ptr<Unit> chosen_unit = board.get_unit(col, row);
         if (chosen_unit->get_type() == "regular") {
@@ -28,7 +27,6 @@ void Player::set_unit(int col, int row, int choice) {
 }
 
 void Player::remove_unit(int col, int row) {
-    // check if the variables are correct
     if (board.get_unit(col, row)) {
         std::shared_ptr<Unit> temp_unit = board.get_unit(col, row);
         if (temp_unit->get_type() == "regular") {
@@ -48,7 +46,6 @@ void Player::reverse_remove_unit(Board::Tile unit) {
 }
 
 bool Player::move_unit(Board::Tile from, Board::Tile to) {
-    // check if the variables are correct
     return board.move_unit(from, to);
 }
 

@@ -30,4 +30,5 @@ public:
     void highlight_off() { highlighted = false; };
     bool is_highlighted() const { return highlighted; };
     sf::Vector2f get_position() const { return button.getPosition(); };
+    sf::String get_text() const { return button_text.getString(); };
 };

@@ -6,23 +6,31 @@ Game::Game(GameView& g_view, GameController& g_controller)
       clock_started(false) {
 }
 
-void Game::run() {
-    const unsigned int width = static_cast<unsigned int>(game_view.get_window_size().x);
-    const unsigned int height = static_cast<unsigned int>(game_view.get_window_size().y);
+std::string Game::run(sf::RenderWindow& win) {
+    
 
-    sf::RenderWindow window(sf::VideoMode(width, height), "stratego");
-    while (window.isOpen()) {
+    while (win.isOpen()) {
         sf::Event event;
         game_view.update_players(game_controller.get_current_player(), game_controller.get_other_player());
-        while (window.pollEvent(event)) {
+        while (win.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
-                window.close();
+                win.close();
+            }
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Escape) {
+                    return "menu";
+                }
+            }
+            if (event.type == sf::Event::MouseButtonPressed) {
+                if(game_controller.get_end_game_info_box_button_pressed()) {
+                    return "menu";
+                }
             }
             game_controller.handle_events(event);
         }
-        window.clear();
-        draw(window);
-        window.display();
+        win.clear();
+        draw(win);
+        win.display();
     }
 }
 

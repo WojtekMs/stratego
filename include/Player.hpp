@@ -31,4 +31,5 @@ class Player
     std::string get_tile_info(int col, int row) const;
     std::string get_tile_info(Board::Tile tile) const;
     bool can_move(Board::Tile from, Board::Tile to);
+    void set_name(const std::string& n) { name = n; };
 };

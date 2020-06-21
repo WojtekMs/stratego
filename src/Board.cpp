@@ -156,7 +156,6 @@ bool Board::set_unit(int col, int row, TURN player, int choice) {
         return false;
     }
 
-    //first we have to choose the type of unit to set
     switch (choice + 2) {
     case 2: {
         units[row][col] = std::make_shared<ScoutUnit>(player);
@@ -177,11 +176,6 @@ bool Board::set_unit(int col, int row, TURN player, int choice) {
     if (choice + 2 > 3 && choice + 2 < 11) {
         units[row][col] = std::make_shared<RegularUnit>(choice + 2, player);
     }
-    std::cout << "unit created type: " << units[row][col]->get_type() << '\n';
-    std::cout << "unit created value: " << units[row][col]->get_value() << '\n';
-    std::cout << "unit created owner: " << static_cast<int>(units[row][col]->get_owner()) << '\n';
-    //second we set the desired field with the chosen unit
-    // units[row][col]->set_position(col, row);
     unit_count++;
     if (unit_count == MAX_UNIT_COUNT) {
         current_state = STATE::FULL;
@@ -217,8 +211,6 @@ bool Board::can_move(const Tile& from, const Tile& to) const {
         } else {
             return check_regular_moves(from, to);
         }
-        // Movable* temp_ptr = units[from.y][from.x].get();
-        // temp_ptr->can_move
     }
    
     return true;
@@ -253,7 +245,6 @@ bool Board::check_regular_moves(const Board::Tile& from, const Board::Tile& to) 
 bool Board::move_unit(const Tile& from, const Tile& to) {
     if (can_move(from, to)) {
         units[from.y][from.x].swap(units[to.y][to.x]);
-        // units[to.y][to.x]->set_position(to.x, to.y);
         return true;
     }
     return false;
@@ -293,10 +284,6 @@ Board::Tile Board::point_reflection(int col, int row) {
     distance.y = row - distance_point.y;
     reflection.x = -distance.x;
     reflection.y = -distance.y;
-    if (out_of_range(reflection_point.x + reflection.x, reflection_point.y + reflection.y)) {
-        std::cerr << " reflection points out of range! inside update_board\n";
-        abort();
-    }
     return Board::Tile(reflection_point.x + reflection.x, reflection_point.y + reflection.y);
 }
 
@@ -306,7 +293,6 @@ Board& Board::operator=(const Board& rhs) {
     }
     height = rhs.height;
     width = rhs.width;
-    // set_default_units();
     for (int row = 0; row < height; ++row) {
         for (int col = 0; col < width; ++col) {
             units[row][col] = rhs.units[row][col];
