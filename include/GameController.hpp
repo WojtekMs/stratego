@@ -1,11 +1,8 @@
 #pragma once
 
-// #include "GameView.hpp"
-// #include "Player.hpp"
 #include <SFML/Graphics.hpp>
 
 #include "Board.hpp"
-// #include "GameView.hpp"
 
 struct mouse_data {
     float mouse_x;

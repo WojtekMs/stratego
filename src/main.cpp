@@ -6,7 +6,6 @@
 #include "MainMenu.hpp"
 #include "Player.hpp"
 #include "RegularUnit.hpp"
-#include "test.hpp"
 
 int main() {
     Board board;

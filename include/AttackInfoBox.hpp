@@ -20,8 +20,6 @@ class AttackInfoBox
     sf::Text box_text;
     sf::Sprite attacking_unit;
     sf::Sprite attacked_unit;
-    // std::shared_ptr<Unit> attacking_unit;
-    // std::shared_ptr<Unit> attacked_unit;
 
     int get_unit_sprite_idx(const std::shared_ptr<Unit>& unit);
     void load_box_texture();

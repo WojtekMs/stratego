@@ -70,7 +70,6 @@ public:
         bool value;
         my_bool(bool val = false) : value(val){};
         inline friend std::ostream &operator<<(std::ostream &stream, my_bool rhs);
-        // bool my_bool::operator==(my_bool rhs);
         inline operator bool() const;
         inline operator bool();
         
@@ -107,14 +106,6 @@ std::ostream &operator<<(std::ostream &stream, Array<bool>::my_bool rhs)
     stream << rhs.value;
     return stream;
 }
-
-// bool Array<bool>::my_bool::operator==(my_bool rhs)
-// {
-//     if (this->value == rhs.value) {
-//         return true;
-//     }
-//     return false;
-// }
 
 Array<bool>::my_bool::operator bool() const {
     return (const bool)value;
