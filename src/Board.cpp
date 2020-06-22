@@ -203,43 +203,13 @@ bool Board::can_move(const Tile& from, const Tile& to) const {
     if (!units[from.y][from.x]) {
         return false;
     }
+    if (const Movable* movable = dynamic_cast<const Movable*>(units[from.y][from.x].get()) ) {
+        return movable->can_move(from, to);
+    }
     if (!units[from.y][from.x]->get_movable()) {
         return false;
-    } else {
-        if (units[from.y][from.x]->get_type() == "scout") {
-            return check_scout_moves(from, to);
-        } else {
-            return check_regular_moves(from, to);
-        }
-    }
-   
+    } 
     return true;
-}
-
-bool Board::check_scout_moves(const Board::Tile& from, const Board::Tile& to) const {
-    if (from.x == to.x) {
-        return true;
-    }
-    if (from.y == to.y) {
-        return true;
-    }
-    return false;
-}
-
-bool Board::check_regular_moves(const Board::Tile& from, const Board::Tile& to) const {
-    if (from.x + 1 == to.x && from.y == to.y) {
-        return true;
-    }
-    if (from.x - 1 == to.x && from.y == to.y) {
-        return true;
-    }
-    if (from.x == to.x && from.y + 1 == to.y) {
-        return true;
-    }
-    if (from.x == to.x && from.y - 1 == to.y) {
-        return true;
-    }
-    return false;
 }
 
 bool Board::move_unit(const Tile& from, const Tile& to) {

@@ -63,8 +63,6 @@ public:
     std::shared_ptr<Unit> get_unit(int col, int row) const;
     std::shared_ptr<Unit> get_unit(const Board::Tile& chosen_unit) const;
     bool can_move(const Tile& from, const Tile& to) const;
-    bool check_scout_moves(const Tile& from, const Tile& to) const;
-    bool check_regular_moves(const Tile& from, const Tile& to) const;
     bool move_unit(const Tile& from, const Tile& to);
     void reverse_move_unit(const Tile& from, const Tile& to);
     void update(const Board& other_board);
