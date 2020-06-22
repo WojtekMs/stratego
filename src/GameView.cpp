@@ -21,7 +21,7 @@ GameView::GameView(Player& pA, Player& pB)
       remove_button("Remove"),
       end_turn_button("End Turn"),
       info_box("End of Turn"),
-      attack_info_box(red_units_sprites, blue_units_sprites),
+      attack_info_box(red_units_sprites, blue_units_sprites, yellow_highlight_sprite),
       end_game_info_box("None")
 {
     load_obstacle_textures();

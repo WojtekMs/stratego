@@ -4,14 +4,17 @@
 
 #include "Board.hpp"
 
-AttackInfoBox::AttackInfoBox(std::array<sf::Sprite, 12>& red_units_sprites, std::array<sf::Sprite, 12>& blue_units_sprites)
+AttackInfoBox::AttackInfoBox(std::array<sf::Sprite, 12>& red_units_sprites, std::array<sf::Sprite, 12>& blue_units_sprites, sf::Sprite& winning_unit_highlight)
     : path_to_textures("images/board/"),
       attacking_unit_pos_x(-1),
       attacking_unit_pos_y(-1),
       attacked_unit_pos_x(-1),
       attacked_unit_pos_y(-1),
       attacking_unit{},
-      attacked_unit{} {
+      attacked_unit{},
+      attacker_ptr{},
+      attacked_ptr{},
+      winner_highlight(winning_unit_highlight) {
     for (int i = 0; i < red_units_sprites_ptrs.size(); ++i) {
         red_units_sprites_ptrs[i] = &red_units_sprites[i];
     }
@@ -31,10 +34,12 @@ void AttackInfoBox::draw(sf::RenderWindow& win) {
     update_attacked_unit_pos();
     update_attacking_unit_pos();
     update_box_text_pos();
+    set_winner_highlight();
     win.draw(box_sprite);
     win.draw(attacking_unit);
     win.draw(box_text);
     win.draw(attacked_unit);
+    draw_winner_highlight(win);
 }
 
 void AttackInfoBox::load_box_texture() {
@@ -81,6 +86,7 @@ void AttackInfoBox::set_position(int x, int y) {
     update_attacking_unit_pos();
     update_attacked_unit_pos();
     update_box_text_pos();
+    set_winner_highlight();
 }
 
 void AttackInfoBox::set_attacking_unit(const std::shared_ptr<Unit>& attacker) {
@@ -94,7 +100,7 @@ void AttackInfoBox::set_attacking_unit(const std::shared_ptr<Unit>& attacker) {
     }
     attacking_unit.setPosition(attacking_unit_pos_x, attacking_unit_pos_y);
     attacking_unit.scale(1.5, 1.5);
-    // attacking_unit.
+    attacker_ptr = attacker;
 }
 
 void AttackInfoBox::set_attacked_unit(const std::shared_ptr<Unit>& victim) {
@@ -108,11 +114,12 @@ void AttackInfoBox::set_attacked_unit(const std::shared_ptr<Unit>& victim) {
     }
     attacked_unit.setPosition(attacked_unit_pos_x, attacked_unit_pos_y);
     attacked_unit.scale(1.5, 1.5);
+    attacked_ptr = victim;
 }
 
 void AttackInfoBox::update_attacking_unit_pos() {
     attacking_unit_pos_x = box_sprite.getPosition().x + (get_width() / 4);
-    attacking_unit_pos_y = box_sprite.getPosition().y + ((get_height() - attacking_unit.getGlobalBounds().height)/ 2);
+    attacking_unit_pos_y = box_sprite.getPosition().y + ((get_height() - attacking_unit.getGlobalBounds().height) / 2);
     attacking_unit.setPosition(attacking_unit_pos_x, attacking_unit_pos_y);
 }
 
@@ -123,6 +130,40 @@ void AttackInfoBox::update_attacked_unit_pos() {
 }
 
 void AttackInfoBox::update_box_text_pos() {
-    box_text.setPosition(box_sprite.getPosition().x + ((get_width() - box_text.getLocalBounds().width) / 2), 
-    box_sprite.getPosition().y + (get_height() - box_text.getCharacterSize()) / 2);
+    box_text.setPosition(box_sprite.getPosition().x + ((get_width() - box_text.getLocalBounds().width) / 2),
+                         box_sprite.getPosition().y + (get_height() - box_text.getCharacterSize()) / 2);
+}
+
+std::shared_ptr<Unit> AttackInfoBox::get_winner() {
+    if (!attacked_ptr) {
+        return std::shared_ptr<Unit>{};
+    }
+    if (!attacker_ptr) {
+        return std::shared_ptr<Unit>{};
+    }
+    if (attacker_ptr->attack(attacked_ptr) == RESULT::WON) {
+        return attacker_ptr;
+    }
+    if (attacker_ptr->attack(attacked_ptr) == RESULT::LOST) {
+        return attacked_ptr;
+    }
+    return std::shared_ptr<Unit>{};
+}
+
+void AttackInfoBox::set_winner_highlight() {
+    if (get_winner() == attacker_ptr) {
+        winner_highlight.setPosition(attacking_unit.getPosition());
+    }
+    if (get_winner() == attacked_ptr) {
+        winner_highlight.setPosition(attacked_unit.getPosition());
+    }
+}
+
+void AttackInfoBox::draw_winner_highlight(sf::RenderWindow& win) {
+    if (!get_winner()) {
+        return;
+    }
+    winner_highlight.setScale(1.5, 1.5);
+    win.draw(winner_highlight);
+    winner_highlight.setScale(1, 1);
 }

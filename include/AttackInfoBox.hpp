@@ -20,6 +20,9 @@ class AttackInfoBox
     sf::Text box_text;
     sf::Sprite attacking_unit;
     sf::Sprite attacked_unit;
+    sf::Sprite& winner_highlight;
+    std::shared_ptr<Unit> attacker_ptr;
+    std::shared_ptr<Unit> attacked_ptr;
 
     int get_unit_sprite_idx(const std::shared_ptr<Unit>& unit);
     void load_box_texture();
@@ -27,8 +30,11 @@ class AttackInfoBox
     void update_attacking_unit_pos();
     void update_attacked_unit_pos();
     void update_box_text_pos();
+    std::shared_ptr<Unit> get_winner();
+    void set_winner_highlight();
+    void draw_winner_highlight(sf::RenderWindow& win);
     public:
-    AttackInfoBox(std::array<sf::Sprite, 12>& red_units_sprites, std::array<sf::Sprite, 12>& blue_units_sprites);
+    AttackInfoBox(std::array<sf::Sprite, 12>& red_units_sprites, std::array<sf::Sprite, 12>& blue_units_sprites, sf::Sprite& winning_unit_highlight);
     void draw(sf::RenderWindow& win);
     void set_position(int x, int y);
     void set_attacking_unit(const std::shared_ptr<Unit>& attacker);
