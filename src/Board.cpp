@@ -206,9 +206,6 @@ bool Board::can_move(const Tile& from, const Tile& to) const {
     if (const Movable* movable = dynamic_cast<const Movable*>(units[from.y][from.x].get()) ) {
         return movable->can_move(from, to);
     }
-    if (!units[from.y][from.x]->get_movable()) {
-        return false;
-    } 
     return true;
 }
 

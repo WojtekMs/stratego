@@ -5,6 +5,7 @@
 #include "Board.hpp"
 
 enum class TURN;
+enum class RESULT;
 class Player
 {
     std::string name;

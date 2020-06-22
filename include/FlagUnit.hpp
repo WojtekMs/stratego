@@ -8,5 +8,4 @@ public:
     FlagUnit(TURN player)
         : Unit(-1, "flag", player, false){};
     virtual ~FlagUnit(){};
-    virtual RESULT attack(const std::shared_ptr<Unit>& rhs) override { return RESULT::LOST; };
 };

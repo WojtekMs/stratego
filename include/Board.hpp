@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "Array2D.h"
-#include "Unit.hpp"
 
 enum class TURN {
     PLAYER_A,
@@ -21,6 +20,7 @@ enum class STATE {
 
 constexpr int MAX_UNIT_COUNT = 40;
 
+class Unit;
 class Board {
 public:
     class Tile {

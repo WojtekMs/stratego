@@ -1,3 +1,5 @@
+#include "Movable.hpp"
+#include "Unit.hpp"
 #include "Player.hpp"
 
 void Player::set_units_count() {
@@ -50,7 +52,10 @@ bool Player::move_unit(Board::Tile from, Board::Tile to) {
 }
 
 RESULT Player::attack(Board::Tile attacker, Board::Tile attacked) {
-    return board.get_unit(attacker)->attack(board.get_unit(attacked));
+    if (const Movable* movable = dynamic_cast<const Movable*>(board.get_unit(attacker).get())) {
+        return movable->attack(board.get_unit(attacked));
+    // return board.get_unit(attacker)->attack(board.get_unit(attacked));
+    }
 }
 
 void Player::reverse_move_unit(Board::Tile from, Board::Tile to) {

@@ -141,11 +141,13 @@ std::shared_ptr<Unit> AttackInfoBox::get_winner() {
     if (!attacker_ptr) {
         return std::shared_ptr<Unit>{};
     }
-    if (attacker_ptr->attack(attacked_ptr) == RESULT::WON) {
-        return attacker_ptr;
-    }
-    if (attacker_ptr->attack(attacked_ptr) == RESULT::LOST) {
-        return attacked_ptr;
+    if (const Movable* movable = dynamic_cast<const Movable*>(attacker_ptr.get())) {
+        if (movable->attack(attacked_ptr) == RESULT::WON) {
+            return attacker_ptr;
+        }
+        if (movable->attack(attacked_ptr) == RESULT::LOST) {
+            return attacked_ptr;
+        }
     }
     return std::shared_ptr<Unit>{};
 }
