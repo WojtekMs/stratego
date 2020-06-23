@@ -42,6 +42,7 @@ class GameController {
     bool unit_attacked;
     bool remove_button_pressed;
     bool done_button_pressed;
+    bool randomize_button_pressed;
     bool end_game_info_box_button_pressed;
     bool game_finished;
     bool clock_started;
@@ -60,6 +61,7 @@ class GameController {
     void change_init_turn(sf::Event& event);
     void set_unit(sf::Event& event);
     void remove_unit();
+    void randomize_units();
     void set_active_unit(sf::Event& event);
     void change_player_turn();
     void move_active_unit(sf::Event& event);
@@ -79,6 +81,7 @@ public:
     bool get_unit_attacked() const { return unit_attacked; };
     bool get_remove_button_pressed() { return remove_button_pressed; };
     bool get_done_button_pressed() { return done_button_pressed; };
+    bool get_randomize_button_pressed() { return randomize_button_pressed; };
     bool get_end_game_info_box_button_pressed() { return end_game_info_box_button_pressed; };
     bool get_game_finished() { return game_finished; };
     bool both_boards_set() const;

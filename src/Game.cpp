@@ -58,7 +58,8 @@ void Game::draw(sf::RenderWindow& win) {
     if (!game_controller.both_boards_set()) {
         game_view.draw_units_for_init(win, game_controller.get_dragging(), 
         game_controller.get_selected_init_unit_idx(), game_controller.get_mouse_data());
-
+        game_view.draw_done_button(win);
+        game_view.draw_randomize_button(win);
         if (game_controller.get_is_active_unit()) {
             game_view.draw_remove_button(win);
         }

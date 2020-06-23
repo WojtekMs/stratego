@@ -27,6 +27,7 @@ GameController::GameController(Player& pA, Player& pB, GameView& g_view)
       unit_attacked(false),
       remove_button_pressed(false),
       done_button_pressed(false),
+      randomize_button_pressed(false),
       end_game_info_box_button_pressed(false),
       game_finished(false),
       active_unit(-1, -1),
@@ -199,7 +200,15 @@ void GameController::move_active_unit(sf::Event& event) {
     }
 }
 
-void GameController::TEST_SET_RANDOM_UNITS() {
+void GameController::randomize_units() {
+    if (!randomize_button_pressed) {
+        return;
+    }
+    for (int row = 8; row < current_player->get_board().get_height(); ++row) {
+        for (int col = 0; col < current_player->get_board().get_width(); ++col) {
+            current_player->remove_unit(col, row);
+        }
+    }
     while (current_player->get_board().get_state() != STATE::FULL) {
         for (int row = 8; row < current_player->get_board().get_height(); ++row) {
             for (int col = 0; col < current_player->get_board().get_width(); ++col) {
@@ -209,6 +218,7 @@ void GameController::TEST_SET_RANDOM_UNITS() {
             }
         }
     }
+    randomize_button_pressed = false;
 }
 
 void GameController::set_buttons_pressed() {
@@ -219,11 +229,16 @@ void GameController::set_buttons_pressed() {
         turn_approved = true;
         end_turn_button_pressed = false;
     }
-    if (!(board_a_initialized && board_b_initialized) && game_view.get_remove_button().is_highlighted()) {
-        remove_button_pressed = true;
-    }
-    if (!(board_a_initialized && board_b_initialized) && game_view.get_done_button().is_highlighted()) {
-        done_button_pressed = true;
+    if (!(board_a_initialized && board_b_initialized)) {
+        if (game_view.get_done_button().is_highlighted()) {
+            done_button_pressed = true;
+        }
+        if (game_view.get_randomize_button().is_highlighted()) {
+            randomize_button_pressed = true;
+        }
+        if (game_view.get_remove_button().is_highlighted()) {
+            remove_button_pressed = true;
+        }
     }
     if (game_finished && game_view.get_end_game_info_box().button_is_highlighted()) {
         end_game_info_box_button_pressed = true;
@@ -240,6 +255,7 @@ void GameController::handle_events(sf::Event& event) {
                 drag_blue_player(event);
             }
             remove_unit();
+            randomize_units();
             change_init_turn(event);
         }
         if (!is_out_of_the_board(event.mouseButton.x, event.mouseButton.y)) {
@@ -260,11 +276,11 @@ void GameController::handle_events(sf::Event& event) {
         m_data.mouse_y = event.mouseMove.y;
         game_view.set_button_highlights(m_data.mouse_x, m_data.mouse_y);
     }
-    if (event.type == sf::Event::KeyPressed) {
-        if (event.key.code == sf::Keyboard::A) {
-            TEST_SET_RANDOM_UNITS();
-        }
-    }
+    // if (event.type == sf::Event::KeyPressed) {
+    //     if (event.key.code == sf::Keyboard::A) {
+    //         TEST_SET_RANDOM_UNITS();
+    //     }
+    // }
 }
 
 sf::Vector2f GameController::return_pixels(int col, int row) const {

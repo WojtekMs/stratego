@@ -233,7 +233,7 @@ void GameView::draw_units_for_init(sf::RenderWindow& win, bool is_dragging, int 
     } else {
         draw_blue_init_units(win, is_dragging, selected_units_idx, m_data);
     }
-    draw_done_button(win);
+    
 }
 
 void GameView::draw_red_init_units(sf::RenderWindow& win, bool is_dragging, int selected_unit_idx, const mouse_data& m_data) {
