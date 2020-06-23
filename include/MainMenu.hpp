@@ -32,9 +32,11 @@ class MainMenu : public cScreen
     int idx;
 
     std::array<sf::Texture, 5> rules_textures;
+    sf::Texture logo_texture;
     std::array<sf::Sprite, 5> rules_sprites;
+    sf::Sprite logo_sprite;
 
-    void draw_buttons(sf::RenderWindow& win);
+    void draw_menu(sf::RenderWindow& win);
     void draw_names(sf::RenderWindow& win);
     void draw_rules(sf::RenderWindow& win);
     void draw_rule(sf::RenderWindow& win, int idx);

@@ -25,6 +25,11 @@ MainMenu::MainMenu(Player& pA, Player& pB)
         }
         rules_sprites[i].setTexture(rules_textures[i]);
     }
+    if (!logo_texture.loadFromFile(path_to_textures + "stratego_logo.png")) {
+        std::cerr << "logo texture failed to load!\n";
+        abort();
+    }
+    logo_sprite.setTexture(logo_texture);
 }
 
 std::string MainMenu::run(sf::RenderWindow& win) {
@@ -54,7 +59,7 @@ std::string MainMenu::run(sf::RenderWindow& win) {
             draw_rules(win);
         }
         if (!game_started_button_pressed && !rules_button_pressed) {
-            draw_buttons(win);
+            draw_menu(win);
         }
         if (game_started_button_pressed) {
             draw_names(win);
@@ -99,14 +104,17 @@ void MainMenu::set_buttons_pressed() {
     }
 }
 
-void MainMenu::draw_buttons(sf::RenderWindow& win) {
+void MainMenu::draw_menu(sf::RenderWindow& win) {
+    logo_sprite.setPosition((win.getSize().x - logo_sprite.getLocalBounds().width) / 2,
+                                   0.8 * start_game_button.get_height());
     start_game_button.set_position((win.getSize().x - start_game_button.get_width()) / 2,
-                                   (win.getSize().y - 4 * start_game_button.get_height()) / 2);
+                                   (logo_sprite.getPosition().y + 1.5 * start_game_button.get_height()));
     game_rules_button.set_position(start_game_button.get_position().x,
-                                   start_game_button.get_position().y + 1.5 * game_rules_button.get_height());
+                                   start_game_button.get_position().y + 1.25 * game_rules_button.get_height());
     exit_button.set_position(game_rules_button.get_position().x,
-                             game_rules_button.get_position().y + 1.5 * exit_button.get_height());
+                             game_rules_button.get_position().y + 1.25 * exit_button.get_height());
 
+    win.draw(logo_sprite);
     start_game_button.draw(win);
     game_rules_button.draw(win);
     exit_button.draw(win);
