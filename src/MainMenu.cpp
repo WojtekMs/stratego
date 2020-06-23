@@ -218,6 +218,9 @@ void MainMenu::highlight_buttons(int mouse_x, int mouse_y) {
 }
 
 void MainMenu::enter_names(sf::Event& event) {
+    if (!game_started_button_pressed) {
+        return;
+    }
     if (event.type == sf::Event::TextEntered) {
         if (event.text.unicode > 31 && event.text.unicode < 128 && nickname.size() < 21) {
             nickname += event.text.unicode;
