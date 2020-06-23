@@ -93,5 +93,4 @@ public:
     void update_unit_attacked(const sf::Time& time_past);
 
     void handle_events(sf::Event& event);
-    void set_button_highlights(int mouse_x, int mouse_y);
 };

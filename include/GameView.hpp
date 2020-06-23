@@ -14,9 +14,6 @@ class Player;
 enum class TURN;
 
 class GameView {
-    friend void GameController::set_button_highlights(int mouse_x, int mouse_y);
-
-private:
     Player& playerA;
     Player& playerB;
     Player* current_player;
@@ -63,6 +60,7 @@ private:
     sf::Font font;
     sf::Text text;
     Button done_button;
+    Button randomize_button;
     Button remove_button;
     Button end_turn_button;
     Box info_box;
@@ -95,11 +93,13 @@ private:
 public:
     GameView(Player& pA, Player& pB);
     void update_players(Player* current, Player* other);
+    void set_button_highlights(int mouse_x, int mouse_y);
 
     sf::Vector2f get_window_size() { return window_size; };
     const std::array<sf::Sprite, 12>& get_red_units_sprites() const { return red_units_sprites; };
     const std::array<sf::Sprite, 12>& get_blue_units_sprites() const { return blue_units_sprites; };
     const Button& get_done_button() const { return done_button; };
+    const Button& get_randomize_button() const { return randomize_button; };
     const Button& get_remove_button() const { return remove_button; };
     const Button& get_end_turn_button() const { return end_turn_button; };
     const Box& get_info_box() const { return info_box; };
@@ -112,6 +112,7 @@ public:
     void draw_units_for_init(sf::RenderWindow& win, bool is_dragging, int selected_unit_idx, const mouse_data& m_data);
     void draw_sprite(sf::RenderWindow& win, int idx, int sprite_pos_x, int sprite_pos_y);
     void draw_done_button(sf::RenderWindow& win);
+    void draw_randomize_button(sf::RenderWindow& win);
     void draw_remove_button(sf::RenderWindow& win);
     void draw_end_turn_button(sf::RenderWindow& win);
     void draw_possible_moves_for_active_unit(sf::RenderWindow& win, const Board::Tile& active_unit);

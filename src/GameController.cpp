@@ -137,34 +137,6 @@ void GameController::set_active_unit(sf::Event& event) {
     }
 }
 
-void GameController::set_button_highlights(int mouse_x, int mouse_y) {
-    if (game_view.get_done_button().contains(mouse_x, mouse_y)) {
-        game_view.done_button.highlight_on();
-    } else {
-        game_view.done_button.highlight_off();
-    }
-    if (game_view.get_remove_button().contains(mouse_x, mouse_y)) {
-        game_view.remove_button.highlight_on();
-    } else {
-        game_view.remove_button.highlight_off();
-    }
-    if (game_view.get_end_turn_button().contains(mouse_x, mouse_y)) {
-        game_view.end_turn_button.highlight_on();
-    } else {
-        game_view.end_turn_button.highlight_off();
-    }
-    if (game_view.get_info_box().button_contains(mouse_x, mouse_y) && end_turn_button_pressed) {
-        game_view.info_box.set_button_highlight_on();
-    } else {
-        game_view.info_box.set_button_highlight_off();
-    }
-    if (game_view.get_end_game_info_box().button_contains(mouse_x, mouse_y)) {
-        game_view.end_game_info_box.set_button_highlight_on();
-    } else {
-        game_view.end_game_info_box.set_button_highlight_off();
-    }
-}
-
 void GameController::remove_unit() {
     if (is_active_unit && remove_button_pressed) {
         current_player->remove_unit(active_unit.x, active_unit.y);
@@ -243,7 +215,7 @@ void GameController::set_buttons_pressed() {
     if (game_view.get_end_turn_button().is_highlighted() && unit_moved_this_round) {
         end_turn_button_pressed = true;
     }
-    if (game_view.get_info_box().button_is_highlighted()) {
+    if (game_view.get_info_box().button_is_highlighted() && end_turn_button_pressed) {
         turn_approved = true;
         end_turn_button_pressed = false;
     }
@@ -286,7 +258,7 @@ void GameController::handle_events(sf::Event& event) {
     if (event.type == sf::Event::MouseMoved) {
         m_data.mouse_x = event.mouseMove.x;
         m_data.mouse_y = event.mouseMove.y;
-        set_button_highlights(m_data.mouse_x, m_data.mouse_y);
+        game_view.set_button_highlights(m_data.mouse_x, m_data.mouse_y);
     }
     if (event.type == sf::Event::KeyPressed) {
         if (event.key.code == sf::Keyboard::A) {

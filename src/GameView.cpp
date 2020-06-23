@@ -18,12 +18,12 @@ GameView::GameView(Player& pA, Player& pB)
       sprite_initial_position(-1, -1),
       clock_started(false),
       done_button("Done"),
+      randomize_button("Randomize"),
       remove_button("Remove"),
       end_turn_button("End Turn"),
       info_box("End of Turn"),
       attack_info_box(red_units_sprites, blue_units_sprites, yellow_highlight_sprite),
-      end_game_info_box("None")
-{
+      end_game_info_box("None") {
     load_obstacle_textures();
     load_grass_textures();
     load_board_border_texture();
@@ -285,9 +285,13 @@ void GameView::draw_done_button(sf::RenderWindow& win) {
     done_button.set_position(x_denting + (X_ADDITIONAL_SPACE - done_button.get_width()) / 2, TILE_SIZE * 6);
     done_button.draw(win);
 }
+void GameView::draw_randomize_button(sf::RenderWindow& win) {
+    randomize_button.set_position(done_button.get_position().x, done_button.get_position().y + done_button.get_height() + TILE_SIZE);
+    randomize_button.draw(win);
+}
 
 void GameView::draw_remove_button(sf::RenderWindow& win) {
-    remove_button.set_position(done_button.get_position().x, done_button.get_position().y + done_button.get_height() + TILE_SIZE);
+    remove_button.set_position(randomize_button.get_position().x, randomize_button.get_position().y + randomize_button.get_height() + TILE_SIZE);
     remove_button.draw(win);
 }
 
@@ -466,4 +470,37 @@ Board::Tile GameView::return_tile(int x, int y) const {
         return Board::Tile{-1, -1};
     }
     return return_tile(sf::Vector2f(x, y));
+}
+
+void GameView::set_button_highlights(int mouse_x, int mouse_y) {
+    if (done_button.contains(mouse_x, mouse_y)) {
+        done_button.highlight_on();
+    } else {
+        done_button.highlight_off();
+    }
+    if (randomize_button.contains(mouse_x, mouse_y)) {
+        randomize_button.highlight_on();
+    } else {
+        randomize_button.highlight_off();
+    }
+    if (remove_button.contains(mouse_x, mouse_y)) {
+        remove_button.highlight_on();
+    } else {
+        remove_button.highlight_off();
+    }
+    if (end_turn_button.contains(mouse_x, mouse_y)) {
+        end_turn_button.highlight_on();
+    } else {
+        end_turn_button.highlight_off();
+    }
+    if (info_box.button_contains(mouse_x, mouse_y)) {
+        info_box.set_button_highlight_on();
+    } else {
+        info_box.set_button_highlight_off();
+    }
+    if (end_game_info_box.button_contains(mouse_x, mouse_y)) {
+        end_game_info_box.set_button_highlight_on();
+    } else {
+        end_game_info_box.set_button_highlight_off();
+    }
 }
