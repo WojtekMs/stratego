@@ -16,6 +16,7 @@ In my game units are marked as:
 ## Dependencies
 To build this application you need:
 - SFML library
+- Linux
 - C++ compiler ;)
 
 To run this application:
