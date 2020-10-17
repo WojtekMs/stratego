@@ -21,7 +21,7 @@ int main() {
     std::string screen = "menu";
     const unsigned int width = static_cast<unsigned int>(game_view.get_window_size().x);
     const unsigned int height = static_cast<unsigned int>(game_view.get_window_size().y);
-    sf::RenderWindow window(sf::VideoMode(width, height), "stratego", sf::Style::Fullscreen);
+    sf::RenderWindow window(sf::VideoMode(width, height), "stratego");
     while(screen != "exit") {
         screen = screens[screen]->run(window);
     }

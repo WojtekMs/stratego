@@ -10,14 +10,15 @@ MainMenu::MainMenu(Player& pA, Player& pB)
       prev("Previous"),
       names_entered(false),
       game_started_button_pressed(false),
+      rules_button_pressed(false),
+      exit_button_pressed(false),
       next_button_pressed(false),
       prev_button_pressed(false),
       player_1_name_approved(false),
       player_2_name_approved(false),
+      entering_from_menu(true),
       path_to_textures("images/board/"),
-      exit_button_pressed(false),
-      idx(0),
-      entering_from_menu(true) {
+      idx(0) {
     for (size_t i = 0; i < rules_textures.size(); ++i) {
         if (!rules_textures[i].loadFromFile(path_to_textures + "rules#" + std::to_string(i + 1) + ".png")) {
             std::cerr << "rules#" + std::to_string(i + 1) + " texture failed to load!\n";
@@ -156,7 +157,6 @@ void MainMenu::draw_rules(sf::RenderWindow& win) {
         next_button_pressed = false;
     }
     if (prev_button_pressed && prev.get_text() != "Menu") {
-        std::cout << idx << "\n";
         if (idx > 0) {
             idx--;
         } else if (idx == 0) {
