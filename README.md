@@ -15,9 +15,17 @@ In my game units are marked as:
 
 ## Dependencies
 To build this application you need:
-- CMake configured with SFML library
 - SFML library
 - C++ compiler ;)
+
+To run this application:
+1) `sudo apt-get install libsfml-dev`
+2) `mkdir build`
+3) `cd build`
+4) `cmake ..`
+5) `make -j`
+6) `cd ..`
+7) `./stratego`
 
 ## Built with
 - CMake
