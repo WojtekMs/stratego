@@ -276,11 +276,6 @@ void GameController::handle_events(sf::Event& event) {
         m_data.mouse_y = event.mouseMove.y;
         game_view.set_button_highlights(m_data.mouse_x, m_data.mouse_y);
     }
-    // if (event.type == sf::Event::KeyPressed) {
-    //     if (event.key.code == sf::Keyboard::A) {
-    //         TEST_SET_RANDOM_UNITS();
-    //     }
-    // }
 }
 
 sf::Vector2f GameController::return_pixels(int col, int row) const {

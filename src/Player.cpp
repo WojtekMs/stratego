@@ -1,6 +1,7 @@
 #include "Movable.hpp"
 #include "Unit.hpp"
 #include "Player.hpp"
+#include <stdexcept>
 
 void Player::set_units_count() {
     units_count.insert(std::pair<std::string, int>{"regular4", 0});
@@ -52,10 +53,11 @@ bool Player::move_unit(Board::Tile from, Board::Tile to) {
 }
 
 RESULT Player::attack(Board::Tile attacker, Board::Tile attacked) {
-    if (const Movable* movable = dynamic_cast<const Movable*>(board.get_unit(attacker).get())) {
-        return movable->attack(board.get_unit(attacked));
-    // return board.get_unit(attacker)->attack(board.get_unit(attacked));
+    const Movable* movable = dynamic_cast<const Movable*>(board.get_unit(attacker).get());
+    if (!movable) {
+        throw std::logic_error("Player.cpp:58 - unit you wish to attack with cannot move");
     }
+    return movable->attack(board.get_unit(attacked));
 }
 
 void Player::reverse_move_unit(Board::Tile from, Board::Tile to) {

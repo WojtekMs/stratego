@@ -14,6 +14,6 @@ public:
         return Movable::attack(rhs);
     };
     bool can_move(int from_x, int from_y, int to_x, int to_y) const override {
-        Movable::can_move(from_x, from_y, to_x, to_y);
+        return Movable::can_move(from_x, from_y, to_x, to_y);
     };
 };

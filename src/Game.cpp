@@ -8,13 +8,13 @@ Game::Game(GameView& g_view, GameController& g_controller)
 
 std::string Game::run(sf::RenderWindow& win) {
     
-
     while (win.isOpen()) {
         sf::Event event;
         game_view.update_players(game_controller.get_current_player(), game_controller.get_other_player());
         while (win.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 win.close();
+                return "exit";
             }
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Escape) {
@@ -32,6 +32,7 @@ std::string Game::run(sf::RenderWindow& win) {
         draw(win);
         win.display();
     }
+    return "exit";
 }
 
 void Game::draw(sf::RenderWindow& win) {

@@ -15,7 +15,7 @@ In my game units are marked as:
 
 ## Dependencies
 To build this application you need:
-- SFML library
+- SFML >= 2.5.1 library
 - C++ compiler ;)
 
 To run this application:
@@ -24,7 +24,7 @@ To run this application:
 3) `cd build`
 4) `cmake ..`
 5) `make -j`
-6) `cd ..`
+6) `make install`
 7) `./stratego`
 
 ## Built with
