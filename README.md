@@ -13,6 +13,8 @@ In my game units are marked as:
  - '2' is indeed a Scout
  - '3' is indeed a Miner
 
+![Main Menu](https://user-images.githubusercontent.com/62173407/85401749-d268f780-b55a-11ea-9728-bb8ce322a3a0.png?raw=true)
+
 ## Dependencies
 To build this application you need:
 - SFML >= 2.5.1 library
