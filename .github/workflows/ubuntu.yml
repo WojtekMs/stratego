@@ -1,4 +1,4 @@
-name: CMake
+name: Ubuntu/GCC
 
 on:
   push:
@@ -15,6 +15,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Download dependencies
+      run: sudo apt-get update && sudo apt-get install -y libsfml-dev
 
     - name: Configure CMake
       run: |
