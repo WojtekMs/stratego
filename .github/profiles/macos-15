@@ -1,0 +1,14 @@
+[settings]
+arch=x86_64
+build_type=Debug
+compiler=clang
+compiler.version=18
+compiler.libcxx=libc++
+compiler.runtime=dynamic
+compiler.runtime_type=Release
+compiler.cppstd=23
+os=Macos
+
+[buildenv]
+CC=$(brew --prefix llvm@18)/bin/clang
+CXX=$(brew --prefix llvm@18)/bin/clang++
