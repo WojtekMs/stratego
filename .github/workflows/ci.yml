@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    name: ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - { name: Linux GCC 14,      os: ubuntu-24.04 }
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Install dependencies && configure
+      run: |
+        pip install 'conan~=2.0'
+        conan install . --build=missing --profile:all ${{github.workspace}}/.github/profiles/${{matrix.platform.os}} -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
+
+    - name: Build
+      run: conan build . --profile:all ${{github.workspace}}/.github/profiles/${{matrix.platform.os}}
