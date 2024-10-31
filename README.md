@@ -15,26 +15,23 @@ In my game units are marked as:
 
 ![Main Menu](https://user-images.githubusercontent.com/62173407/85401749-d268f780-b55a-11ea-9728-bb8ce322a3a0.png?raw=true)
 
-## Dependencies
+## How to build
 To build this application you need:
-- SFML >= 2.5.1 library
-- C++ compiler ;)
-
-To run this application:
-1) `sudo apt-get install libsfml-dev`
-2) `mkdir build`
-3) `cd build`
-4) `cmake ..`
-5) `make -j`
-6) `make install`
-7) `./stratego`
-
-## Built with
+- C++ compiler with support for C++23 (eg: gcc14)
 - CMake
-- Visual Studio Code
+- conan2
 
-## Author
-Just me :)
+If you are using conan2 for the first time detect your profile:
+`conan profile detect`
+
+Make sure that your cwd is the project root
+```bash
+conan install . --build=missing -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
+conan build .
+cd build/Debug
+./stratego
+```
+
 
 ## Acknowledgements
 Textures used from this Stratego game:

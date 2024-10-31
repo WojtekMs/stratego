@@ -46,29 +46,29 @@ void GameController::update_unit_attacked(const sf::Time& time_past) {
 }
 
 void GameController::drag_red_player(sf::Event& event) {
-    const sf::Sprite* unit_selected = std::find_if(game_view.get_red_units_sprites().begin(), game_view.get_red_units_sprites().end(),
+    const auto unit_selected = std::find_if(game_view.get_red_units_sprites().cbegin(), game_view.get_red_units_sprites().cend(),
                                                    [&event](const sf::Sprite& unit_sprite) {
                                                        return unit_sprite.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y);
                                                    });
-    if (unit_selected != game_view.get_red_units_sprites().end()) {
+    if (unit_selected != game_view.get_red_units_sprites().cend()) {
         dragging = true;
         m_data.mouse_object_offset_x = event.mouseButton.x - unit_selected->getGlobalBounds().left;
         m_data.mouse_object_offset_y = event.mouseButton.y - unit_selected->getGlobalBounds().top;
     }
-    selected_unit_idx = unit_selected - &game_view.get_red_units_sprites()[0];
+    selected_unit_idx = std::distance(std::cbegin(game_view.get_red_units_sprites()), unit_selected);
 }
 
 void GameController::drag_blue_player(sf::Event& event) {
-    const sf::Sprite* unit_selected = std::find_if(game_view.get_blue_units_sprites().begin(), game_view.get_blue_units_sprites().end(),
+    const auto unit_selected = std::find_if(game_view.get_blue_units_sprites().cbegin(), game_view.get_blue_units_sprites().cend(),
                                                    [&event](const sf::Sprite& unit_sprite) {
                                                        return unit_sprite.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y);
                                                    });
-    if (unit_selected != game_view.get_blue_units_sprites().end()) {
+    if (unit_selected != game_view.get_blue_units_sprites().cend()) {
         dragging = true;
         m_data.mouse_object_offset_x = event.mouseButton.x - unit_selected->getGlobalBounds().left;
         m_data.mouse_object_offset_y = event.mouseButton.y - unit_selected->getGlobalBounds().top;
     }
-    selected_unit_idx = unit_selected - &game_view.get_blue_units_sprites()[0];
+    selected_unit_idx = std::distance(std::cbegin(game_view.get_blue_units_sprites()), unit_selected);
 }
 
 void GameController::change_player_turn() {

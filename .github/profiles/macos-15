@@ -1,0 +1,14 @@
+[settings]
+arch=armv8
+build_type=Debug
+compiler=clang
+compiler.version=18
+compiler.libcxx=libc++
+compiler.runtime=dynamic
+compiler.runtime_type=Release
+compiler.cppstd=23
+os=Macos
+
+[buildenv]
+CC=/opt/homebrew/opt/llvm@18/bin/clang
+CXX=/opt/homebrew/opt/llvm@18/bin/clang++

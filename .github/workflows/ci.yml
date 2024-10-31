@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - { name: Linux GCC 14,        os: ubuntu-24.04, profile: ubuntu-24.04 }
+        - { name: Windows MSVC 19.4,   os: windows-2022, profile: windows-2022 }
+        - { name: MacOS ARM Clang 18,  os: macos-15,     profile: macos-15 }
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Install dependencies && configure
+      run: |
+        pip install 'conan~=2.0'
+        conan install . --build=missing --profile:all ${{github.workspace}}/.github/profiles/${{matrix.platform.profile}} -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
+
+    - name: Build
+      run: conan build . --profile:all ${{github.workspace}}/.github/profiles/${{matrix.platform.profile}}
