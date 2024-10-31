@@ -17,8 +17,7 @@ jobs:
         platform:
         - { name: Linux GCC 14,        os: ubuntu-24.04, profile: ubuntu-24.04 }
         - { name: Windows MSVC 19.4,   os: windows-2022, profile: windows-2022 }
-        - { name: MacOS Clang 18,      os: macos-15,     profile: macos-15 }
-        - { name: MacOS ARM Clang 18,  os: macos-15,     profile: macos-15-arm }
+        - { name: MacOS ARM Clang 18,  os: macos-15,     profile: macos-15 }
 
     steps:
     - uses: actions/checkout@v2
