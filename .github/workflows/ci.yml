@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ master ]
 
-env:
-  BUILD_TYPE: Release
-
 jobs:
   build:
     name: ${{ matrix.platform.name }}
@@ -19,6 +16,7 @@ jobs:
       matrix:
         platform:
         - { name: Linux GCC 14,      os: ubuntu-24.04 }
+        - { name: Windows MSVC 19.4,   os: windows-2022 }
 
     steps:
     - uses: actions/checkout@v2
