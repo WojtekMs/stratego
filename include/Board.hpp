@@ -1,4 +1,5 @@
 #pragma once
+
 #include <array>
 #include <map>
 #include <memory>
@@ -6,6 +7,7 @@
 #include <vector>
 
 #include "Array2D.h"
+#include "Tile.hpp"
 
 enum class TURN {
     PLAYER_A,
@@ -22,20 +24,6 @@ constexpr int MAX_UNIT_COUNT = 40;
 
 class Unit;
 class Board {
-public:
-    class Tile {
-    public:
-        int x;
-        int y;
-        explicit Tile(int col = 0, int row = 0) {
-            x = col;
-            y = row;
-        };
-        bool operator==(const Tile& rhs) const { return x == rhs.x && y == rhs.y; };
-        void set_cords(const Board::Tile& rhs) { x = rhs.x; y = rhs.y; };
-        void set_cords(int Ax, int Ay) { x = Ax; y = Ay; };
-    };
-
 private:
     int height;
     int width;
@@ -61,7 +49,7 @@ public:
     int get_height() const { return height; };
     int get_width() const { return width; };
     std::shared_ptr<Unit> get_unit(int col, int row) const;
-    std::shared_ptr<Unit> get_unit(const Board::Tile& chosen_unit) const;
+    std::shared_ptr<Unit> get_unit(const Tile& chosen_unit) const;
     bool can_move(const Tile& from, const Tile& to) const;
     bool move_unit(const Tile& from, const Tile& to);
     void reverse_move_unit(const Tile& from, const Tile& to);

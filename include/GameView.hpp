@@ -80,13 +80,13 @@ class GameView {
     void set_highlight_sprites();
 
     sf::Vector2f return_pixels(int col, int row) const;
-    Board::Tile return_tile(const sf::Vector2f& coords) const;
-    Board::Tile return_tile(int x, int y) const;
+    Tile return_tile(const sf::Vector2f& coords) const;
+    Tile return_tile(int x, int y) const;
 
-    bool check_if_viable(Board::Tile from, int to_x, int to_y);
-    void highlight_regular_moves(sf::RenderWindow& win, const Board::Tile& active_unit);
-    void highlight_scout_moves(sf::RenderWindow& win, const Board::Tile& active_unit);
-    bool highlight_tile(sf::RenderWindow& win, const Board::Tile& active_unit, int to_x, int to_y);
+    bool check_if_viable(Tile from, int to_x, int to_y);
+    void highlight_regular_moves(sf::RenderWindow& win, const Tile& active_unit);
+    void highlight_scout_moves(sf::RenderWindow& win, const Tile& active_unit);
+    bool highlight_tile(sf::RenderWindow& win, const Tile& active_unit, int to_x, int to_y);
     void draw_red_init_units(sf::RenderWindow& win, bool is_dragging, int selected_unit_idx, const mouse_data& m_data);
     void draw_blue_init_units(sf::RenderWindow& win, bool is_dragging, int selected_unit_idx, const mouse_data& m_data);
 
@@ -115,10 +115,10 @@ public:
     void draw_randomize_button(sf::RenderWindow& win);
     void draw_remove_button(sf::RenderWindow& win);
     void draw_end_turn_button(sf::RenderWindow& win);
-    void draw_possible_moves_for_active_unit(sf::RenderWindow& win, const Board::Tile& active_unit);
+    void draw_possible_moves_for_active_unit(sf::RenderWindow& win, const Tile& active_unit);
     void draw_info_box(sf::RenderWindow& win);
     void draw_attack_info_box(sf::RenderWindow& win, const std::shared_ptr<Unit>& attacker, const std::shared_ptr<Unit>& attacked);
     void draw_units(sf::RenderWindow& win);
-    void draw_unit_highlight(sf::RenderWindow& win, const Board::Tile& active_unit);
+    void draw_unit_highlight(sf::RenderWindow& win, const Tile& active_unit);
     void draw_end_game_screen(sf::RenderWindow& win, const std::string& victorious_name);
 };

@@ -1,5 +1,5 @@
-#include "Movable.hpp"
-#include "Unit.hpp"
+#include "unit/Movable.hpp"
+#include "unit/Unit.hpp"
 #include "Player.hpp"
 #include <stdexcept>
 
@@ -40,19 +40,19 @@ void Player::remove_unit(int col, int row) {
     }
 }
 
-void Player::remove_unit(Board::Tile chosen_unit) {
+void Player::remove_unit(Tile chosen_unit) {
     remove_unit(chosen_unit.x, chosen_unit.y);
 }
 
-void Player::reverse_remove_unit(Board::Tile unit) {
+void Player::reverse_remove_unit(Tile unit) {
     board.reverse_remove_unit(unit.x, unit.y);
 }
 
-bool Player::move_unit(Board::Tile from, Board::Tile to) {
+bool Player::move_unit(Tile from, Tile to) {
     return board.move_unit(from, to);
 }
 
-RESULT Player::attack(Board::Tile attacker, Board::Tile attacked) {
+RESULT Player::attack(Tile attacker, Tile attacked) {
     const Movable* movable = dynamic_cast<const Movable*>(board.get_unit(attacker).get());
     if (!movable) {
         throw std::logic_error("Player.cpp:58 - unit you wish to attack with cannot move");
@@ -60,11 +60,11 @@ RESULT Player::attack(Board::Tile attacker, Board::Tile attacked) {
     return movable->attack(board.get_unit(attacked));
 }
 
-void Player::reverse_move_unit(Board::Tile from, Board::Tile to) {
+void Player::reverse_move_unit(Tile from, Tile to) {
     board.reverse_move_unit(from, to);
 }
 
-bool Player::can_move(Board::Tile from, Board::Tile to) {
+bool Player::can_move(Tile from, Tile to) {
     if (board.get_tile_info(to.x, to.y, player) == "#") {
         return false;
     }
@@ -91,7 +91,7 @@ std::string Player::get_tile_info(int col, int row) const {
     return board.get_tile_info(col, row, player);
 }
 
-std::string Player::get_tile_info(Board::Tile tile) const {
+std::string Player::get_tile_info(Tile tile) const {
     return board.get_tile_info(tile, player);
 }
 

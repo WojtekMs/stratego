@@ -1,6 +1,7 @@
-#include "Movable.hpp"
+#include "unit/Movable.hpp"
 
-#include "Unit.hpp"
+#include "unit/Unit.hpp"
+#include "Tile.hpp"
 
 Movable::Movable(Movable::Delegate* del) : delegate(del) {}
 

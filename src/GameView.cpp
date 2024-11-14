@@ -355,7 +355,7 @@ void GameView::draw_units(sf::RenderWindow& win) {
     }
 }
 
-void GameView::draw_unit_highlight(sf::RenderWindow& win, const Board::Tile& active_unit) {
+void GameView::draw_unit_highlight(sf::RenderWindow& win, const Tile& active_unit) {
     yellow_highlight_sprite.setPosition(return_pixels(active_unit.x, active_unit.y));
     win.draw(yellow_highlight_sprite);
 }
@@ -384,7 +384,7 @@ void GameView::draw_sprite(sf::RenderWindow& win, int idx, int sprite_pos_x, int
     }
 }
 
-void GameView::draw_possible_moves_for_active_unit(sf::RenderWindow& win, const Board::Tile& active_unit) {
+void GameView::draw_possible_moves_for_active_unit(sf::RenderWindow& win, const Tile& active_unit) {
     if (!current_player->get_board().get_unit(active_unit.x, active_unit.y)) {
         return;
     }
@@ -395,14 +395,14 @@ void GameView::draw_possible_moves_for_active_unit(sf::RenderWindow& win, const 
     }
 }
 
-void GameView::highlight_regular_moves(sf::RenderWindow& win, const Board::Tile& active_unit) {
+void GameView::highlight_regular_moves(sf::RenderWindow& win, const Tile& active_unit) {
     highlight_tile(win, active_unit, active_unit.x - 1, active_unit.y);
     highlight_tile(win, active_unit, active_unit.x + 1, active_unit.y);
     highlight_tile(win, active_unit, active_unit.x, active_unit.y + 1);
     highlight_tile(win, active_unit, active_unit.x, active_unit.y - 1);
 }
 
-void GameView::highlight_scout_moves(sf::RenderWindow& win, const Board::Tile& active_unit) {
+void GameView::highlight_scout_moves(sf::RenderWindow& win, const Tile& active_unit) {
     for (int col = active_unit.x + 1; col < current_player->get_board().get_width(); ++col) {
         if (!highlight_tile(win, active_unit, col, active_unit.y)) {
             break;
@@ -425,7 +425,7 @@ void GameView::highlight_scout_moves(sf::RenderWindow& win, const Board::Tile& a
     }
 }
 
-bool GameView::highlight_tile(sf::RenderWindow& win, const Board::Tile& active_unit, int to_x, int to_y) {
+bool GameView::highlight_tile(sf::RenderWindow& win, const Tile& active_unit, int to_x, int to_y) {
     if (check_if_viable(active_unit, to_x, to_y)) {
         if (current_player->get_tile_info(to_x, to_y) == "enemy") {
             red_highlight_sprite.setPosition(return_pixels(to_x, to_y));
@@ -440,8 +440,8 @@ bool GameView::highlight_tile(sf::RenderWindow& win, const Board::Tile& active_u
     return false;
 }
 
-bool GameView::check_if_viable(Board::Tile from, int to_x, int to_y) {
-    return current_player->can_move(from, Board::Tile(to_x, to_y));
+bool GameView::check_if_viable(Tile from, int to_x, int to_y) {
+    return current_player->can_move(from, Tile(to_x, to_y));
 }
 
 void GameView::draw_end_game_screen(sf::RenderWindow& win, const std::string& victorious_name) {
@@ -461,13 +461,13 @@ sf::Vector2f GameView::return_pixels(int col, int row) const {
     return sf::Vector2f(TILE_SIZE * (col + 1), TILE_SIZE * (row + 1));
 }
 
-Board::Tile GameView::return_tile(const sf::Vector2f& coords) const {
-    return Board::Tile((coords.x - TILE_SIZE) / TILE_SIZE, (coords.y - TILE_SIZE) / TILE_SIZE);
+Tile GameView::return_tile(const sf::Vector2f& coords) const {
+    return Tile((coords.x - TILE_SIZE) / TILE_SIZE, (coords.y - TILE_SIZE) / TILE_SIZE);
 }
 
-Board::Tile GameView::return_tile(int x, int y) const {
+Tile GameView::return_tile(int x, int y) const {
     if (x < 0 && y < 0) {
-        return Board::Tile{-1, -1};
+        return Tile{-1, -1};
     }
     return return_tile(sf::Vector2f(x, y));
 }

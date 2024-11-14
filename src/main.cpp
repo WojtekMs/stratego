@@ -5,7 +5,7 @@
 #include "Game.hpp"
 #include "MainMenu.hpp"
 #include "Player.hpp"
-#include "RegularUnit.hpp"
+#include "unit/RegularUnit.hpp"
 
 int main() {
     Board board;

@@ -3,7 +3,7 @@
 #include <memory>
 #include <SFML/Graphics.hpp>
 
-#include "Unit.hpp"
+#include "unit/Unit.hpp"
 
 class AttackInfoBox
 {

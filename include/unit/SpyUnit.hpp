@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Unit.hpp"
-#include "Movable.hpp"
+#include "unit/Unit.hpp"
+#include "unit/Movable.hpp"
 
 enum class TURN;
 class SpyUnit : public Unit, public Movable {

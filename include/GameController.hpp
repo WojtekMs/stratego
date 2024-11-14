@@ -47,14 +47,14 @@ class GameController {
     bool game_finished;
     bool clock_started;
 
-    Board::Tile active_unit;
-    Board::Tile attacking_unit;
-    Board::Tile attacked_unit;
+    Tile active_unit;
+    Tile attacking_unit;
+    Tile attacked_unit;
 
     void TEST_SET_RANDOM_UNITS();
     sf::Vector2f return_pixels(int col, int row) const;
-    Board::Tile return_tile(const sf::Vector2f& coords) const;
-    Board::Tile return_tile(int x, int y) const;
+    Tile return_tile(const sf::Vector2f& coords) const;
+    Tile return_tile(int x, int y) const;
 
     void drag_red_player(sf::Event& event);
     void drag_blue_player(sf::Event& event);
@@ -67,7 +67,7 @@ class GameController {
     void move_active_unit(sf::Event& event);
     bool is_out_of_the_board(int x, int y);
     void set_buttons_pressed();
-    void resolve_unit_conflict(const Board::Tile& attacked_unit);
+    void resolve_unit_conflict(const Tile& attacked_unit);
 
 public:
     GameController(Player& pA, Player& pB, GameView& g_view);
@@ -88,7 +88,7 @@ public:
     std::shared_ptr<Unit> get_attacker() const { return attacker; };
     std::shared_ptr<Unit> get_attacked() const { return attacked; };
     std::string get_victorious_player_name() const { return victorious_player_name; };
-    const Board::Tile& get_active_unit() const { return active_unit; };
+    const Tile& get_active_unit() const { return active_unit; };
     int get_selected_init_unit_idx() const { return selected_unit_idx; };
     const mouse_data& get_mouse_data() const { return m_data; };
     Player* get_current_player() const { return current_player; };

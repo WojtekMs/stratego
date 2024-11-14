@@ -114,14 +114,14 @@ void GameController::change_init_turn(sf::Event& event) {
 
 void GameController::set_unit(sf::Event& event) {
     dragging = false;
-    Board::Tile tile(return_tile(event.mouseButton.x, event.mouseButton.y));
+    Tile tile(return_tile(event.mouseButton.x, event.mouseButton.y));
     if (current_player->get_units_count(selected_unit_idx) < current_player->get_board().get_max_unit_count(selected_unit_idx)) {
         current_player->set_unit(tile.x, tile.y, selected_unit_idx);
     }
 }
 
 void GameController::set_active_unit(sf::Event& event) {
-    Board::Tile chosen_tile(return_tile(event.mouseButton.x, event.mouseButton.y));
+    Tile chosen_tile(return_tile(event.mouseButton.x, event.mouseButton.y));
     if (!current_player->get_board().get_unit(chosen_tile)) {
         return;
     }
@@ -147,7 +147,7 @@ void GameController::remove_unit() {
     }
 }
 
-void GameController::resolve_unit_conflict(const Board::Tile& attacked_unit) {
+void GameController::resolve_unit_conflict(const Tile& attacked_unit) {
     switch (current_player->attack(active_unit, attacked_unit)) {
     case RESULT::WON:
         current_player->remove_unit(attacked_unit);
@@ -170,7 +170,7 @@ void GameController::resolve_unit_conflict(const Board::Tile& attacked_unit) {
 }
 
 void GameController::move_active_unit(sf::Event& event) {
-    Board::Tile chosen_tile(return_tile(event.mouseButton.x, event.mouseButton.y));
+    Tile chosen_tile(return_tile(event.mouseButton.x, event.mouseButton.y));
     if (!is_active_unit) {
         return;
     }
@@ -285,13 +285,13 @@ sf::Vector2f GameController::return_pixels(int col, int row) const {
     return sf::Vector2f(TILE_SIZE * (col + 1), TILE_SIZE * (row + 1));
 }
 
-Board::Tile GameController::return_tile(const sf::Vector2f& coords) const {
-    return Board::Tile((coords.x - TILE_SIZE) / TILE_SIZE, (coords.y - TILE_SIZE) / TILE_SIZE);
+Tile GameController::return_tile(const sf::Vector2f& coords) const {
+    return Tile((coords.x - TILE_SIZE) / TILE_SIZE, (coords.y - TILE_SIZE) / TILE_SIZE);
 }
 
-Board::Tile GameController::return_tile(int x, int y) const {
+Tile GameController::return_tile(int x, int y) const {
     if (x < 0 && y < 0) {
-        return Board::Tile{-1, -1};
+        return Tile{-1, -1};
     }
     return return_tile(sf::Vector2f(x, y));
 }

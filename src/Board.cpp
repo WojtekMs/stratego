@@ -5,12 +5,12 @@
 #include <map>
 #include <string>
 
-#include "BombUnit.hpp"
-#include "FlagUnit.hpp"
-#include "MinerUnit.hpp"
-#include "RegularUnit.hpp"
-#include "ScoutUnit.hpp"
-#include "SpyUnit.hpp"
+#include "unit/BombUnit.hpp"
+#include "unit/FlagUnit.hpp"
+#include "unit/MinerUnit.hpp"
+#include "unit/RegularUnit.hpp"
+#include "unit/ScoutUnit.hpp"
+#include "unit/SpyUnit.hpp"
 
 Board::Board()
     : height(12),
@@ -86,7 +86,7 @@ std::string Board::get_tile_info(int col, int row, TURN player) const {
     if (out_of_range(col, row)) {
         return "#";
     }
-    if (std::find_if(obstacles.begin(), obstacles.end(), [col, row](const Board::Tile& tile) {
+    if (std::find_if(obstacles.begin(), obstacles.end(), [col, row](const Tile& tile) {
             return tile.x == col && tile.y == row;
         }) != obstacles.end()) {
         return "O";
@@ -192,7 +192,7 @@ void Board::remove_unit(int col, int row) {
 }
 
 void Board::reverse_remove_unit(int col, int row) {
-    Board::Tile unit = point_reflection(col, row);
+    Tile unit = point_reflection(col, row);
     units[unit.y][unit.x].reset();
 }
 
@@ -226,32 +226,32 @@ void Board::reverse_move_unit(const Tile& from, const Tile& to) {
     // units[rev_from.y][rev_from.y].swap(units[rev_to.y][rev_to.x]); <---- this doesnt work!
 }
 
-Board::Tile Board::point_reflection(int col, int row) {
-    Board::Tile distance;
-    Board::Tile distance_point;
-    Board::Tile reflection;
-    Board::Tile reflection_point;
+Tile Board::point_reflection(int col, int row) {
+    Tile distance;
+    Tile distance_point;
+    Tile reflection;
+    Tile reflection_point;
     if (col >= 5 && row <= 5) {  //first quarter of the board
-        distance_point = Board::Tile(4, 6);
-        reflection_point = Board::Tile(5, 5);
+        distance_point = Tile(4, 6);
+        reflection_point = Tile(5, 5);
     }
     if (col <= 4 && row <= 5) {  //second quarter of the board
-        distance_point = Board::Tile(5, 6);
-        reflection_point = Board::Tile(4, 5);
+        distance_point = Tile(5, 6);
+        reflection_point = Tile(4, 5);
     }
     if (col <= 4 && row >= 6) {  //third quarter of the board
-        distance_point = Board::Tile(5, 5);
-        reflection_point = Board::Tile(4, 6);
+        distance_point = Tile(5, 5);
+        reflection_point = Tile(4, 6);
     }
     if (col >= 5 && row >= 6) {  //fourth quarter of the board
-        distance_point = Board::Tile(4, 5);
-        reflection_point = Board::Tile(5, 6);
+        distance_point = Tile(4, 5);
+        reflection_point = Tile(5, 6);
     }
     distance.x = col - distance_point.x;
     distance.y = row - distance_point.y;
     reflection.x = -distance.x;
     reflection.y = -distance.y;
-    return Board::Tile(reflection_point.x + reflection.x, reflection_point.y + reflection.y);
+    return Tile(reflection_point.x + reflection.x, reflection_point.y + reflection.y);
 }
 
 Board& Board::operator=(const Board& rhs) {
@@ -272,7 +272,7 @@ Board& Board::operator=(const Board& rhs) {
 }
 
 void Board::update(const Board& other_board) {
-    Board::Tile other_unit;
+    Tile other_unit;
     *this = other_board;
     for (int row = 0; row < height / 2; ++row) {
         for (int col = 0; col < width; ++col) {
@@ -289,7 +289,7 @@ std::shared_ptr<Unit> Board::get_unit(int col, int row) const {
     return units[row][col];
 }
 
-std::shared_ptr<Unit> Board::get_unit(const Board::Tile& chosen_unit) const {
+std::shared_ptr<Unit> Board::get_unit(const Tile& chosen_unit) const {
     if (out_of_range(chosen_unit.x, chosen_unit.y)) {
         return std::shared_ptr<Unit>{};
     }

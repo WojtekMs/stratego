@@ -1,12 +1,14 @@
 #pragma once
 
-#include "Board.hpp"
+#include <memory>
+#include "Tile.hpp"
 
 enum class RESULT {
     LOST,
     DRAW,
     WON,
 };
+
 class Unit;
 
 class Movable {
@@ -23,7 +25,7 @@ private:
 public:
     explicit Movable(Delegate* del);
     virtual bool can_move(int from_x, int from_y, int to_x, int to_y) const = 0;
-    virtual bool can_move(const Board::Tile& from, const Board::Tile& to) const { return can_move(from.x, from.y, to.x, to.y); };
+    virtual bool can_move(const Tile& from, const Tile& to) const { return can_move(from.x, from.y, to.x, to.y); };
     virtual RESULT attack(const std::shared_ptr<Unit>& rhs) const = 0;
 
     virtual ~Movable(){};
