@@ -2,10 +2,10 @@
 
 #include "unit/Unit.hpp"
 
-enum class TURN;
+enum class Turn;
 class FlagUnit : public Unit {
 public:
-    FlagUnit(TURN player)
+    FlagUnit(Turn player)
         : Unit(-1, "flag", player, false){};
     virtual ~FlagUnit(){};
 };

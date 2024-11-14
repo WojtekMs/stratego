@@ -2,10 +2,10 @@
 
 #include "unit/Unit.hpp"
 
-enum class TURN;
+enum class Turn;
 class BombUnit : public Unit {
 public:
-    BombUnit(TURN player)
+    BombUnit(Turn player)
         : Unit(0, "bomb", player, false){};
     virtual ~BombUnit(){};
 };

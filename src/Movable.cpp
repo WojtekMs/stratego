@@ -22,20 +22,20 @@ bool Movable::can_move(int from_x, int from_y, int to_x, int to_y) const
     return false;
 }
 
-RESULT Movable::attack(const std::shared_ptr<Unit>& rhs) const
+Result Movable::attack(const std::shared_ptr<Unit>& rhs) const
 {
     if (!rhs) {
         throw std::invalid_argument(
             "Movable.cpp:27 - unit you try to attack doesn't exist");
     }
     if (rhs->get_type() == "bomb") {
-        return RESULT::LOST;
+        return Result::Lost;
     }
     if (delegate->get_value() > rhs->get_value()) {
-        return RESULT::WON;
+        return Result::Won;
     }
     if (delegate->get_value() == rhs->get_value()) {
-        return RESULT::DRAW;
+        return Result::Draw;
     }
-    return RESULT::LOST;
+    return Result::Lost;
 }

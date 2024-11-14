@@ -11,14 +11,14 @@
 #include "GameController.hpp"
 
 class Player;
-enum class TURN;
+enum class Turn;
 
 class GameView {
     Player& playerA;
     Player& playerB;
     Player* current_player;
     Player* other_player;
-    TURN current_player_turn;
+    Turn current_player_turn;
 
     const std::string board_textures_path;
     const std::string pieces_textures_path;

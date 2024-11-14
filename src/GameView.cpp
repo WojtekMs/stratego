@@ -9,7 +9,7 @@ GameView::GameView(Player& pA, Player& pB)
       playerB(pB),
       current_player(&playerA),
       other_player(&playerB),
-      current_player_turn(TURN::PLAYER_A),
+      current_player_turn(Turn::PlayerA),
       board_textures_path("images/board/"),
       pieces_textures_path("images/pieces/"),
       TILE_SIZE(64),
@@ -228,7 +228,7 @@ void GameView::draw_obstacles(sf::RenderWindow& win) {
 }
 
 void GameView::draw_units_for_init(sf::RenderWindow& win, bool is_dragging, int selected_units_idx, const mouse_data& m_data) {
-    if (current_player_turn == TURN::PLAYER_A) {
+    if (current_player_turn == Turn::PlayerA) {
         draw_red_init_units(win, is_dragging, selected_units_idx, m_data);
     } else {
         draw_blue_init_units(win, is_dragging, selected_units_idx, m_data);
@@ -362,7 +362,7 @@ void GameView::draw_unit_highlight(sf::RenderWindow& win, const Tile& active_uni
 
 void GameView::draw_sprite(sf::RenderWindow& win, int idx, int sprite_pos_x, int sprite_pos_y) {
     if (idx == 12) {
-        if (current_player_turn == TURN::PLAYER_A) {
+        if (current_player_turn == Turn::PlayerA) {
             blue_back_sprite.setPosition(sprite_pos_x, sprite_pos_y);
             win.draw(blue_back_sprite);
         } else {
@@ -370,7 +370,7 @@ void GameView::draw_sprite(sf::RenderWindow& win, int idx, int sprite_pos_x, int
             win.draw(red_back_sprite);
         }
     } else {
-        if (current_player_turn == TURN::PLAYER_A) {
+        if (current_player_turn == Turn::PlayerA) {
             sprite_initial_position = red_units_sprites[idx].getPosition();
             red_units_sprites[idx].setPosition(sprite_pos_x, sprite_pos_y);
             win.draw(red_units_sprites[idx]);

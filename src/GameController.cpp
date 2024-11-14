@@ -14,7 +14,7 @@ GameController::GameController(Player& pA, Player& pB, GameView& g_view)
       attacker{},
       attacked{},
       victorious_player_name("none"),
-      current_player_turn(TURN::PLAYER_A),
+      current_player_turn(Turn::PlayerA),
       TILE_SIZE(64),
       selected_unit_idx(0),
       dragging(false),
@@ -73,12 +73,12 @@ void GameController::drag_blue_player(sf::Event& event) {
 
 void GameController::change_player_turn() {
     if (unit_moved_this_round && turn_approved) {
-        if (current_player_turn == TURN::PLAYER_A) {
-            current_player_turn = TURN::PLAYER_B;
+        if (current_player_turn == Turn::PlayerA) {
+            current_player_turn = Turn::PlayerB;
             current_player = &playerB;
             other_player = &playerA;
         } else {
-            current_player_turn = TURN::PLAYER_A;
+            current_player_turn = Turn::PlayerA;
             current_player = &playerA;
             other_player = &playerB;
         }
@@ -90,18 +90,18 @@ void GameController::change_player_turn() {
 
 void GameController::change_init_turn(sf::Event& event) {
     if (done_button_pressed) {
-        if (current_player_turn == TURN::PLAYER_A) {
-            if (playerA.get_board().get_state() == STATE::FULL) {
+        if (current_player_turn == Turn::PlayerA) {
+            if (playerA.get_board().get_state() == State::Full) {
                 board_a_initialized = true;
-                current_player_turn = TURN::PLAYER_B;
+                current_player_turn = Turn::PlayerB;
                 current_player = &playerB;
                 other_player = &playerA;
                 playerB.update_board(playerA.get_board());
             }
         } else {
-            if (playerB.get_board().get_state() == STATE::FULL) {
+            if (playerB.get_board().get_state() == State::Full) {
                 board_b_initialized = true;
-                current_player_turn = TURN::PLAYER_A;
+                current_player_turn = Turn::PlayerA;
                 current_player = &playerA;
                 other_player = &playerB;
                 playerA.update_board(playerB.get_board());
@@ -149,18 +149,18 @@ void GameController::remove_unit() {
 
 void GameController::resolve_unit_conflict(const Tile& attacked_unit) {
     switch (current_player->attack(active_unit, attacked_unit)) {
-    case RESULT::WON:
+    case Result::Won:
         current_player->remove_unit(attacked_unit);
         other_player->reverse_remove_unit(attacked_unit);
         break;
-    case RESULT::DRAW:
+    case Result::Draw:
         current_player->remove_unit(active_unit);
         current_player->remove_unit(attacked_unit);
         other_player->reverse_remove_unit(active_unit);
         other_player->reverse_remove_unit(attacked_unit);
         active_unit.set_cords(-1, -1);
         break;
-    case RESULT::LOST:
+    case Result::Lost:
         current_player->remove_unit(active_unit);
         other_player->reverse_remove_unit(active_unit);
         active_unit.set_cords(-1, -1);
@@ -209,7 +209,7 @@ void GameController::randomize_units() {
             current_player->remove_unit(col, row);
         }
     }
-    while (current_player->get_board().get_state() != STATE::FULL) {
+    while (current_player->get_board().get_state() != State::Full) {
         for (int row = 8; row < current_player->get_board().get_height(); ++row) {
             for (int col = 0; col < current_player->get_board().get_width(); ++col) {
                 int idx = rand() % 12;
@@ -249,7 +249,7 @@ void GameController::handle_events(sf::Event& event) {
     if (event.type == sf::Event::MouseButtonPressed) {
         set_buttons_pressed();
         if (!(board_a_initialized && board_b_initialized)) {
-            if (current_player_turn == TURN::PLAYER_A) {
+            if (current_player_turn == Turn::PlayerA) {
                 drag_red_player(event);
             } else {
                 drag_blue_player(event);

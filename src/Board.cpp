@@ -15,7 +15,7 @@
 Board::Board()
     : height(12),
       width(10),
-      current_state(STATE::UNINITIALIZED),
+      current_state(State::Uninitialized),
       unit_count(0),
       units(width, height),
       max_count_of_each_unit({{"flag", 1},
@@ -82,7 +82,7 @@ bool Board::out_of_range(int col, int row) const {
     return false;
 }
 
-std::string Board::get_tile_info(int col, int row, TURN player) const {
+std::string Board::get_tile_info(int col, int row, Turn player) const {
     if (out_of_range(col, row)) {
         return "#";
     }
@@ -101,7 +101,7 @@ std::string Board::get_tile_info(int col, int row, TURN player) const {
     return " ";
 }
 
-std::string Board::get_tile_info(const Tile& tile, TURN player) const {
+std::string Board::get_tile_info(const Tile& tile, Turn player) const {
     return get_tile_info(tile.x, tile.y, player);
 }
 
@@ -135,11 +135,11 @@ int Board::get_max_unit_count(int idx) const {
     return -1;
 }
 
-void Board::set_state(STATE state) {
+void Board::set_state(State state) {
     current_state = state;
 }
 
-bool Board::set_unit(int col, int row, TURN player, int choice) {
+bool Board::set_unit(int col, int row, Turn player, int choice) {
     if (col < 0 || col >= width) {
         return false;
     }
@@ -152,7 +152,7 @@ bool Board::set_unit(int col, int row, TURN player, int choice) {
     if (get_tile_info(col, row, player) != " ") {
         return false;
     }
-    if (current_state == STATE::FULL) {
+    if (current_state == State::Full) {
         return false;
     }
 
@@ -178,7 +178,7 @@ bool Board::set_unit(int col, int row, TURN player, int choice) {
     }
     unit_count++;
     if (unit_count == MAX_UNIT_COUNT) {
-        current_state = STATE::FULL;
+        current_state = State::Full;
     }
     return true;
 }
@@ -186,8 +186,8 @@ bool Board::set_unit(int col, int row, TURN player, int choice) {
 void Board::remove_unit(int col, int row) {
     units[row][col].reset();
     unit_count--;
-    if (current_state == STATE::FULL) {
-        current_state = STATE::UNINITIALIZED;
+    if (current_state == State::Full) {
+        current_state = State::Uninitialized;
     }
 }
 

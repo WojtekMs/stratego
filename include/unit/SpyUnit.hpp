@@ -3,15 +3,15 @@
 #include "unit/Unit.hpp"
 #include "unit/Movable.hpp"
 
-enum class TURN;
+enum class Turn;
 class SpyUnit : public Unit, public Movable {
 public:
-    SpyUnit(TURN player)
+    SpyUnit(Turn player)
         : Unit(-1, "spy", player, true), Movable(this) {};
     virtual ~SpyUnit() {};
-    RESULT attack(const std::shared_ptr<Unit>& rhs) const override {
+    Result attack(const std::shared_ptr<Unit>& rhs) const override {
         if (rhs->get_value() == 10) {
-            return RESULT::WON;
+            return Result::Won;
         }
         return Movable::attack(rhs);
     };

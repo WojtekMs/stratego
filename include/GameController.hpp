@@ -11,7 +11,7 @@ struct mouse_data {
     float mouse_object_offset_y;
 };
 
-enum class TURN;
+enum class Turn;
 class Player;
 class GameView;
 
@@ -27,7 +27,7 @@ class GameController {
     sf::Time total_time_unit_attacked;
 
     std::string victorious_player_name;
-    TURN current_player_turn;
+    Turn current_player_turn;
     mouse_data m_data;
     size_t TILE_SIZE;
     size_t selected_unit_idx;

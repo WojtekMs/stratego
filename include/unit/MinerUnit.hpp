@@ -3,15 +3,15 @@
 #include "unit/Movable.hpp"
 #include "unit/Unit.hpp"
 
-enum class TURN;
+enum class Turn;
 class MinerUnit : public Unit, public Movable {
 public:
-    MinerUnit(TURN player)
+    MinerUnit(Turn player)
         : Unit(3, "miner", player, true), Movable(this){};
     virtual ~MinerUnit(){};
-    virtual RESULT attack(const std::shared_ptr<Unit>& rhs) const override {
+    virtual Result attack(const std::shared_ptr<Unit>& rhs) const override {
         if (rhs->get_type() == "bomb") {
-            return RESULT::WON;
+            return Result::Won;
         }
         return Movable::attack(rhs);
     };

@@ -52,7 +52,7 @@ bool Player::move_unit(Tile from, Tile to) {
     return board.move_unit(from, to);
 }
 
-RESULT Player::attack(Tile attacker, Tile attacked) {
+Result Player::attack(Tile attacker, Tile attacked) {
     const Movable* movable = dynamic_cast<const Movable*>(board.get_unit(attacker).get());
     if (!movable) {
         throw std::logic_error("Player.cpp:58 - unit you wish to attack with cannot move");

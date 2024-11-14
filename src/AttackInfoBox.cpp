@@ -93,7 +93,7 @@ void AttackInfoBox::set_attacking_unit(const std::shared_ptr<Unit>& attacker) {
     if (!attacker) {
         return;
     }
-    if (attacker->get_owner() == TURN::PLAYER_A) {
+    if (attacker->get_owner() == Turn::PlayerA) {
         attacking_unit = *red_units_sprites_ptrs[get_unit_sprite_idx(attacker)];
     } else {
         attacking_unit = *blue_units_sprites_ptrs[get_unit_sprite_idx(attacker)];
@@ -107,7 +107,7 @@ void AttackInfoBox::set_attacked_unit(const std::shared_ptr<Unit>& victim) {
     if (!victim) {
         return;
     }
-    if (victim->get_owner() == TURN::PLAYER_A) {
+    if (victim->get_owner() == Turn::PlayerA) {
         attacked_unit = *red_units_sprites_ptrs[get_unit_sprite_idx(victim)];
     } else {
         attacked_unit = *blue_units_sprites_ptrs[get_unit_sprite_idx(victim)];
@@ -142,10 +142,10 @@ std::shared_ptr<Unit> AttackInfoBox::get_winner() {
         return std::shared_ptr<Unit>{};
     }
     if (const Movable* movable = dynamic_cast<const Movable*>(attacker_ptr.get())) {
-        if (movable->attack(attacked_ptr) == RESULT::WON) {
+        if (movable->attack(attacked_ptr) == Result::Won) {
             return attacker_ptr;
         }
-        if (movable->attack(attacked_ptr) == RESULT::LOST) {
+        if (movable->attack(attacked_ptr) == Result::Lost) {
             return attacked_ptr;
         }
     }

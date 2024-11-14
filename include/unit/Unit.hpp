@@ -6,27 +6,22 @@
 #include "unit/Movable.hpp"
 
 class Board;
-enum class TURN;
+enum class Turn;
 
 class Unit : public Movable::Delegate {
-    int value;
-    std::string type;
-    TURN owner;
+    int value{};
+    std::string type{};
+    Turn owner{};
 
 public:
-    Unit(){};
-    Unit(int v, const std::string& t, TURN player, bool m)
+    Unit() = default;
+    Unit(int v, const std::string& t, Turn player, bool m)
         : value(v), type(t), owner(player) {
     };
-    inline Unit(const Unit& rhs);
     int get_value() const override { return value; };
     std::string get_type() const { return type; };
-    TURN get_owner() const { return owner; };
-    virtual ~Unit(){};
+    Turn get_owner() const { return owner; };
+    virtual ~Unit() = default;
 };
 
-Unit::Unit(const Unit& rhs) {
-    value = rhs.value;
-    type = rhs.type;
-    owner = rhs.owner;
-}
+

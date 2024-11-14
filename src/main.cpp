@@ -9,8 +9,8 @@
 
 int main() {
     Board board;
-    Player playerA("Red-A", TURN::PLAYER_A);
-    Player playerB("Blue-B", TURN::PLAYER_B);
+    Player playerA("Red-A", Turn::PlayerA);
+    Player playerB("Blue-B", Turn::PlayerB);
     GameView game_view(playerA, playerB);
     GameController game_controller(playerA, playerB, game_view);
     Game game(game_view, game_controller);
