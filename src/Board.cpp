@@ -203,10 +203,7 @@ bool Board::can_move(const Tile& from, const Tile& to) const {
     if (!units[from.y][from.x]) {
         return false;
     }
-    if (const Movable* movable = dynamic_cast<const Movable*>(units[from.y][from.x].get()) ) {
-        return movable->can_move(from, to);
-    }
-    return false;
+    return units[from.y][from.x]->can_move(from, to);
 }
 
 bool Board::move_unit(const Tile& from, const Tile& to) {

@@ -1,7 +1,7 @@
-#include "unit/Movable.hpp"
 #include "unit/Unit.hpp"
 #include "Player.hpp"
 #include <stdexcept>
+#include "Attack.h"
 
 void Player::set_units_count() {
     units_count.insert(std::pair<std::string, int>{"regular4", 0});
@@ -52,12 +52,11 @@ bool Player::move_unit(Tile from, Tile to) {
     return board.move_unit(from, to);
 }
 
-Result Player::attack(Tile attacker, Tile attacked) {
-    const Movable* movable = dynamic_cast<const Movable*>(board.get_unit(attacker).get());
-    if (!movable) {
-        throw std::logic_error("Player.cpp:58 - unit you wish to attack with cannot move");
-    }
-    return movable->attack(board.get_unit(attacked));
+attack::Result Player::attack(Tile attacker, Tile attacked) {
+    // TODO: make the actual implementation a strategy (use dependency injection)
+    const auto& attacker_unit = board.get_unit(attacker);
+    const auto& attacked_unit = board.get_unit(attacked);
+    return attack::attack(attacker_unit, attacked_unit);
 }
 
 void Player::reverse_move_unit(Tile from, Tile to) {

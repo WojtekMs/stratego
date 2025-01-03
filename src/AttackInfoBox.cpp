@@ -3,8 +3,9 @@
 #include <iostream>
 
 #include "Board.hpp"
+#include "Attack.h"
 
-AttackInfoBox::AttackInfoBox(std::array<sf::Sprite, 12>& red_units_sprites, std::array<sf::Sprite, 12>& blue_units_sprites, sf::Sprite& winning_unit_highlight)
+AttackInfoBox::AttackInfoBox(std::array<sf::Sprite, 12> &red_units_sprites, std::array<sf::Sprite, 12> &blue_units_sprites, sf::Sprite &winning_unit_highlight)
     : path_to_textures("images/board/"),
       attacking_unit_pos_x(-1),
       attacking_unit_pos_y(-1),
@@ -14,11 +15,14 @@ AttackInfoBox::AttackInfoBox(std::array<sf::Sprite, 12>& red_units_sprites, std:
       attacked_unit{},
       attacker_ptr{},
       attacked_ptr{},
-      winner_highlight(winning_unit_highlight) {
-    for (int i = 0; i < red_units_sprites_ptrs.size(); ++i) {
+      winner_highlight(winning_unit_highlight)
+{
+    for (int i = 0; i < red_units_sprites_ptrs.size(); ++i)
+    {
         red_units_sprites_ptrs[i] = &red_units_sprites[i];
     }
-    for (int i = 0; i < blue_units_sprites_ptrs.size(); ++i) {
+    for (int i = 0; i < blue_units_sprites_ptrs.size(); ++i)
+    {
         blue_units_sprites_ptrs[i] = &blue_units_sprites[i];
     }
     load_box_texture();
@@ -30,7 +34,8 @@ AttackInfoBox::AttackInfoBox(std::array<sf::Sprite, 12>& red_units_sprites, std:
     box_sprite.setTexture(box_texture);
 }
 
-void AttackInfoBox::draw(sf::RenderWindow& win) {
+void AttackInfoBox::draw(sf::RenderWindow &win)
+{
     update_attacked_unit_pos();
     update_attacking_unit_pos();
     update_box_text_pos();
@@ -42,46 +47,59 @@ void AttackInfoBox::draw(sf::RenderWindow& win) {
     draw_winner_highlight(win);
 }
 
-void AttackInfoBox::load_box_texture() {
-    if (!box_texture.loadFromFile(path_to_textures + "attack_info_box.png")) {
+void AttackInfoBox::load_box_texture()
+{
+    if (!box_texture.loadFromFile(path_to_textures + "attack_info_box.png"))
+    {
         std::cerr << "attack info box texture failed to load!\n";
         abort();
     }
 }
 
-void AttackInfoBox::load_font() {
-    if (!box_font.loadFromFile("font/lunchds.ttf")) {
+void AttackInfoBox::load_font()
+{
+    if (!box_font.loadFromFile("font/lunchds.ttf"))
+    {
         std::cerr << "failed to load attack info box font!\n";
         abort();
     }
 }
 
-int AttackInfoBox::get_unit_sprite_idx(const std::shared_ptr<Unit>& unit) {
-    if (!unit) {
+int AttackInfoBox::get_unit_sprite_idx(const std::shared_ptr<Unit> &unit)
+{
+    if (!unit)
+    {
         return -1;
     }
-    if (unit->get_type() == "regular") {
+    if (unit->get_type() == "regular")
+    {
         return unit->get_value() - 2;
     }
-    if (unit->get_type() == "scout") {
+    if (unit->get_type() == "scout")
+    {
         return 0;
     }
-    if (unit->get_type() == "miner") {
+    if (unit->get_type() == "miner")
+    {
         return 1;
     }
-    if (unit->get_type() == "bomb") {
+    if (unit->get_type() == "bomb")
+    {
         return 9;
     }
-    if (unit->get_type() == "flag") {
+    if (unit->get_type() == "flag")
+    {
         return 10;
     }
-    if (unit->get_type() == "spy") {
+    if (unit->get_type() == "spy")
+    {
         return 11;
     }
     return -1;
 }
 
-void AttackInfoBox::set_position(int x, int y) {
+void AttackInfoBox::set_position(int x, int y)
+{
     box_sprite.setPosition(x, y);
     update_attacking_unit_pos();
     update_attacked_unit_pos();
@@ -89,13 +107,18 @@ void AttackInfoBox::set_position(int x, int y) {
     set_winner_highlight();
 }
 
-void AttackInfoBox::set_attacking_unit(const std::shared_ptr<Unit>& attacker) {
-    if (!attacker) {
+void AttackInfoBox::set_attacking_unit(const std::shared_ptr<Unit> &attacker)
+{
+    if (!attacker)
+    {
         return;
     }
-    if (attacker->get_owner() == Turn::PlayerA) {
+    if (attacker->get_owner() == Turn::PlayerA)
+    {
         attacking_unit = *red_units_sprites_ptrs[get_unit_sprite_idx(attacker)];
-    } else {
+    }
+    else
+    {
         attacking_unit = *blue_units_sprites_ptrs[get_unit_sprite_idx(attacker)];
     }
     attacking_unit.setPosition(attacking_unit_pos_x, attacking_unit_pos_y);
@@ -103,13 +126,18 @@ void AttackInfoBox::set_attacking_unit(const std::shared_ptr<Unit>& attacker) {
     attacker_ptr = attacker;
 }
 
-void AttackInfoBox::set_attacked_unit(const std::shared_ptr<Unit>& victim) {
-    if (!victim) {
+void AttackInfoBox::set_attacked_unit(const std::shared_ptr<Unit> &victim)
+{
+    if (!victim)
+    {
         return;
     }
-    if (victim->get_owner() == Turn::PlayerA) {
+    if (victim->get_owner() == Turn::PlayerA)
+    {
         attacked_unit = *red_units_sprites_ptrs[get_unit_sprite_idx(victim)];
-    } else {
+    }
+    else
+    {
         attacked_unit = *blue_units_sprites_ptrs[get_unit_sprite_idx(victim)];
     }
     attacked_unit.setPosition(attacked_unit_pos_x, attacked_unit_pos_y);
@@ -117,52 +145,65 @@ void AttackInfoBox::set_attacked_unit(const std::shared_ptr<Unit>& victim) {
     attacked_ptr = victim;
 }
 
-void AttackInfoBox::update_attacking_unit_pos() {
+void AttackInfoBox::update_attacking_unit_pos()
+{
     attacking_unit_pos_x = box_sprite.getPosition().x + (get_width() / 4);
     attacking_unit_pos_y = box_sprite.getPosition().y + ((get_height() - attacking_unit.getGlobalBounds().height) / 2);
     attacking_unit.setPosition(attacking_unit_pos_x, attacking_unit_pos_y);
 }
 
-void AttackInfoBox::update_attacked_unit_pos() {
+void AttackInfoBox::update_attacked_unit_pos()
+{
     attacked_unit_pos_x = box_sprite.getPosition().x + get_width() * 3 / 4 - attacked_unit.getGlobalBounds().width;
     attacked_unit_pos_y = attacking_unit_pos_y;
     attacked_unit.setPosition(attacked_unit_pos_x, attacked_unit_pos_y);
 }
 
-void AttackInfoBox::update_box_text_pos() {
+void AttackInfoBox::update_box_text_pos()
+{
     box_text.setPosition(box_sprite.getPosition().x + ((get_width() - box_text.getLocalBounds().width) / 2),
                          box_sprite.getPosition().y + (get_height() - box_text.getCharacterSize()) / 2);
 }
 
-std::shared_ptr<Unit> AttackInfoBox::get_winner() {
-    if (!attacked_ptr) {
+std::shared_ptr<Unit> AttackInfoBox::get_winner()
+{
+    if (!attacked_ptr)
+    {
         return std::shared_ptr<Unit>{};
     }
-    if (!attacker_ptr) {
+    if (!attacker_ptr)
+    {
         return std::shared_ptr<Unit>{};
     }
-    if (const Movable* movable = dynamic_cast<const Movable*>(attacker_ptr.get())) {
-        if (movable->attack(attacked_ptr) == Result::Won) {
-            return attacker_ptr;
-        }
-        if (movable->attack(attacked_ptr) == Result::Lost) {
-            return attacked_ptr;
-        }
+    const auto result = attack::attack(attacker_ptr, attacked_ptr);
+    if (result == attack::Result::Won)
+    {
+        return attacker_ptr;
     }
+    if (result == attack::Result::Lost)
+    {
+        return attacked_ptr;
+    }
+    // FIXME: what happens with a Draw? Both are winners then
     return std::shared_ptr<Unit>{};
 }
 
-void AttackInfoBox::set_winner_highlight() {
-    if (get_winner() == attacker_ptr) {
+void AttackInfoBox::set_winner_highlight()
+{
+    if (get_winner() == attacker_ptr)
+    {
         winner_highlight.setPosition(attacking_unit.getPosition());
     }
-    if (get_winner() == attacked_ptr) {
+    if (get_winner() == attacked_ptr)
+    {
         winner_highlight.setPosition(attacked_unit.getPosition());
     }
 }
 
-void AttackInfoBox::draw_winner_highlight(sf::RenderWindow& win) {
-    if (!get_winner()) {
+void AttackInfoBox::draw_winner_highlight(sf::RenderWindow &win)
+{
+    if (!get_winner())
+    {
         return;
     }
     winner_highlight.setScale(1.5, 1.5);

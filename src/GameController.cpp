@@ -149,18 +149,18 @@ void GameController::remove_unit() {
 
 void GameController::resolve_unit_conflict(const Tile& attacked_unit) {
     switch (current_player->attack(active_unit, attacked_unit)) {
-    case Result::Won:
+    case attack::Result::Won:
         current_player->remove_unit(attacked_unit);
         other_player->reverse_remove_unit(attacked_unit);
         break;
-    case Result::Draw:
+    case attack::Result::Draw:
         current_player->remove_unit(active_unit);
         current_player->remove_unit(attacked_unit);
         other_player->reverse_remove_unit(active_unit);
         other_player->reverse_remove_unit(attacked_unit);
         active_unit.set_cords(-1, -1);
         break;
-    case Result::Lost:
+    case attack::Result::Lost:
         current_player->remove_unit(active_unit);
         other_player->reverse_remove_unit(active_unit);
         active_unit.set_cords(-1, -1);

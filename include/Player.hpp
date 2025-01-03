@@ -3,9 +3,9 @@
 #include <unordered_map>
 
 #include "Board.hpp"
+#include "Attack.h"
 
 enum class Turn;
-enum class Result;
 class Player
 {
     std::string name;
@@ -25,7 +25,7 @@ class Player
     void remove_unit(Tile chosen_unit);
     void reverse_remove_unit(Tile unit);
     bool move_unit(Tile from, Tile to);
-    Result attack(Tile attacker, Tile attacked);
+    attack::Result attack(Tile attacker, Tile attacked);
     void reverse_move_unit(Tile from, Tile to);
     void update_board(const Board& other_player_board);
     const Board& get_board() { return board; };

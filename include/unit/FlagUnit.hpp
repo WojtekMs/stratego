@@ -3,9 +3,9 @@
 #include "unit/Unit.hpp"
 
 enum class Turn;
-class FlagUnit : public Unit {
+class FlagUnit : public Unit
+{
 public:
-    FlagUnit(Turn player)
-        : Unit(-1, "flag", player, false){};
-    virtual ~FlagUnit(){};
+    FlagUnit(Turn player);
+    bool can_move(const Tile &from, const Tile &to) const override;
 };

@@ -10,8 +10,15 @@ add_library(
   GameController.cpp
   GameView.cpp
   MainMenu.cpp
-  Movable.cpp
-  Player.cpp)
+  Player.cpp
+  Attack.cpp
+  unit/BombUnit.cpp
+  unit/FlagUnit.cpp
+  unit/MinerUnit.cpp
+  unit/RegularUnit.cpp
+  unit/ScoutUnit.cpp
+  unit/SpyUnit.cpp
+  unit/Unit.cpp)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
