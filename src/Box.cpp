@@ -7,7 +7,7 @@ Box::Box(const std::string &text)
     : path_to_textures("images/board/"), max_char_count_inside_box(12),
       max_number_of_text_lines_inside_box(3), box_text_x_pos(-1.0f),
       box_text_y_pos(-1.0f), button_x_pos(-1.0f), button_y_pos(-1.0f) {
-  load_box_texture();
+  			load_box_texture();
   load_font();
   set_default_text(text);
   update_max_char_count();
