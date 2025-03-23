@@ -113,29 +113,23 @@ std::string Board::get_tile_info(const Tile& tile, Turn player) const {
 int Board::get_max_unit_count(int idx) const {
     switch (idx) {
     case 0:
-        return max_count_of_each_unit.at("scout");
+        return ScoutUnit::get_max_count();
     case 1:
-        return max_count_of_each_unit.at("miner");
+        return MinerUnit::get_max_count();
     case 2:
-        return max_count_of_each_unit.at("regular4");
     case 3:
-        return max_count_of_each_unit.at("regular5");
     case 4:
-        return max_count_of_each_unit.at("regular6");
     case 5:
-        return max_count_of_each_unit.at("regular7");
     case 6:
-        return max_count_of_each_unit.at("regular8");
     case 7:
-        return max_count_of_each_unit.at("regular9");
     case 8:
-        return max_count_of_each_unit.at("regular10");
+        return RegularUnit::get_max_count(idx + 2);
     case 9:
-        return max_count_of_each_unit.at("bomb");
+        return BombUnit::get_max_count();
     case 10:
-        return max_count_of_each_unit.at("flag");
+        return FlagUnit::get_max_count();
     case 11:
-        return max_count_of_each_unit.at("spy");
+        return SpyUnit::get_max_count();
     }
     return -1;
 }

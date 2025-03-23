@@ -11,7 +11,6 @@ add_library(
   GameView.cpp
   MainMenu.cpp
   Player.cpp
-  Attack.cpp
   unit/BombUnit.cpp
   unit/FlagUnit.cpp
   unit/MinerUnit.cpp
