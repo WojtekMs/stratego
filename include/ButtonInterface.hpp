@@ -26,7 +26,8 @@ public:
   float get_height() const { return button.getGlobalBounds().height; };
   float get_width() const { return button.getGlobalBounds().width; };
   bool contains(int x, int y) const {
-    return button.getGlobalBounds().contains(static_cast<float>(x), static_cast<float>(y));
+    return button.getGlobalBounds().contains(static_cast<float>(x),
+                                             static_cast<float>(y));
   };
   void highlight_on() { highlighted = true; };
   void highlight_off() { highlighted = false; };

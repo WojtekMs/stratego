@@ -42,17 +42,17 @@ void Box::update_text_pos() {
       (box_sprite.getPosition().x +
        (box_sprite.getGlobalBounds().width - box_text.getLocalBounds().width) /
            2);
-  box_text_y_pos =
-      static_cast<float>(box_sprite.getPosition().y + 2 * box_text.getCharacterSize());
+  box_text_y_pos = static_cast<float>(box_sprite.getPosition().y +
+                                      2 * box_text.getCharacterSize());
   box_text.setPosition(box_text_x_pos, box_text_y_pos);
 }
 
 void Box::update_button_pos() {
   button_x_pos = box_sprite.getPosition().x +
                  (box_sprite.getGlobalBounds().width - button.get_width()) / 2;
-  button_y_pos = static_cast<float>(box_sprite.getPosition().y +
-                 box_sprite.getGlobalBounds().height -
-                 2 * box_text.getCharacterSize() - button.get_height());
+  button_y_pos = static_cast<float>(
+      box_sprite.getPosition().y + box_sprite.getGlobalBounds().height -
+      2 * box_text.getCharacterSize() - button.get_height());
   button.set_position(button_x_pos, button_y_pos);
 }
 
@@ -83,8 +83,8 @@ void Box::draw(sf::RenderWindow &win) {
 }
 
 void Box::update_max_char_count() {
-  int max_chars_per_line = static_cast<int>(
-      box_sprite.getLocalBounds().width / box_text.getCharacterSize());
+  int max_chars_per_line = static_cast<int>(box_sprite.getLocalBounds().width /
+                                            box_text.getCharacterSize());
   max_char_count_inside_box =
       max_chars_per_line * max_number_of_text_lines_inside_box;
 }
@@ -122,7 +122,8 @@ void Box::break_text_into_lines() {
         float denting = (box_sprite.getLocalBounds().width -
                          char_count_inside_line * box_text.getCharacterSize()) /
                         2;
-        int spaces = static_cast<int>(denting / box_text.getCharacterSize() + 0.5);
+        int spaces =
+            static_cast<int>(denting / box_text.getCharacterSize() + 0.5);
         temp_text.insert(idx_of_the_first_char_in_new_line, spaces, ' ');
       }
       temp_text += (words[i] + " ");

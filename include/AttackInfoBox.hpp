@@ -1,8 +1,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <memory>
 #include <array>
+#include <memory>
 
 #include "unit/Unit.hpp"
 
