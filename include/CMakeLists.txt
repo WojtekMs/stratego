@@ -1,0 +1,1 @@
+target_include_directories(stratego-src PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

@@ -51,3 +51,25 @@ Created with the help of SFML documentation and sources:
 - [Setting The Board](https://user-images.githubusercontent.com/62173407/85401972-2f64ad80-b55b-11ea-81bb-2f78c8d047ed.png)
 - [Scout Move](https://user-images.githubusercontent.com/62173407/85402027-44d9d780-b55b-11ea-9de2-3ff096b19e8b.png)
 - [Attack Info Box](https://user-images.githubusercontent.com/62173407/85402062-5622e400-b55b-11ea-9d96-9cd896a91d29.png)
+
+
+## Contributing
+In case you would like to contribue, please make sure that you format code.
+
+1. Make sure you are in repo root
+2. Install clang-format using pip:
+```bash
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+```
+
+3. Now use the formatting script:
+```bash
+bash infra/scripts/apply_formatting.sh .
+```
+
+4. You can also install pre-commit hook that will automatically check for correct code-formatting:
+```bash
+cp infra/hooks/pre-commit .git/hooks/pre-commit
+```
