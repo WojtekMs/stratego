@@ -1,6 +1,3 @@
-#pragma once 
+#pragma once
 
-enum class Turn {
-    PlayerA,
-    PlayerB
-};
+enum class Turn { PlayerA, PlayerB };

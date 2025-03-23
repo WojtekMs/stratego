@@ -9,7 +9,9 @@
 #include "unit/ScoutUnit.hpp"
 #include "unit/SpyUnit.hpp"
 
-using Unit = std::variant<BombUnit, FlagUnit, MinerUnit, RegularUnit, ScoutUnit, SpyUnit>;
+using Unit = std::variant<BombUnit, FlagUnit, MinerUnit, RegularUnit, ScoutUnit,
+                          SpyUnit>;
 
-template<class... Ts>
-struct overloads : Ts... { using Ts::operator()...; };
+template <class... Ts> struct overloads : Ts... {
+  using Ts::operator()...;
+};
