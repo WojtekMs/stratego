@@ -9,10 +9,10 @@ protected:
   const std::string path_to_textures;
   size_t max_char_count_inside_box;
   size_t max_number_of_text_lines_inside_box;
-  int box_text_x_pos;
-  int box_text_y_pos;
-  int button_x_pos;
-  int button_y_pos;
+  float box_text_x_pos;
+  float box_text_y_pos;
+  float button_x_pos;
+  float button_y_pos;
   Button button;
   sf::Font font;
   sf::Text box_text;

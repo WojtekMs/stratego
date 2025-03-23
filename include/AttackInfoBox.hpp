@@ -2,15 +2,16 @@
 
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <array>
 
 #include "unit/Unit.hpp"
 
 class AttackInfoBox {
   const std::string path_to_textures;
-  int attacking_unit_pos_x;
-  int attacking_unit_pos_y;
-  int attacked_unit_pos_x;
-  int attacked_unit_pos_y;
+  float attacking_unit_pos_x;
+  float attacking_unit_pos_y;
+  float attacked_unit_pos_x;
+  float attacked_unit_pos_y;
   std::array<sf::Sprite *, 12> red_units_sprites_ptrs;
   std::array<sf::Sprite *, 12> blue_units_sprites_ptrs;
   sf::Texture box_texture;

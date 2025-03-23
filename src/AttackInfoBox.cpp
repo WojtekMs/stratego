@@ -10,9 +10,9 @@
 AttackInfoBox::AttackInfoBox(std::array<sf::Sprite, 12> &red_units_sprites,
                              std::array<sf::Sprite, 12> &blue_units_sprites,
                              sf::Sprite &winning_unit_highlight)
-    : path_to_textures("images/board/"), attacking_unit_pos_x(-1),
-      attacking_unit_pos_y(-1), attacked_unit_pos_x(-1),
-      attacked_unit_pos_y(-1), attacking_unit{}, attacked_unit{},
+    : path_to_textures("images/board/"), attacking_unit_pos_x(-1.0f),
+      attacking_unit_pos_y(-1.0f), attacked_unit_pos_x(-1.0f),
+      attacked_unit_pos_y(-1.0f), attacking_unit{}, attacked_unit{},
       attacker_ptr{}, attacked_ptr{}, winner_highlight(winning_unit_highlight) {
   for (int i = 0; i < red_units_sprites_ptrs.size(); ++i) {
     red_units_sprites_ptrs[i] = &red_units_sprites[i];
@@ -60,7 +60,7 @@ int AttackInfoBox::get_unit_sprite_idx(const Unit &unit) {
 }
 
 void AttackInfoBox::set_position(int x, int y) {
-  box_sprite.setPosition(x, y);
+  box_sprite.setPosition(static_cast<float>(x), static_cast<float>(y));
   update_attacking_unit_pos();
   update_attacked_unit_pos();
   update_box_text_pos();
@@ -149,7 +149,7 @@ void AttackInfoBox::draw_winner_highlight(sf::RenderWindow &win) {
   if (!get_winner()) {
     return;
   }
-  winner_highlight.setScale(1.5, 1.5);
+  winner_highlight.setScale(1.5f, 1.5f);
   win.draw(winner_highlight);
-  winner_highlight.setScale(1, 1);
+  winner_highlight.setScale(1.0f, 1.0f);
 }

@@ -19,6 +19,6 @@ public:
   Turn get_owner() const noexcept { return model_.get_owner(); }
   static int get_count(int value) { RegularUnitCounter::get_count(value); }
   static int get_max_count(int value) {
-    RegularUnitCounter::get_max_count(value);
+    return RegularUnitCounter::get_max_count(value);
   }
 };
