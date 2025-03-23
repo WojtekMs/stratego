@@ -28,7 +28,6 @@ private:
   int unit_count{};
   Array2D<std::optional<Unit>> units;
   std::array<Tile, 8> obstacles;
-  const std::map<std::string, int> max_count_of_each_unit;
 
   void set_default_units();
   void set_obstacles();

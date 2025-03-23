@@ -16,18 +16,7 @@
 
 Board::Board()
     : height(12), width(10), current_state(State::Uninitialized), unit_count(0),
-      units(width, height), max_count_of_each_unit({{"flag", 1},
-                                                    {"scout", 8},
-                                                    {"miner", 5},
-                                                    {"bomb", 6},
-                                                    {"spy", 1},
-                                                    {"regular4", 4},
-                                                    {"regular5", 4},
-                                                    {"regular6", 4},
-                                                    {"regular7", 3},
-                                                    {"regular8", 2},
-                                                    {"regular9", 1},
-                                                    {"regular10", 1}}) {
+      units(width, height) {
   set_obstacles();
   set_default_units();
 }
