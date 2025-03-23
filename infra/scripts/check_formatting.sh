@@ -14,7 +14,7 @@ if [[ ! -d .git ]]; then
 fi
 
 echo "Checking code formatting..."
-. env/bin/activate && find src/ include/ -regex ".*\.\(hpp\|cpp\|c\|h\)$" -execdir clang-format --style=LLVM --dry-run --Werror {} + ;
+find src/ include/ -regex ".*\.\(hpp\|cpp\|c\|h\)$" -execdir clang-format --style=LLVM --dry-run --Werror {} + ;
 FORMATTING_EC=$?
 if [[ $FORMATTING_EC -ne 0 ]]; then
 	exit 1
