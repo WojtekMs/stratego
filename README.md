@@ -66,7 +66,7 @@ pip install -r requirements.txt
 
 3. Now use the formatting script:
 ```bash
-bash infra/scripts/check_formatting.sh .
+bash infra/scripts/apply_formatting.sh .
 ```
 
 4. You can also install pre-commit hook that will automatically check for correct code-formatting:
