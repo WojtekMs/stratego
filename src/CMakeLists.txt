@@ -18,7 +18,9 @@ add_library(
   unit/RegularUnit.cpp
   unit/ScoutUnit.cpp
   unit/SpyUnit.cpp
-  unit/Unit.cpp)
+  unit/Unit.cpp
+  unit/UnitCounter.cpp
+  unit/UnitModel.cpp)
 
 add_executable(${PROJECT_NAME} main.cpp)
 

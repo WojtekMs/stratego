@@ -21,24 +21,24 @@ class AttackInfoBox
     sf::Sprite attacking_unit;
     sf::Sprite attacked_unit;
     sf::Sprite& winner_highlight;
-    std::shared_ptr<Unit> attacker_ptr;
-    std::shared_ptr<Unit> attacked_ptr;
+    const Unit* attacker_ptr;
+    const Unit* attacked_ptr;
 
-    int get_unit_sprite_idx(const std::shared_ptr<Unit>& unit);
+    int get_unit_sprite_idx(const Unit& unit);
     void load_box_texture();
     void load_font();
     void update_attacking_unit_pos();
     void update_attacked_unit_pos();
     void update_box_text_pos();
-    std::shared_ptr<Unit> get_winner();
+    const Unit* get_winner();
     void set_winner_highlight();
     void draw_winner_highlight(sf::RenderWindow& win);
     public:
     AttackInfoBox(std::array<sf::Sprite, 12>& red_units_sprites, std::array<sf::Sprite, 12>& blue_units_sprites, sf::Sprite& winning_unit_highlight);
     void draw(sf::RenderWindow& win);
     void set_position(int x, int y);
-    void set_attacking_unit(const std::shared_ptr<Unit>& attacker);
-    void set_attacked_unit(const std::shared_ptr<Unit>& victim);
+    void set_attacking_unit(const std::optional<Unit>& attacker);
+    void set_attacked_unit(const std::optional<Unit>& victim);
     float get_height() const { return box_sprite.getGlobalBounds().height; };
     float get_width() const { return box_sprite.getGlobalBounds().width; };
     

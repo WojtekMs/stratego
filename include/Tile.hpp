@@ -3,8 +3,8 @@
 class Tile
 {
 public:
-    int x;
-    int y;
+    int x{};
+    int y{};
     explicit Tile(int col = 0, int row = 0)
     {
         x = col;

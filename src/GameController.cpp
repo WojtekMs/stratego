@@ -4,6 +4,7 @@
 
 #include "GameView.hpp"
 #include "Player.hpp"
+#include "unit/visit/GetOwner.hpp"
 
 GameController::GameController(Player& pA, Player& pB, GameView& g_view)
     : playerA(pA),
@@ -125,7 +126,7 @@ void GameController::set_active_unit(sf::Event& event) {
     if (!current_player->get_board().get_unit(chosen_tile)) {
         return;
     }
-    if (current_player->get_board().get_unit(chosen_tile)->get_owner() != current_player->get_player_number()) {
+    if (std::visit(GetOwner{}, current_player->get_board().get_unit(chosen_tile).value()) != current_player->get_player_number()) {
         return;
     }
 
@@ -181,7 +182,7 @@ void GameController::move_active_unit(sf::Event& event) {
         return;
     }
     if (current_player->get_tile_info(chosen_tile) == "enemy") {
-        if (current_player->get_board().get_unit(chosen_tile)->get_type() == "flag") {
+        if (std::holds_alternative<FlagUnit>(current_player->get_board().get_unit(chosen_tile).value())) {
             game_finished = true;
             victorious_player_name = current_player->get_player_name();
         }

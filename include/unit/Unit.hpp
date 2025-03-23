@@ -1,28 +1,15 @@
 #pragma once
 
-#include <memory>
-#include <string>
-#include "Tile.hpp"
+#include <variant>
 
-enum class Turn;
+#include "unit/BombUnit.hpp"
+#include "unit/FlagUnit.hpp"
+#include "unit/MinerUnit.hpp"
+#include "unit/RegularUnit.hpp"
+#include "unit/ScoutUnit.hpp"
+#include "unit/SpyUnit.hpp"
 
-class Unit
-{
-private:
-    int value_{};
-    std::string type_{};
-    Turn owner_{};
+using Unit = std::variant<BombUnit, FlagUnit, MinerUnit, RegularUnit, ScoutUnit, SpyUnit>;
 
-public:
-    static constexpr int MARSHAL_VALUE{10};
-    Unit() = default;
-    Unit(int value, std::string type, Turn player);
-
-    int get_value() const noexcept;
-    [[deprecated("Future refactoring will remove get_type()")]] std::string get_type() const noexcept;
-    Turn get_owner() const noexcept;
-
-    virtual bool can_move(const Tile &from, const Tile &to) const;
-
-    virtual ~Unit() = default;
-};
+template<class... Ts>
+struct overloads : Ts... { using Ts::operator()...; };

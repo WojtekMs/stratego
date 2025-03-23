@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "Board.hpp"
+#include <optional>
 
 struct mouse_data {
     float mouse_x;
@@ -21,8 +22,8 @@ class GameController {
     GameView& game_view;
     Player* current_player;
     Player* other_player;
-    std::shared_ptr<Unit> attacker;
-    std::shared_ptr<Unit> attacked;
+    std::optional<Unit> attacker;
+    std::optional<Unit> attacked;
     sf::Clock clock;
     sf::Time total_time_unit_attacked;
 
@@ -85,8 +86,8 @@ public:
     bool get_end_game_info_box_button_pressed() { return end_game_info_box_button_pressed; };
     bool get_game_finished() { return game_finished; };
     bool both_boards_set() const;
-    std::shared_ptr<Unit> get_attacker() const { return attacker; };
-    std::shared_ptr<Unit> get_attacked() const { return attacked; };
+    std::optional<Unit> get_attacker() const { return attacker; };
+    std::optional<Unit> get_attacked() const { return attacked; };
     std::string get_victorious_player_name() const { return victorious_player_name; };
     const Tile& get_active_unit() const { return active_unit; };
     int get_selected_init_unit_idx() const { return selected_unit_idx; };

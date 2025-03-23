@@ -11,6 +11,8 @@
 #include "unit/RegularUnit.hpp"
 #include "unit/ScoutUnit.hpp"
 #include "unit/SpyUnit.hpp"
+#include "unit/visit/GetTileInfo.hpp"
+#include "unit/visit/CanMove.hpp"
 
 Board::Board()
     : height(12),
@@ -37,8 +39,7 @@ Board::Board()
 void Board::set_default_units() {
     for (int row = 0; row < height; ++row) {
         for (int col = 0; col < width; ++col) {
-            units[row][col].reset();
-            units[row][col] = nullptr;
+            unset_unit(Tile{col, row});
         }
     }
 }
@@ -72,6 +73,14 @@ void Board::set_obstacles() {
     }
 }
 
+bool Board::is_unit_set(Tile tile) const {
+    return units[tile.y][tile.x].has_value();
+}
+
+void Board::unset_unit(Tile tile) {
+    units[tile.y][tile.x] = std::nullopt;
+}
+
 bool Board::out_of_range(int col, int row) const {
     if (col < 0 || col >= width) {
         return true;
@@ -86,19 +95,15 @@ std::string Board::get_tile_info(int col, int row, Turn player) const {
     if (out_of_range(col, row)) {
         return "#";
     }
+    if (!is_unit_set(Tile{col, row})) {
+        return " ";
+    }
     if (std::find_if(obstacles.begin(), obstacles.end(), [col, row](const Tile& tile) {
             return tile.x == col && tile.y == row;
         }) != obstacles.end()) {
         return "O";
     }
-    if (units[row][col]) {
-        if (units[row][col]->get_owner() != player) {
-            return "enemy";
-        } else {
-            return units[row][col]->get_type();
-        }
-    }
-    return " ";
+    return std::visit(GetTileInfo{player}, units[row][col].value());
 }
 
 std::string Board::get_tile_info(const Tile& tile, Turn player) const {
@@ -158,23 +163,23 @@ bool Board::set_unit(int col, int row, Turn player, int choice) {
 
     switch (choice + 2) {
     case 2: {
-        units[row][col] = std::make_shared<ScoutUnit>(player);
+        units[row][col] = ScoutUnit(player);
     } break;
     case 3: {
-        units[row][col] = std::make_shared<MinerUnit>(player);
+        units[row][col] = MinerUnit(player);
     } break;
     case 11: {
-        units[row][col] = std::make_shared<BombUnit>(player);
+        units[row][col] = BombUnit(player);
     } break;
     case 12: {
-        units[row][col] = std::make_shared<FlagUnit>(player);
+        units[row][col] = FlagUnit(player);
     } break;
     case 13: {
-        units[row][col] = std::make_shared<SpyUnit>(player);
+        units[row][col] = SpyUnit(player);
     }
     }
     if (choice + 2 > 3 && choice + 2 < 11) {
-        units[row][col] = std::make_shared<RegularUnit>(choice + 2, player);
+        units[row][col] = RegularUnit(choice + 2, player);
     }
     unit_count++;
     if (unit_count == MAX_UNIT_COUNT) {
@@ -184,7 +189,7 @@ bool Board::set_unit(int col, int row, Turn player, int choice) {
 }
 
 void Board::remove_unit(int col, int row) {
-    units[row][col].reset();
+    unset_unit(Tile{col, row});
     unit_count--;
     if (current_state == State::Full) {
         current_state = State::Uninitialized;
@@ -193,34 +198,33 @@ void Board::remove_unit(int col, int row) {
 
 void Board::reverse_remove_unit(int col, int row) {
     Tile unit = point_reflection(col, row);
-    units[unit.y][unit.x].reset();
+    unset_unit(unit);
 }
 
 bool Board::can_move(const Tile& from, const Tile& to) const {
     if (out_of_range(from.x, from.y)) {
         return false;
     }
-    if (!units[from.y][from.x]) {
+    if (!is_unit_set(from)) {
         return false;
     }
-    return units[from.y][from.x]->can_move(from, to);
+    return std::visit(CanMove{from, to}, units[from.y][from.x].value());
 }
 
 bool Board::move_unit(const Tile& from, const Tile& to) {
+    using std::swap;
     if (can_move(from, to)) {
-        units[from.y][from.x].swap(units[to.y][to.x]);
+        swap(units[from.y][from.x], units[to.y][to.x]);
         return true;
     }
     return false;
 }
 
 void Board::reverse_move_unit(const Tile& from, const Tile& to) {
+    using std::swap;
     Tile rev_from = point_reflection(from.x, from.y);
     Tile rev_to = point_reflection(to.x, to.y);
-    std::shared_ptr<Unit> temp_ptr = units[rev_from.y][rev_from.x]; //<---- this does! (whaaat?)
-    units[rev_from.y][rev_from.x] = units[rev_to.y][rev_to.x];
-    units[rev_to.y][rev_to.x] = temp_ptr;
-    // units[rev_from.y][rev_from.y].swap(units[rev_to.y][rev_to.x]); <---- this doesnt work!
+    swap(units[rev_from.y][rev_from.x], units[rev_to.y][rev_to.x]);
 }
 
 Tile Board::point_reflection(int col, int row) {
@@ -269,26 +273,25 @@ Board& Board::operator=(const Board& rhs) {
 }
 
 void Board::update(const Board& other_board) {
+    using std::swap;
     Tile other_unit;
     *this = other_board;
     for (int row = 0; row < height / 2; ++row) {
         for (int col = 0; col < width; ++col) {
             other_unit = point_reflection(col, row);
-            units[other_unit.y][other_unit.x].swap(units[row][col]);
+            swap(units[other_unit.y][other_unit.x], units[row][col]);
         }
     }
 }
 
-std::shared_ptr<Unit> Board::get_unit(int col, int row) const {
+const std::optional<Unit>& Board::get_unit(int col, int row) const {
     if (out_of_range(col, row)) {
-        return std::shared_ptr<Unit>{};
+        // TODO: maybe more sophisticated error handling? 
+        return std::nullopt;
     }
     return units[row][col];
 }
 
-std::shared_ptr<Unit> Board::get_unit(const Tile& chosen_unit) const {
-    if (out_of_range(chosen_unit.x, chosen_unit.y)) {
-        return std::shared_ptr<Unit>{};
-    }
-    return units[chosen_unit.y][chosen_unit.x];
+const std::optional<Unit>& Board::get_unit(const Tile& chosen_unit) const {
+    return get_unit(chosen_unit.x, chosen_unit.y);
 }

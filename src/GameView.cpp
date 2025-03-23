@@ -306,7 +306,7 @@ void GameView::draw_info_box(sf::RenderWindow& win) {
     info_box.draw(win);
 }
 
-void GameView::draw_attack_info_box(sf::RenderWindow& win, const std::shared_ptr<Unit>& attacker, const std::shared_ptr<Unit>& attacked) {
+void GameView::draw_attack_info_box(sf::RenderWindow& win, const std::optional<Unit>& attacker, const std::optional<Unit>& attacked) {
     if (!clock_started) {
         clock.restart();
         clock_started = true;
@@ -322,35 +322,23 @@ void GameView::draw_attack_info_box(sf::RenderWindow& win, const std::shared_ptr
 }
 
 void GameView::draw_units(sf::RenderWindow& win) {
-    int object_x_pos = -1;
-    int object_y_pos = -1;
-    int unit_idx = -1;
     for (int row = 0; row < current_player->get_board().get_height(); ++row) {
-        object_y_pos = (row + 1) * TILE_SIZE;
+        const int object_y_pos = (row + 1) * TILE_SIZE;
         for (int col = 0; col < current_player->get_board().get_width(); ++col) {
-            object_x_pos = (col + 1) * TILE_SIZE;
-            if (current_player->get_tile_info(col, row) == "regular") {
-                unit_idx = current_player->get_board().get_unit(col, row)->get_value() - 2;
-                draw_sprite(win, unit_idx, object_x_pos, object_y_pos);
-            }
-            if (current_player->get_tile_info(col, row) == "scout") {
-                draw_sprite(win, 0, object_x_pos, object_y_pos);
-            }
-            if (current_player->get_tile_info(col, row) == "miner") {
-                draw_sprite(win, 1, object_x_pos, object_y_pos);
-            }
-            if (current_player->get_tile_info(col, row) == "bomb") {
-                draw_sprite(win, 9, object_x_pos, object_y_pos);
-            }
-            if (current_player->get_tile_info(col, row) == "flag") {
-                draw_sprite(win, 10, object_x_pos, object_y_pos);
-            }
-            if (current_player->get_tile_info(col, row) == "spy") {
-                draw_sprite(win, 11, object_x_pos, object_y_pos);
-            }
+            const int object_x_pos = (col + 1) * TILE_SIZE;
+            const auto& unit = current_player->get_board().get_unit(col, row);
+            int unit_idx = std::visit(overloads{
+                [](const RegularUnit& runit){ return runit.get_value() - 2; },
+                [](const ScoutUnit&){ return 0; },
+                [](const MinerUnit&){ return 1; },
+                [](const BombUnit&){ return 9; },
+                [](const FlagUnit&){ return 10; },
+                [](const SpyUnit&){ return 11; },
+            }, unit.value());
             if (current_player->get_tile_info(col, row) == "enemy") {
-                draw_sprite(win, 12, object_x_pos, object_y_pos);
+                unit_idx = 12;
             }
+            draw_sprite(win, unit_idx, object_x_pos, object_y_pos);
         }
     }
 }
@@ -385,14 +373,14 @@ void GameView::draw_sprite(sf::RenderWindow& win, int idx, int sprite_pos_x, int
 }
 
 void GameView::draw_possible_moves_for_active_unit(sf::RenderWindow& win, const Tile& active_unit) {
-    if (!current_player->get_board().get_unit(active_unit.x, active_unit.y)) {
+    const auto& unit = current_player->get_board().get_unit(active_unit.x, active_unit.y);
+    if (!unit) {
         return;
     }
-    if (current_player->get_board().get_unit(active_unit.x, active_unit.y)->get_type() == "scout") {
-        highlight_scout_moves(win, active_unit);
-    } else {
-        highlight_regular_moves(win, active_unit);
-    }
+    std::visit(overloads{
+        [this, &win, &active_unit](const ScoutUnit&){ highlight_scout_moves(win, active_unit); },
+        [this, &win, &active_unit](const auto&){ highlight_regular_moves(win, active_unit); },
+    }, unit.value());
 }
 
 void GameView::highlight_regular_moves(sf::RenderWindow& win, const Tile& active_unit) {

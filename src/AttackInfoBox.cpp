@@ -3,7 +3,9 @@
 #include <iostream>
 
 #include "Board.hpp"
-#include "Attack.h"
+#include "unit/visit/Attack.hpp"
+#include "unit/visit/GetOwner.hpp"
+#include "unit/visit/GetUnitSpriteId.hpp"
 
 AttackInfoBox::AttackInfoBox(std::array<sf::Sprite, 12> &red_units_sprites, std::array<sf::Sprite, 12> &blue_units_sprites, sf::Sprite &winning_unit_highlight)
     : path_to_textures("images/board/"),
@@ -65,37 +67,9 @@ void AttackInfoBox::load_font()
     }
 }
 
-int AttackInfoBox::get_unit_sprite_idx(const std::shared_ptr<Unit> &unit)
+int AttackInfoBox::get_unit_sprite_idx(const Unit &unit)
 {
-    if (!unit)
-    {
-        return -1;
-    }
-    if (unit->get_type() == "regular")
-    {
-        return unit->get_value() - 2;
-    }
-    if (unit->get_type() == "scout")
-    {
-        return 0;
-    }
-    if (unit->get_type() == "miner")
-    {
-        return 1;
-    }
-    if (unit->get_type() == "bomb")
-    {
-        return 9;
-    }
-    if (unit->get_type() == "flag")
-    {
-        return 10;
-    }
-    if (unit->get_type() == "spy")
-    {
-        return 11;
-    }
-    return -1;
+    return std::visit(GetUnitSpriteId{}, unit);
 }
 
 void AttackInfoBox::set_position(int x, int y)
@@ -107,42 +81,42 @@ void AttackInfoBox::set_position(int x, int y)
     set_winner_highlight();
 }
 
-void AttackInfoBox::set_attacking_unit(const std::shared_ptr<Unit> &attacker)
+void AttackInfoBox::set_attacking_unit(const std::optional<Unit> &attacker)
 {
-    if (!attacker)
-    {
+    if (!attacker) {
         return;
     }
-    if (attacker->get_owner() == Turn::PlayerA)
+    const auto attackerUnit = attacker.value();
+    if (std::visit(GetOwner{}, attackerUnit) == Turn::PlayerA)
     {
-        attacking_unit = *red_units_sprites_ptrs[get_unit_sprite_idx(attacker)];
+        attacking_unit = *red_units_sprites_ptrs[get_unit_sprite_idx(attackerUnit)];
     }
     else
     {
-        attacking_unit = *blue_units_sprites_ptrs[get_unit_sprite_idx(attacker)];
+        attacking_unit = *blue_units_sprites_ptrs[get_unit_sprite_idx(attackerUnit)];
     }
     attacking_unit.setPosition(attacking_unit_pos_x, attacking_unit_pos_y);
     attacking_unit.scale(1.5, 1.5);
-    attacker_ptr = attacker;
+    attacker_ptr = &attackerUnit;
 }
 
-void AttackInfoBox::set_attacked_unit(const std::shared_ptr<Unit> &victim)
+void AttackInfoBox::set_attacked_unit(const std::optional<Unit> &victim)
 {
-    if (!victim)
-    {
+    if (!victim) {
         return;
     }
-    if (victim->get_owner() == Turn::PlayerA)
+    const auto victimUnit = victim.value();
+    if (std::visit(GetOwner{}, victimUnit) == Turn::PlayerA)
     {
-        attacked_unit = *red_units_sprites_ptrs[get_unit_sprite_idx(victim)];
+        attacked_unit = *red_units_sprites_ptrs[get_unit_sprite_idx(victimUnit)];
     }
     else
     {
-        attacked_unit = *blue_units_sprites_ptrs[get_unit_sprite_idx(victim)];
+        attacked_unit = *blue_units_sprites_ptrs[get_unit_sprite_idx(victimUnit)];
     }
     attacked_unit.setPosition(attacked_unit_pos_x, attacked_unit_pos_y);
     attacked_unit.scale(1.5, 1.5);
-    attacked_ptr = victim;
+    attacked_ptr = &victimUnit;
 }
 
 void AttackInfoBox::update_attacking_unit_pos()
@@ -165,17 +139,13 @@ void AttackInfoBox::update_box_text_pos()
                          box_sprite.getPosition().y + (get_height() - box_text.getCharacterSize()) / 2);
 }
 
-std::shared_ptr<Unit> AttackInfoBox::get_winner()
+const Unit* AttackInfoBox::get_winner()
 {
-    if (!attacked_ptr)
+    if (!attacked_ptr || !attacker_ptr)
     {
-        return std::shared_ptr<Unit>{};
+        return {};
     }
-    if (!attacker_ptr)
-    {
-        return std::shared_ptr<Unit>{};
-    }
-    const auto result = attack::attack(attacker_ptr, attacked_ptr);
+    const auto result = std::visit(Attack{}, *attacker_ptr, *attacked_ptr);
     if (result == attack::Result::Won)
     {
         return attacker_ptr;
@@ -185,7 +155,7 @@ std::shared_ptr<Unit> AttackInfoBox::get_winner()
         return attacked_ptr;
     }
     // FIXME: what happens with a Draw? Both are winners then
-    return std::shared_ptr<Unit>{};
+    return {};
 }
 
 void AttackInfoBox::set_winner_highlight()

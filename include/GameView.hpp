@@ -117,7 +117,7 @@ public:
     void draw_end_turn_button(sf::RenderWindow& win);
     void draw_possible_moves_for_active_unit(sf::RenderWindow& win, const Tile& active_unit);
     void draw_info_box(sf::RenderWindow& win);
-    void draw_attack_info_box(sf::RenderWindow& win, const std::shared_ptr<Unit>& attacker, const std::shared_ptr<Unit>& attacked);
+    void draw_attack_info_box(sf::RenderWindow& win, const std::optional<Unit>& attacker, const std::optional<Unit>& attacked);
     void draw_units(sf::RenderWindow& win);
     void draw_unit_highlight(sf::RenderWindow& win, const Tile& active_unit);
     void draw_end_game_screen(sf::RenderWindow& win, const std::string& victorious_name);
